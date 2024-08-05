@@ -8,11 +8,10 @@ pingdirectory:
         limits:
           memory: "26Gi"
         requests:
-          memory: "22Gi"
+          memory: "26Gi"
     statsdExporter:
-      resources:
         requests:
           memory: "300Mi"
   # Persistent volume size configuration.
   persistentVolume:
-    size: 100Gi
+    size: 50Gi
