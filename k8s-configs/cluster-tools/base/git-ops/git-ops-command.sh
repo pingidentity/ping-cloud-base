@@ -8,6 +8,16 @@
 LOG_FILE=/tmp/git-ops-command.log
 
 ########################################################################################################################
+# Converts the provided string to lowercase.
+#
+# Arguments
+#   $1 -> The string to convert to lowercase.
+########################################################################################################################
+lowercase() {
+  echo "$1" | tr '[:upper:]' '[:lower:]'
+}
+
+########################################################################################################################
 # Add the provided message to LOG_FILE.
 #
 # Arguments
@@ -15,7 +25,7 @@ LOG_FILE=/tmp/git-ops-command.log
 ########################################################################################################################
 log() {
   msg="$1"
-  if [[ "${DEBUG}" == "true" ]]; then
+  if [[ $(lowercase "${DEBUG}") == "true" ]]; then
     echo "git-ops-command: ${msg}"
   else
     echo "git-ops-command: ${msg}" >> "${LOG_FILE}"
@@ -52,6 +62,41 @@ substitute_vars() {
 }
 
 ########################################################################################################################
+# Comments out lines in a file containing a search term.
+#
+# Arguments
+#   $1 -> The file to comment out lines in.
+#   $2 -> The search term.
+########################################################################################################################
+comment_lines_in_file() {
+  local file="$1"
+  local search_term="$2"
+  log "Commenting out ${search_term} in ${file}"
+  sed -i.bak \
+    -e "/${search_term}/ s|^#*|#|g" \
+    "${file}"
+  rm -f "${file}".bak
+}
+
+
+########################################################################################################################
+# Uncomments out lines in a file containing a search term.
+#
+# Arguments
+#   $1 -> The file to uncomment lines in.
+#   $2 -> The search term.
+########################################################################################################################
+uncomment_lines_in_file() {
+  local file="$1"
+  local search_term="$2"
+  log "Uncommenting ${search_term} in ${file}"
+  sed -i.bak \
+    -e "/${search_term}/ s|^#*||g" \
+    "${file}"
+  rm -f "${file}".bak
+}
+
+########################################################################################################################
 # Returns the first directory relative to the second.
 #
 # Arguments
@@ -83,25 +128,26 @@ feature_flags() {
   cd "${1}/k8s-configs"
 
   # Map with the feature flag environment variable & the term to search to find the kustomization files
-  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy"
+  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy
+            ${CUSTOMER_PINGONE_ENABLED}:customer-p1-connection.yaml"
 
   for flag in $flag_map; do
     enabled="${flag%%:*}"
     search_term="${flag##*:}"
     log "${search_term} is set to ${enabled}"
 
-    # If the feature flag is disabled, comment the search term lines out of the kustomization files
-    if [[ ${enabled} != "true" ]]; then
-      for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
-        log "Commenting out ${search_term} in ${kust_file}"
-        sed -i.bak \
-          -e "/${search_term}/ s|^#*|#|g" \
-          "${kust_file}"
-        rm -f "${kust_file}".bak
-      done
-    fi
+    # When feature flag is enabled, uncomment the search term to include the resources in the kustomization files
+    # When feature flag is disabled, comment the search term to exclude the resources in the kustomization files
+    for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
+      if [[ $(lowercase "${enabled}") == "true" ]]; then
+        uncomment_lines_in_file "${kust_file}" "${search_term}"
+      else
+        comment_lines_in_file "${kust_file}" "${search_term}"
+      fi
+    done
   done
 }
+
 ########################################################################################################################
 # Comments the remove external ingress patch for ping apps from k8s-configs kustomization.yaml files.
 # Hence the apps which are part of list in EXTERNAL_INGRESS_ENABLED will have external ingress enabled.
@@ -112,10 +158,7 @@ enable_external_ingress() {
     search_term="${apps}[/].*remove-external-ingress"
     for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
       log "Commenting external ingress for ${apps} in ${kust_file}"
-      sed -i.bak \
-        -e "/${search_term}/ s|^#*|#|g" \
-        "${kust_file}"
-      rm -f "${kust_file}".bak
+      comment_lines_in_file "${kust_file}" "${search_term}"
     done
   done
 }
@@ -127,11 +170,7 @@ disable_grafana_crds() {
   cd "${TMP_DIR}"
   search_term="grafana-operator\/base"
   for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
-      log "Commenting grafana ${kust_file}"
-      sed -i.bak \
-        -e "/${search_term}/ s|^#*|#|g" \
-        "${kust_file}"
-      rm -f "${kust_file}".bak
+      comment_lines_in_file "${kust_file}" "${search_term}"
     done
 }
 
@@ -142,29 +181,8 @@ disable_os_operator_crds() {
   cd "${TMP_DIR}"
   search_term="opensearch-operator\/crd"
   for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
-      log "Commenting opensearch operator ${kust_file}"
-      sed -i.bak \
-        -e "/${search_term}/ s|^#*|#|g" \
-        "${kust_file}"
-      rm -f "${kust_file}".bak
+      comment_lines_in_file "${kust_file}" "${search_term}"
     done
-}
-
-########################################################################################################################
-# Set customer-p1-connection job suspension value
-########################################################################################################################
-set_customer_p1_connection_job_suspension() {
-  cd "${TMP_DIR}"
-  local search_term='customer-p1-connection'
-  for job_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "customer-p1-connection.yaml"); do
-    local customer_p1_enabled_lc
-    customer_p1_enabled_lc=$(echo "${CUSTOMER_PINGONE_ENABLED}" | tr '[:upper:]' '[:lower:]')
-    if [[ "${customer_p1_enabled_lc}" == "true" ]]; then
-      log "Setting customer-p1-connection job suspension value in ${job_file}"
-      sed -i.bak 's/suspend: true/suspend: false/g' "${job_file}"
-      rm -f "${job_file}".bak
-    fi
-  done
 }
 
 ########################################################################################################################
@@ -217,7 +235,7 @@ trap on_terminate SIGTERM
 TARGET_DIR="${1:-.}"
 cd "${TARGET_DIR}" >/dev/null 2>&1
 
-if [[ "${DEBUG}" != "true" ]]; then
+if [[ $(lowercase "${DEBUG}") != "true" ]]; then
   # Trap all exit codes from here on so cleanup is run
   trap "cleanup" EXIT
 fi
@@ -230,7 +248,7 @@ TARGET_DIR_SHORT="$(basename "${TARGET_DIR_FULL}")"
 BASE_DIR='../base'
 
 # Perform substitution and build in a temporary directory
-if [[ ${DEBUG} == "true" ]]; then
+if [[ $(lowercase "${DEBUG}") == "true" ]]; then
   TMP_DIR="/tmp/git-ops-scratch-space"
   rm -rf "${TMP_DIR}"
   mkdir -p "${TMP_DIR}"
@@ -269,7 +287,7 @@ if test -f 'env_vars'; then
     PCB_TMP="${TMP_DIR}/${K8S_GIT_BRANCH}"
 
     # Try to copy a local repo to improve testing flow
-    if [[ "${LOCAL}" == "true" ]]; then
+    if [[ $(lowercase "${LOCAL}") == "true" ]]; then
       if [[ -z "${PCB_PATH}" ]]; then
         log "ERROR: running in local mode, please provide a PCB_PATH. Exiting."
         exit 1
@@ -323,10 +341,8 @@ if ! command -v argocd &> /dev/null ; then
   disable_os_operator_crds
 fi
 
-set_customer_p1_connection_job_suspension
-
 # Build the uber deploy yaml
-if [[ ${DEBUG} == "true" ]]; then
+if [[ $(lowercase "${DEBUG}") == "true" ]]; then
   log "DEBUG - generating uber yaml file from '${BUILD_DIR}' to /tmp/uber-debug.yaml"
   kustomize build ${build_load_arg} ${build_load_arg_value} "${BUILD_DIR}" --output /tmp/uber-debug.yaml
 # Output the yaml to stdout for Argo when operating normally
