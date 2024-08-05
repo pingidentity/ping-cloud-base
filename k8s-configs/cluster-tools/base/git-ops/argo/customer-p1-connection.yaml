@@ -7,9 +7,6 @@ metadata:
   labels:
     role: customer-p1-connection
 spec:
-  # Job is suspended by default, as the job depends on a customer's PingOne being configured before running.
-  # Value is changed to false via git-ops-command.sh when CUSTOMER_P1_ENABLED env_var is set to true.
-  suspend: true
   template:
     metadata:
       labels:
