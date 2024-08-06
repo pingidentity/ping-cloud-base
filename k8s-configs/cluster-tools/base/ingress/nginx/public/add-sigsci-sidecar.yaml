@@ -20,7 +20,7 @@
       allowPrivilegeEscalation: false
       capabilities:
         drop:
-          - ALL 
+          - ALL
       # SigSci needs to be able to write to the root fs
       readOnlyRootFilesystem: false
       runAsNonRoot: true

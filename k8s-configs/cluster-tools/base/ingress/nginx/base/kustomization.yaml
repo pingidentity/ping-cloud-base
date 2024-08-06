@@ -63,7 +63,7 @@ patches:
   target:
     kind: ServiceAccount
     name: ingress-nginx-admission
-  
+
   # Removing the ingress-nginx-admission Role as we use nginx-ingress-role in P1AS
 - patch: |
     $patch: delete
@@ -128,7 +128,7 @@ patches:
     kind: ClusterRoleBinding
     name: ingress-nginx-admission
 
-  # Removing the ingress-nginx-controller-admission Service as we use ingress-nginx Service in P1AS 
+  # Removing the ingress-nginx-controller-admission Service as we use ingress-nginx Service in P1AS
 - patch: |
     $patch: delete
     apiVersion: v1
@@ -161,13 +161,13 @@ patches:
   target:
     kind: ValidatingWebhookConfiguration
     name: ingress-nginx-admission
-   
+
 - target:
     # Modifiying Deployment kind to P1AS needs
     kind: Deployment
     name: ingress-nginx-controller
   patch: |
-    # Removing namespaces as we have two different namespaces in P1AS 
+    # Removing namespaces as we have two different namespaces in P1AS
     - op: remove
       path: /metadata/namespace
 
@@ -224,24 +224,24 @@ patches:
           requests:
             cpu: 2
             memory: 4Gi
-    
+
     # Added securityContext
     - op: add
       path: /spec/template/spec/securityContext
-      value: 
+      value:
          runAsNonRoot: true
 
     # Replaced allowPrivilegeEscalation in securityContext
-    - op: replace 
+    - op: replace
       path: /spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation
       value: false
 
-    # Added readOnlyRootFilesystem in securityContext  
+    # Added readOnlyRootFilesystem in securityContext
     - op: add
       path: /spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem
       value: false
 
-    # Added runAsNonRoot in securityContext  
+    # Added runAsNonRoot in securityContext
     - op: add
       path: /spec/template/spec/containers/0/securityContext/runAsNonRoot
       value: true
@@ -253,7 +253,7 @@ patches:
 
     - op: add
       path: /spec/template/spec/affinity
-      value: 
+      value:
           podAntiAffinity:
             # Add a soft requirement for each nginx pod to be deployed to a different AZ
             preferredDuringSchedulingIgnoredDuringExecution:
@@ -266,20 +266,20 @@ patches:
                       values:
                         - ingress-nginx
                 topologyKey: "topology.kubernetes.io/zone"
-    
+
     # Removed metadata
     - op: remove
       path: /spec/template/metadata
-   
+
     # Removed labels
     - op: remove
       path: /metadata/labels
 
-    # Removed selector 
+    # Removed selector
     - op: remove
-      path: /spec/selector 
+      path: /spec/selector
 
-    # Removed volumeMounts 
+    # Removed volumeMounts
     - op: remove
       path: /spec/template/spec/containers/0/volumeMounts
 
@@ -298,7 +298,7 @@ patches:
     # Removed annotations in metadata
     - op: add
       path: /spec/template/metadata
-      value: 
+      value:
         annotations:
           prometheus.io/port: "10254"
           prometheus.io/scrape: "true"
@@ -308,10 +308,10 @@ patches:
       kind: Service
       name: ingress-nginx-controller
       namespace: ingress-nginx
-  patch: | 
+  patch: |
     - op: add
       path: /metadata/annotations
-      value: 
+      value:
           service.beta.kubernetes.io/aws-load-balancer-type: nlb
     - op: add
       path: /spec/externalTrafficPolicy
@@ -354,7 +354,7 @@ patches:
       kind: Role
       name: ingress-nginx
       namespace: ingress-nginx
-  patch: | 
+  patch: |
     - op: remove
       path: /metadata/labels
 
@@ -364,10 +364,10 @@ patches:
     - op: replace
       path: /metadata/name
       value: nginx-ingress-role
-    
+
     - op: replace
       path: /rules/6/resourceNames
-      value: 
+      value:
         - ingress-controller-leader
 
 - target:
@@ -375,7 +375,7 @@ patches:
       kind: RoleBinding
       name: ingress-nginx
       namespace: ingress-nginx
-  patch: | 
+  patch: |
     - op: remove
       path: /metadata/labels
 
@@ -402,7 +402,7 @@ patches:
       kind: ServiceAccount
       name: ingress-nginx
       namespace: ingress-nginx
-  patch: | 
+  patch: |
     - op: remove
       path: /metadata/labels
 
