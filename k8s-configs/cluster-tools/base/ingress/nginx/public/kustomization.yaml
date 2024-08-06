@@ -11,12 +11,22 @@ resources:
 
 namespace: ingress-nginx-public
 
-commonLabels:
-  app.kubernetes.io/component: controller
-  app.kubernetes.io/name: ingress-nginx
-  app.kubernetes.io/part-of: ingress-nginx
-  app.kubernetes.io/role: ingress-nginx-public
-  app.kubernetes.io/version: 1.9.6
+labels:
+  # Replace all labels as our OOTB nginx base includes labels like app.kubernetes.io/instance which is also used by ArgoCD
+  - pairs:
+      app.kubernetes.io/role: ingress-nginx-public
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/name: ingress-nginx
+      app.kubernetes.io/part-of: ingress-nginx
+    includeTemplates: true
+    includeSelectors: true
+  # Do NOT add the these labels to selectors - selectors changes on Deployments are immutable and lead to upgrade challenges
+  # and downtime
+  - pairs:
+      app.kubernetes.io/version: 1.9.6
+      app: ingress-nginx
+    includeTemplates: true
+    includeSelectors: false
 
 configMapGenerator:
 - name: ingress-bootstrap-environment-variables
@@ -86,3 +96,29 @@ patches:
     - op: add
       path: /metadata/annotations/nginx.ingress.kubernetes.io~1enable-annotation-validation
       value: "true"
+
+### SELECTOR UPDATE ###
+# Because the selector path is deleted in base, we do a strategic merge patch to add all labels
+#
+# IMPORTANTLY, we add the 'app: ingress-nginx' label which is new with P1AS 1.19.1
+# This new label allows us to upgrade future deployments without having to recreate the deployment resource itself,
+# while also migrating off of the existing deployment which has the same selector labels.
+# When upgrading the new Deployment can be created after the old one is orphaned and the new Deployment will select the
+# new pods but not the old, orphaned ones, which can lead to unexpected behavior.
+# See: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#selector
+#
+# Meanwhile, the Service selects any previous or new pods allowing for zero downtime upgrades
+#######################
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: nginx-ingress-controller
+    spec:
+      selector:
+        matchLabels:
+          app: ingress-nginx
+          app.kubernetes.io/component: controller
+          app.kubernetes.io/name: ingress-nginx
+          app.kubernetes.io/part-of: ingress-nginx
+          app.kubernetes.io/role: ingress-nginx-public
