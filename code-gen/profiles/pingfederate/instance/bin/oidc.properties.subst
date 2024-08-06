@@ -75,7 +75,8 @@ client.authn.method=${PF_OIDC_CLIENT_AUTHN_METHOD}
 #   Copy complete result into property value, as shown in the example below:
 #     client.secret=OBF:JWE:eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2Iiwia2lkIjoiVEU0dVZjcU1wayIsInZlcnNpb24iOiI3LjEuMjAwLjQtU05BUFNIT1QifQ..8Zf_xQ4PuXuYkdE0culPpA.E2Lh_zAne5YpaJo9wbl39A.Z8wVd6SFB8lcQbvutU1u-Q
 #
-client.secret=${PF_OIDC_CLIENT_SECRET}
+# Keep 'client.secret' empty as it will be replaced by P1AS automation by injecting the obfuscated variable of PF_OIDC_CLIENT_SECRET
+client.secret=
 
 #   -----------------------------
 #   Authorization Endpoint (REQUIRED)
