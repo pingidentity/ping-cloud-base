@@ -74,6 +74,8 @@ class TestClusterHealth(TestHealthBase):
         pattern = re.compile("All pods in statefulset [a-z-a-z]+ are Ready")
         self.assertTrue(any(pattern.match(test_name) for test_name in self.test_results.keys()))
 
+    def test_health_check_has_k8s_api_ready_results(self):
+        self.assertIn("K8s API is ready", self.test_results.keys())
 
 
 if __name__ == "__main__":
