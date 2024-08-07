@@ -27,12 +27,24 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
     def tearDownClass(cls):
         super().tearDownClass()
         cls.delete_pingone_user()
-
-    def test_user_can_access_argocd_console(self):
+    
+    def _setup(self, role_attribute_name, role_attribute_values, population_id):
+        # Delete user if exists
+        TestArgoUILogin.delete_pingone_user()
+        # Create user
+        TestArgoUILogin.create_pingone_user(role_attribute_name=role_attribute_name,
+                                            role_attribute_values=role_attribute_values,
+                                            population_id=population_id)
         # Wait for admin console to be reachable if it has been restarted by another test
         self.wait_until_url_is_reachable(self.public_hostname)
         # Attempt to access the console with SSO
         self.pingone_login()
+
+    def test_cust_user_can_access_argocd_with_correct_population(self):
+        self._setup(role_attribute_name="p1asArgoCDRoles",
+                    role_attribute_values=["argo-configteam"],
+                    population_id=TestArgoUILogin.population_id)
+
         self.browser.get(f"{self.public_hostname}/auth/login")
         self.browser.implicitly_wait(10)
         try:
@@ -50,6 +62,55 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
                 f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
             )
 
+    def test_ping_user_can_access_argocd_with_any_population(self):
+        self._setup(role_attribute_name="p1asPingRoles",
+                    role_attribute_values=["argo-pingbeluga"],
+                    population_id=TestArgoUILogin.default_population_id)
+
+        self.browser.get(f"{self.public_hostname}/auth/login")
+        self.browser.implicitly_wait(10)
+        try:
+            title = self.browser.find_element(
+                By.XPATH, "//span[contains(text(), 'Applications')]"
+            )
+            wait = WebDriverWait(self.browser, timeout=10)
+            wait.until(lambda t: title.is_displayed())
+            app_list = self.browser.find_elements(
+                By.CLASS_NAME, "applications-list__entry"
+            )
+            self.assertTrue(
+                len(app_list) > 0,
+                f"Applications were not visible on ArgoCD console 'Applications' page when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
+            )
+        except NoSuchElementException:
+            self.fail(
+                f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
+            )
+
+    def test_cust_user_cannot_access_argocd_without_correct_population(self):
+        self._setup(role_attribute_name="p1asArgoCDRoles",
+                    role_attribute_values=["argo-configteam"],
+                    population_id=TestArgoUILogin.default_population_id)
+
+        self.browser.get(f"{self.public_hostname}/auth/login")
+        self.browser.implicitly_wait(10)
+        try:
+            title = self.browser.find_element(
+                By.XPATH, "//span[contains(text(), 'Applications')]"
+            )
+            wait = WebDriverWait(self.browser, timeout=10)
+            wait.until(lambda t: title.is_displayed())
+            app_list = self.browser.find_elements(
+                By.CLASS_NAME, "applications-list__entry"
+            )
+            self.assertTrue(
+                len(app_list) == 0,
+                f"Applications were visible on ArgoCD console 'Applications' page when attempting to access {self.public_hostname}. SSO may have succeeded. Browser contents: {self.browser.page_source}",
+            )
+        except NoSuchElementException:
+            self.fail(
+                f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
+            )
 
 if __name__ == "__main__":
     unittest.main()

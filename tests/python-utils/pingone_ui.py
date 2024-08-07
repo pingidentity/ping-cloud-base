@@ -35,6 +35,8 @@ class ConsoleUILoginTestBase(unittest.TestCase):
     p1_client = None
     p1_environment_endpoints = None
     p1_session = None
+    population_id = ""
+    default_population_id = ""
 
     @classmethod
     def setUpClass(cls):
@@ -48,6 +50,16 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         )
         cls.p1_environment_endpoints = p1_utils.EnvironmentEndpoints(
             p1_utils.API_LOCATION, ENV_ID
+        )
+        cls.population_id = p1_utils.get_population_id(
+            token_session=cls.p1_session,
+            endpoints=cls.p1_environment_endpoints,
+            name=cls.tenant_name,
+        )
+        cls.default_population_id = p1_utils.get_population_id(
+            token_session=cls.p1_session,
+            endpoints=cls.p1_environment_endpoints,
+            name="Default",
         )
 
     @classmethod
@@ -66,18 +78,15 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         self.addCleanup(self.browser.quit)
 
     @classmethod
-    def create_pingone_user(cls, role_attribute_name: str, role_attribute_values: list):
+    def create_pingone_user(cls, role_attribute_name: str, role_attribute_values: list, population_id: str = None):
         """
         Get population ID for dev/cicd
         Create a user in population
         Add role to user
         """
 
-        population_id = p1_utils.get_population_id(
-            token_session=cls.p1_session,
-            endpoints=cls.p1_environment_endpoints,
-            name=cls.tenant_name,
-        )
+        if not population_id:
+            population_id = cls.population_id
 
         user_payload = {
             "email": "do-not-reply@pingidentity.com",
