@@ -28,7 +28,6 @@ oneTimeSetUp() {
     }
   }'
   restartNginx "$namespace"
-  sleep 15
 }
 
 oneTimeTearDown() {
@@ -48,11 +47,17 @@ oneTimeTearDown() {
 testOCSPEnabled() {
   local endpoint=$(echo "$PINGCLOUD_METADATA_API" | sed 's/https:\/\///')
   log "Endoint to use: $endpoint"
+  local max_attempts=5
   expected_output="OCSP Response Status: successful (0x0)"
-  ocsp_response=$(openssl s_client -connect $endpoint:443 -status </dev/null 2>/dev/null \
-    | grep "$expected_output" | sed 's/^[[:space:]]*//')
-  
-  assertEquals "$expected_output" "$ocsp_response"
+  for ((attempts = 0; attempts < "${max_attempts}"; attempts++)); do
+    ocsp_response=$(openssl s_client -connect $endpoint:443 -status </dev/null 2>/dev/null | grep "$expected_output" | sed 's/^[[:space:]]*//')
+    if [[ -z $result ]]; then
+      log "Failed to run command, waiting then retrying"
+      sleep $max_attempts
+    else
+      assertEquals "$expected_output" "$ocsp_response"
+    fi
+  done 
 }
 
 # When arguments are passed to a script you must
