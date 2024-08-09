@@ -71,3 +71,15 @@ class TestPingAccessWASHealth(TestHealthBase):
         self.assert_admin_api_url_uses_service_name(
             "/app/PAWASVariables.py", "pa_was_admin_api_host"
         )
+
+    def test_health_check_has_connectivity_k8s_api_ready_results(self):
+        test_results = self.get_test_results(self.pingaccess_was, Categories.connectivity)
+        self.assertIn("K8s API is ready", test_results.keys())
+
+    def test_health_check_has_registered_k8s_api_ready_results(self):
+        test_results = self.get_test_results(self.pingaccess_was, Categories.pod_status)
+        self.assertIn("K8s API is ready", test_results.keys())
+
+    def test_health_check_has_registered_pingaccess_was_admin_api_ready_results(self):
+        test_results = self.get_test_results(self.pingaccess_was, Categories.pod_status)
+        self.assertIn("PingAccess WAS Admin API is ready", test_results.keys())

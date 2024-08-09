@@ -99,3 +99,15 @@ class TestPingFederateHealth(TestHealthBase):
         self.assert_admin_api_url_uses_service_name(
             "/app/PFVariables.py", "pf_admin_api_host"
         )
+
+    def test_health_check_has_connectivity_k8s_api_ready_results(self):
+        test_results = self.get_test_results(self.pingfederate, Categories.connectivity)
+        self.assertIn("K8s API is ready", test_results.keys())
+
+    def test_health_check_has_registered_k8s_api_ready_results(self):
+        test_results = self.get_test_results(self.pingfederate, Categories.pod_status)
+        self.assertIn("K8s API is ready", test_results.keys())
+
+    def test_health_check_has_registered_pingfederate_admin_api_ready_results(self):
+        test_results = self.get_test_results(self.pingfederate, Categories.pod_status)
+        self.assertIn("PingFederate Admin API is ready", test_results.keys())
