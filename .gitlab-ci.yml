@@ -171,7 +171,7 @@ pa-was-integration-tests:
   - monitoring
   - health
   - pingone
-  - ingress-nginx
+#  - ingress-nginx
   - cert-manager
 
 #################################################
