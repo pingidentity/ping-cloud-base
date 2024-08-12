@@ -548,7 +548,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: StatefulSet
-    name: pingaccess
+    name: pingaccess-was
   metrics:
   - type: Resource
     resource:
