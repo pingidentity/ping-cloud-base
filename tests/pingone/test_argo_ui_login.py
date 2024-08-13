@@ -2,10 +2,7 @@ import os
 import unittest
 
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 
-from pingone import common as p1_utils
 import pingone_ui as p1_ui
 
 
@@ -17,100 +14,51 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
             "ARGOCD_PUBLIC_HOSTNAME",
             f"https://argocd.{os.environ['TENANT_DOMAIN']}",
         )
-        cls.username = f"sso-argocd-test-user-{cls.tenant_name}"
-        cls.password = "2FederateM0re!"
-        cls.delete_pingone_user()
-        cls.create_pingone_user(role_attribute_name="p1asPingRoles",
-                                role_attribute_values=["argo-pingbeluga"])
+        cls.console_url = f"{cls.public_hostname}/auth/login"
+        cls.applications_list_xpath = "//div[contains(@class, 'applications-list__entry')]"
+        cls.access_granted_xpaths = [cls.applications_list_xpath]
+        cls.configteam_role = {"p1asArgoCDRoles": ["argo-configteam"]}
+        cls.config = p1_ui.PingOneUITestConfig(
+            app_name="ArgoCD",
+            console_url=cls.console_url,
+            roles=cls.configteam_role,
+            access_granted_xpaths=cls.access_granted_xpaths,
+            access_denied_xpaths=[
+                "//h4[contains(text(), 'No applications available to you')]"
+            ],
+        )
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        cls.delete_pingone_user()
-    
-    def _setup(self, role_attribute_name, role_attribute_values, population_id):
-        # Delete user if exists
-        TestArgoUILogin.delete_pingone_user()
-        # Create user
-        TestArgoUILogin.create_pingone_user(role_attribute_name=role_attribute_name,
-                                            role_attribute_values=role_attribute_values,
-                                            population_id=population_id)
-        # Wait for admin console to be reachable if it has been restarted by another test
-        self.wait_until_url_is_reachable(self.public_hostname)
-        # Attempt to access the console with SSO
-        self.pingone_login()
-
-    def test_cust_user_can_access_argocd_with_correct_population(self):
-        self._setup(role_attribute_name="p1asArgoCDRoles",
-                    role_attribute_values=["argo-configteam"],
-                    population_id=TestArgoUILogin.population_id)
-
-        self.browser.get(f"{self.public_hostname}/auth/login")
-        self.browser.implicitly_wait(10)
-        try:
-            title = self.browser.find_element(
-                By.XPATH, "//span[contains(text(), 'Applications')]"
-            )
-            wait = WebDriverWait(self.browser, timeout=10)
-            wait.until(lambda t: title.is_displayed())
-            self.assertTrue(
-                title.is_displayed(),
-                f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
-            )
-        except NoSuchElementException:
-            self.fail(
-                f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
-            )
 
     def test_ping_user_can_access_argocd_with_any_population(self):
-        self._setup(role_attribute_name="p1asPingRoles",
-                    role_attribute_values=["argo-pingbeluga"],
-                    population_id=TestArgoUILogin.default_population_id)
+        ping_user = p1_ui.PingOneUser(
+            session=self.config.session,
+            environment_endpoints=self.config.p1as_endpoints,
+            username=f"{self.config.app_name}-ping-user-{self.config.tenant_name}",
+            roles={"p1asPingRoles": ["argo-pingbeluga"]},
+            population_id=None,
+        )
+        ping_user.delete()
+        ping_user.create(add_p1_role=True)
+        self.addCleanup(ping_user.delete)
 
-        self.browser.get(f"{self.public_hostname}/auth/login")
-        self.browser.implicitly_wait(10)
+        self.wait_until_url_is_reachable(self.console_url)
+        self.pingone_login(username=ping_user.username, password=ping_user.password)
+        self.browser.get(self.console_url)
         try:
-            title = self.browser.find_element(
-                By.XPATH, "//span[contains(text(), 'Applications')]"
-            )
-            wait = WebDriverWait(self.browser, timeout=10)
-            wait.until(lambda t: title.is_displayed())
-            app_list = self.browser.find_elements(
-                By.CLASS_NAME, "applications-list__entry"
-            )
             self.assertTrue(
-                len(app_list) > 0,
-                f"Applications were not visible on ArgoCD console 'Applications' page when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
+                p1_ui.any_browser_element_displayed(self.browser, self.config.access_granted_xpaths),
+                f"Applications were not visible on ArgoCD console 'Applications' page when attempting to access "
+                f"{self.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
             )
         except NoSuchElementException:
             self.fail(
-                f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
+                f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.console_url}. "
+                f"SSO may have failed. Browser contents: {self.browser.page_source}",
             )
 
-    def test_cust_user_cannot_access_argocd_without_correct_population(self):
-        self._setup(role_attribute_name="p1asArgoCDRoles",
-                    role_attribute_values=["argo-configteam"],
-                    population_id=TestArgoUILogin.default_population_id)
-
-        self.browser.get(f"{self.public_hostname}/auth/login")
-        self.browser.implicitly_wait(10)
-        try:
-            title = self.browser.find_element(
-                By.XPATH, "//span[contains(text(), 'Applications')]"
-            )
-            wait = WebDriverWait(self.browser, timeout=10)
-            wait.until(lambda t: title.is_displayed())
-            app_list = self.browser.find_elements(
-                By.CLASS_NAME, "applications-list__entry"
-            )
-            self.assertTrue(
-                len(app_list) == 0,
-                f"Applications were visible on ArgoCD console 'Applications' page when attempting to access {self.public_hostname}. SSO may have succeeded. Browser contents: {self.browser.page_source}",
-            )
-        except NoSuchElementException:
-            self.fail(
-                f"ArgoCD console 'Applications' page was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
-            )
 
 if __name__ == "__main__":
     unittest.main()

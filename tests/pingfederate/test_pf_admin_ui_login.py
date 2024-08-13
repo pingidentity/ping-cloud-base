@@ -1,10 +1,6 @@
 import os
 import unittest
 
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-
-from pingone import common as p1_utils
 import pingone_ui as p1_ui
 
 
@@ -20,40 +16,24 @@ class TestPingFederateUILogin(p1_ui.ConsoleUILoginTestBase):
             "PINGFEDERATE_ADMIN_PUBLIC_HOSTNAME",
             f"https://pingfederate-admin.{os.environ['TENANT_DOMAIN']}",
         )
-        cls.username = f"sso-pingfederate-test-user-{cls.tenant_name}"
-        cls.password = "2FederateM0re!"
-        cls.delete_pingone_user()
-        cls.create_pingone_user(role_attribute_name="p1asPingFederateRoles",
-                                role_attribute_values=[f"{cls.environment}-pf-roleadmin"])
+        cls.environment = os.getenv("ENV", "dev")
+        cls.config = p1_ui.PingOneUITestConfig(
+            app_name="PingFederate",
+            console_url=cls.public_hostname,
+            roles={"p1asPingFederateRoles": [f"{cls.environment}-pf-audit"]},
+            # PingFederate has a pop-up that may or may not be displayed
+            access_granted_xpaths=[
+                "//div[contains(text(), 'Welcome to PingFederate')]",
+                "//div[contains(text(), 'Cluster')]",
+            ],
+            access_denied_xpaths=[
+                "//span[contains(text(), 'An error occurred while trying to login with OIDC')]"
+            ],
+        )
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        cls.delete_pingone_user()
-
-    def test_user_can_access_pingfederate_admin_console(self):
-        # Wait for admin console to be reachable if it has been restarted by another test
-        self.wait_until_url_is_reachable(self.public_hostname)
-        # Attempt to access the console with SSO
-        self.pingone_login()
-        self.browser.get(self.public_hostname)
-        self.browser.implicitly_wait(10)
-        try:
-            try:
-                # This pop-up may or may not be displayed
-                if self.browser.find_element(By.XPATH, "//span[contains(text(), 'Welcome to PingFederate')]"):
-                    self.browser.find_element(By.CSS_SELECTOR, 'a[data-id="content-link"]').click()
-            except NoSuchElementException:
-                pass
-            cluster = self.browser.find_element(By.XPATH, "//div[contains(text(), 'Cluster')]")
-            self.assertTrue(
-                cluster.is_displayed(),
-                f"PingFederate Admin console 'Cluster' was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
-            )
-        except NoSuchElementException:
-            self.fail(
-                f"PingFederate Admin console 'Cluster' was not displayed when attempting to access {self.public_hostname}. SSO may have failed. Browser contents: {self.browser.page_source}",
-            )
 
 
 if __name__ == "__main__":
