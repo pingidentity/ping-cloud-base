@@ -652,11 +652,11 @@ spec:
           resources:
             limits:
               cpu: "1.5"
-              ephemeral-storage: 1024Mi
+              ephemeral-storage: 16Gi
               memory: 3072Mi
             requests:
               cpu: "1.0"
-              ephemeral-storage: 50Mi
+              ephemeral-storage: 1Gi
               memory: 2048Mi
           volumeMounts:
             - name: objstore-config
