@@ -40,8 +40,14 @@ removeWebsession() {
   local app_id="${1}"
 
   # Get app current config
-  app_config=$(curl -k -s -u "Administrator:${ADMIN_PASS}" -H 'X-Xsrf-Header: PingAccess' \
+  app_config=$(curl -k -s --retry 10 -u "Administrator:${ADMIN_PASS}" -H 'X-Xsrf-Header: PingAccess' \
                 "${PINGACCESS_WAS_API}/applications/${app_id}")
+
+  if ! grep -q 'webSessionId' <<< "${app_config}"; then
+    log "Could not remove auth from URLs"
+    log "webSessionId not found in app config: ${app_config}"
+    return 1
+  fi
 
   # Remove websession from app config
   app_config=$(jq -n "${app_config}" | jq '.webSessionId = 0')
