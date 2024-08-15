@@ -28,4 +28,5 @@ _Changes:_
 - [X] PDO-7789 Obfuscate client secret within oidc.properties.subst for PingFederate
 - [X] PDO-7805 Remove application/node logs from CloudWatch
 - [X] PDO-7806 added additional labels in logstash config
+- [X] PDO-8072 ingress-nginx to use topologySpreadConstaints
 - [X] PDO-8128 Correct sample patch for Pingaccess-WAS engine HPA min/max replicas
