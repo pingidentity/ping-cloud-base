@@ -239,11 +239,18 @@ class ConsoleUILoginTestBase(unittest.TestCase):
     def setUpClass(cls):
         super().setUpClass()
         chromedriver_autoinstaller.install()
+        # Ignore warnings for insecure http requests
+        warnings.filterwarnings(
+            "ignore", category=urllib3.exceptions.InsecureRequestWarning
+        )
         cls.config = None
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
+        # Ignore warnings for open sockets when running requests module with python unittest module
+        # Ref: https://github.com/psf/requests/issues/3912
+        warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)
         cls.config.delete_users()
 
     def setUp(self):
@@ -255,7 +262,7 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         options.add_argument("--no-sandbox")  # run in Docker
         options.add_argument("--disable-dev-shm-usage")  # run in Docker
         self.browser = webdriver.Chrome(options=options)
-        self.browser.implicitly_wait(10)
+        self.browser.implicitly_wait(60)
         self.addCleanup(self.browser.quit)
 
     def pingone_login(self, username: str, password: str):
@@ -289,14 +296,10 @@ class ConsoleUILoginTestBase(unittest.TestCase):
     )
     def wait_until_url_is_reachable(self, admin_console_url: str):
         try:
-            warnings.filterwarnings(
-                "ignore", category=urllib3.exceptions.InsecureRequestWarning
-            )
             response = requests.get(
                 admin_console_url, allow_redirects=True, verify=False
             )
             response.raise_for_status()
-            warnings.resetwarnings()
         except requests.exceptions.HTTPError:
             raise
 
