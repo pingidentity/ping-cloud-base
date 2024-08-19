@@ -2,6 +2,8 @@ workflow:
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
       when: never
+    - if: $CI_COMMIT_MESSAGE =~ /\[skip_pipeline\]/
+      when: never
     - if: $CI_MERGE_REQUEST_ID
       when: never
     - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BEFORE_SHA != "0000000000000000000000000000000000000000"
