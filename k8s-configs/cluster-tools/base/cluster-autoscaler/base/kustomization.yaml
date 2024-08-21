@@ -59,6 +59,13 @@ patches:
         value:
           "--balancing-ignore-label=topology.kubernetes.io/zone"
 
+      # New label automatically added to node groups as of EKS 1.30 - ignore it in order to make sure each node group is 
+      # treated similarly for scale-up, in combination with "--balance-similar-node-groups=true"
+      - op: add
+        path: /spec/template/spec/containers/0/command/-
+        value:
+          "--balancing-ignore-label=topology.k8s.aws/zone-id"
+
       - op: replace
         path: /spec/template/spec/containers/0/imagePullPolicy
         value: IfNotPresent
