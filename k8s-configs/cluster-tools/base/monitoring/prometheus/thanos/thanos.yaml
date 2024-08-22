@@ -572,6 +572,10 @@ spec:
         app.kubernetes.io/version: 0.35.0
         helm.sh/chart: thanos-15.5.0
         app.kubernetes.io/component: compactor
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "10902"
+        prometheus.io/scrape: "true"
     spec:
       
       serviceAccountName: thanos-compactor
@@ -619,11 +623,14 @@ spec:
             - --log.format=logfmt
             - --http-address=0.0.0.0:10902
             - --data-dir=/data
-            - --retention.resolution-raw=15d
-            - --retention.resolution-5m=15d
-            - --retention.resolution-1h=15d
+            - --retention.resolution-raw=2d
+            - --retention.resolution-5m=10d
+            - --retention.resolution-1h=3d
             - --consistency-delay=30m
             - --objstore.config-file=/conf/objstore.yml
+            - --enable-auto-gomemlimit
+            - --hash-func=SHA256
+            - --delete-delay=12h
             - --wait
           ports:
             - name: http
