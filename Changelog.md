@@ -26,6 +26,7 @@ _Changes:_
 - [X] PDO-7772 Nginx ocsp integration test in ping-cloud-base causing instability
 - [X] PDO-7788 customer-p1-connection job suspension prevents ArgoCD app healthy status
 - [X] PDO-7789 Obfuscate client secret within oidc.properties.subst for PingFederate
+- [X] PDO-7804 Create aggregate handler to support pluggable pass-through authentication plugins
 - [X] PDO-7805 Remove application/node logs from CloudWatch
 - [X] PDO-7806 added additional labels in logstash config
 - [X] PDO-8072 ingress-nginx to use topologySpreadConstaints

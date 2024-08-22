@@ -13,19 +13,33 @@
 # To obtain the P14C environment ID for a given region and to register/obtain client credentials for that environment,
 # open an SRE ticket or contact the Beluga management team.
 
+### FILE UPDATED TO ALLOW MULTI PTA CONFIG COMPATIBLE WITH PD v10 ###
+
+dsconfig create-pass-through-authentication-handler \
+    --handler-name "PingOne for Customers Pass-Through Authentication Handler"  \
+    --type ping-one  \
+    --set included-local-entry-base-dn:ou=admins,o=platformconfig  \
+    --set api-url:https://api.pingone.com/v1  \
+    --set auth-url:https://auth.pingone.com/${P14C_ENVIRONMENT_ID}/as/token  \
+    --set oauth-client-id:${P14C_CLIENT_ID}  \
+    --set oauth-client-secret:${P14C_CLIENT_SECRET}  \
+    --set environment-id:${P14C_ENVIRONMENT_ID}  \
+    --set user-mapping-local-attribute:uid  \
+    --set user-mapping-remote-json-field:username
+
+dsconfig create-pass-through-authentication-handler \
+    --handler-name "P1AS Aggregate PTA Handler"  \
+    --type aggregate  \
+    --set "subordinate-pass-through-authentication-handler:PingOne for Customers Pass-Through Authentication Handler"
+
 dsconfig create-plugin \
-  --plugin-name 'PingOne for Customers Pass-Through Authentication Plugin' \
-  --type ping-one-for-customers-pass-through-authentication \
-  --set enabled:true \
-  --set api-url:https://api.pingone.com/v1 \
-  --set auth-url:https://auth.pingone.com/${P14C_ENVIRONMENT_ID}/as/token \
-  --set oauth-client-id:${P14C_CLIENT_ID} \
-  --set oauth-client-secret:${P14C_CLIENT_SECRET} \
-  --set environment-id:${P14C_ENVIRONMENT_ID} \
-  --set try-local-bind:true \
-  --set included-local-entry-base-dn:ou=admins,o=platformconfig \
-  --set user-mapping-local-attribute:uid \
-  --set user-mapping-remote-json-field:username
+    --plugin-name "P1AS PTA Plugin"  \
+    --type pluggable-pass-through-authentication  \
+    --set enabled:true  \
+    --set "pass-through-authentication-handler:P1AS Aggregate PTA Handler"  \
+    --set override-local-password:true \
+    --set update-local-password:false \
+    --set try-local-bind:true
 
 dsconfig create-plugin \
    --plugin-name 'PingOne for Customers Pass-Through Authentication Pre-Parse Plugin' \
@@ -37,6 +51,6 @@ dsconfig create-plugin \
    --set extension-argument:base-dn=ou=admins,o=platformconfig
 
 #NOTE#######
-# If you need to troubleshoot passthrough-auth-plugin you can enable the "File-Based Debug Logger" targets "com.pingidentity.pingcloud.pingdatasdk" and "com.unboundid.directory.server.plugins". 
+# If you need to troubleshoot passthrough-auth-plugin you can enable the "File-Based Debug Logger" targets "com.pingidentity.pingcloud.pingdatasdk" and "com.unboundid.directory.server.plugins".
 # Set debug-level as verbose.
 # See create-debug-target for more details: https://docs.ping.directory/PingDirectoryProxy/latest/cli/dsconfig.html#create-debug-target-subcommand
