@@ -19,7 +19,6 @@ _Changes:_
 - [X] PDO-7606 Updated Fluent Bit resource to successfully flush records when under minimal load 
 - [X] PDO-7570 Logstash: Update config to include K8s resource labels
 - [X] PDO-7703 Logstash: Revisit PodDisruptionBudget
-- [X] PDO-7725:Implementing PDO-7558 Karpenter Cost saving changes
 - [X] PDO-7742 NewRelic: Optimize Metric Collection by Removing Unnecessary Data Points
 - [X] PDO-7759 Increase NR interval to 30s
 - [X] PDO-7768 Add customer-defined name to external IdP
