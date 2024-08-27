@@ -1344,12 +1344,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
     # Update patches related to Beluga developer CDEs
 
-    # Do not disable CW and NR if in CI/CD
-    if test "${CI_SERVER}" != "yes"; then
-      sed -i.bak 's/^[[:space:]]*#[[:space:]]*\(.*remove-from-developer-cde-patch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
-    fi
-    rm -f "${PRIMARY_PING_KUST_FILE}.bak"
-
     # Add ArgoCD to Beluga Environments since it normally runs only in customer-hub
     echo "This is a Beluga Development Environment, copying ArgoCD into the CSR"
     cp -R "${CHUB_TEMPLATES_DIR}/base/cluster-tools/git-ops" "${K8S_CONFIGS_DIR}/base/cluster-tools/"
