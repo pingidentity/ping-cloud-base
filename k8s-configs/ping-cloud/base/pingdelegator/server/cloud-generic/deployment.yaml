@@ -84,14 +84,14 @@ spec:
             memory: "1Gi"
             cpu: "1"
         volumeMounts:
+          - name: pingdelegator-init
+            mountPath: /opt/staging/hooks/logger.lib.sh
+            subPath: logger.lib.sh
           - name: ssh-dir
             mountPath: /home/ping/.ssh
           - name: data-dir
             mountPath: /usr/local/bin/kubectl
             subPath: kubectl
-          - name: data-dir
-            mountPath: /opt/staging/hooks/logger.lib.sh
-            subPath: logger.lib.sh
           - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars

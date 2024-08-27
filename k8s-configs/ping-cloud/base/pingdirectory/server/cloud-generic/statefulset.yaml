@@ -247,6 +247,9 @@ spec:
                 name: newrelic-license-key
                 optional: false
           volumeMounts:
+            - name: pingdirectory-init 
+              mountPath: /opt/staging/hooks/logger.lib.sh
+              subPath: logger.lib.sh
             - name: ssh-dir
               mountPath: /home/ping/.ssh
             - name: shared-dir
@@ -260,9 +263,6 @@ spec:
             - name: data-dir
               mountPath: /usr/local/bin/kubectl
               subPath: kubectl
-            - name: data-dir
-              mountPath: /opt/staging/hooks/logger.lib.sh
-              subPath: logger.lib.sh
             - name: data-dir
               mountPath: /opt/staging/newrelic.jar
               subPath: newrelic.jar
