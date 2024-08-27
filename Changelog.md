@@ -3,9 +3,11 @@
 ### 2.1.0
 
 - Update PingDirectory resource limits
+- Use code sharing methods for Logger.lib.sh
 
 _Changes:_
 
+- [X] PDO-4881 Use code sharing methods for Logger.lib.sh
 - [X] PDO-7616 Update PingDirectory resource limits
 
 ### 2.0.0

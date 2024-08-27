@@ -227,6 +227,9 @@ spec:
             memory: "2560Mi"
             cpu: "1"
         volumeMounts:
+        - name: pingaccess-was-init
+          mountPath: /opt/staging/hooks/logger.lib.sh
+          subPath: logger.lib.sh
         - name: ssh-dir
           mountPath: /home/ping/.ssh
         - name: shared-dir
@@ -234,9 +237,6 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
-        - name: data-dir
-          mountPath: /opt/staging/hooks/logger.lib.sh
-          subPath: logger.lib.sh
         - name: data-dir
           mountPath: /opt/staging/newrelic.jar
           subPath: newrelic.jar
