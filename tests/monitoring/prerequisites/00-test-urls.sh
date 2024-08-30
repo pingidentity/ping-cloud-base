@@ -40,7 +40,7 @@ removeWebsession() {
   local app_id="${1}"
 
   # Get app current config
-  app_config=$(curl -k -s --retry 10 -u "Administrator:${ADMIN_PASS}" -H 'X-Xsrf-Header: PingAccess' \
+  app_config=$(curl -k -s -f --retry 10 -u "Administrator:${ADMIN_PASS}" -H 'X-Xsrf-Header: PingAccess' \
                 "${PINGACCESS_WAS_API}/applications/${app_id}")
 
   if ! grep -q 'webSessionId' <<< "${app_config}"; then
