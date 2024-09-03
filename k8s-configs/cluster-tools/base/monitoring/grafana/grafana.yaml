@@ -36,7 +36,7 @@ spec:
               image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/grafana/grafana:10.1.0
               env:
                 - name: GF_INSTALL_PLUGINS
-                  value: "grafana-opensearch-datasource 2.5.1"
+                  value: "grafana-opensearch-datasource 2.10.1"
               securityContext:
                 runAsUser: 472
                 runAsNonRoot: true

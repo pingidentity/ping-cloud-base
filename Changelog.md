@@ -4,11 +4,13 @@
 
 - Update PingDirectory resource limits
 - Use code sharing methods for Logger.lib.sh
+- Reconcile Grafana differences with p1as-observability
 
 _Changes:_
 
 - [X] PDO-4881 Use code sharing methods for Logger.lib.sh
 - [X] PDO-7616 Update PingDirectory resource limits
+- [X] PDO-8109 Reconcile Grafana differences with p1as-observability
 
 ### 2.0.0
 
