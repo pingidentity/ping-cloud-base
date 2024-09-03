@@ -71,6 +71,7 @@ _Changes:_
 - [X] PDO-7789 Obfuscate client secret within oidc.properties.subst for PingFederate
 - [X] PDO-7805 Remove application/node logs from CloudWatch
 - [X] PDO-7806 added additional labels in logstash config
+- [X] PDO-8164 OpenSearch: Implement Version 2.11.1
 
 ### 1.19.0.0
 
