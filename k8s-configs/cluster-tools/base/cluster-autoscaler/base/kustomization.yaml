@@ -69,3 +69,8 @@ patches:
       - op: replace
         path: /spec/template/spec/containers/0/imagePullPolicy
         value: IfNotPresent
+
+      - op: add
+        path: /spec/template/spec/containers/0/command/-
+        value:
+          "--balance-similar-node-groups=true"

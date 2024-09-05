@@ -50,13 +50,14 @@ _Changes:_
 - [X] PDO-7394 Remove Grafana dashboards from secondary region
 - [X] PDO-7434 Update Logstash HPA
 - [X] PDO-7461 Updated Prometheus CPU and memory limits and kustomize settings
+- [X] PDO-7489 Updates to decrease ContainerInsights
+- [X] PDO-7522 Fix autoscaling resource version to use v2
 - [X] PDO-7528 Making Graviton as default for NON-GA environment, fix GA consistency across envs
 - [X] PDO-7530 Implement permanent reduction of OS resources in 1.19.1
 - [X] PDO-7548 Add 'source cluster' identifier to graphs legend for Volume Autoscaler dashboard
 - [X] PDO-7606 Updated Fluent Bit resource to successfully flush records when under minimal load
 - [X] PDO-7570 Logstash: Update config to include K8s resource labels
 - [X] PDO-7703 Logstash: Revisit PodDisruptionBudget
-- [X] PDO-7725:Implementing PDO-7558 Karpenter Cost saving changes
 - [X] PDO-7742 NewRelic: Optimize Metric Collection by Removing Unnecessary Data Points
 - [X] PDO-7759 Increase NR interval to 30s
 - [X] PDO-7768 Add customer-defined name to external IdP
@@ -65,6 +66,7 @@ _Changes:_
 - [X] PDO-7789 Obfuscate client secret within oidc.properties.subst for PingFederate
 - [X] PDO-7805 Remove application/node logs from CloudWatch
 - [X] PDO-7806 added additional labels in logstash config
+- [X] PDO-8072 ingress-nginx to use topologySpreadConstaints
 - [X] PDO-8128 Correct sample patch for Pingaccess-WAS engine HPA min/max replicas
 - [X] PDO-8164 OpenSearch: Implement Version 2.11.1
 
