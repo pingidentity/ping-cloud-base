@@ -16,7 +16,7 @@
 ################################################
 
 ### Update public nginx HPA min/max replicas and target CPU utilization ###
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: nginx-ingress-controller
@@ -28,7 +28,13 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: nginx-ingress-controller
-  targetCPUUtilizationPercentage: 70
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
 
 ---
 
@@ -59,7 +65,7 @@ data:
 ################################################
 
 ### Update private nginx HPA min/max replicas and target CPU utilization ###
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: nginx-ingress-controller
@@ -71,7 +77,13 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: nginx-ingress-controller
-  targetCPUUtilizationPercentage: 70
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
 
 ---
 
@@ -407,7 +419,7 @@ spec:
 ---
 
 ### Update pingfederate engine HPA min/max replicas and target CPU utilization ###
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: pingfederate
@@ -419,7 +431,13 @@ spec:
     apiVersion: apps/v1
     kind: StatefulSet
     name: pingfederate
-  targetCPUUtilizationPercentage: 70
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
 
 ---
 
@@ -496,7 +514,7 @@ spec:
 ---
 
 ### Update pingaccess engine HPA min/max replicas and target CPU utilization ###
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: pingaccess
@@ -508,12 +526,18 @@ spec:
     apiVersion: apps/v1
     kind: StatefulSet
     name: pingaccess
-  targetCPUUtilizationPercentage: 70
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
 
 ---
 
 ### Update pingaccess-was engine HPA min/max replicas and target CPU utilization ###
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: pingaccess-was
@@ -525,7 +549,13 @@ spec:
     apiVersion: apps/v1
     kind: StatefulSet
     name: pingaccess-was
-  targetCPUUtilizationPercentage: 70
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
 
 ---
 
