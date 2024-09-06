@@ -14,6 +14,7 @@
 - Updated Newrelic agent to latest version
 - Refactor update-profile-wrapper code to support new variables for microservice profile mirrors.
 - De-duplicate prod-values.yaml
+- Fluentbit - remove unnecessary configuration
 - Updating memory limits for thanos-storegateway
 - Updating memory limits plus other enhancements for thanos-compactor
 - Adding Cross zone load balancing and graceful shutdown to nginx
@@ -33,6 +34,7 @@ _Changes:_
 - [X] PDO-7248 NewRelic: Upgrade APM agent to latest version
 - [X] PDO-7445 Remove toplogy-descriptor volume mount from products where not needed
 - [X] PDO-7469 De-duplicate prod-values.yaml
+- [X] PDO-7482 Fluentbit - remove unnecessary configuration
 - [X] PDO-7669 Thanos: Storage Gateway crashlooping with OOM killed when choosing old range of data on Prometheus/Grafana UI
 - [X] PDO-7671 Thanos: Compactor is erroring with not enough ephemeral-storage
 - [X] PDO-7672 Thanos: Metrics older than 15 days are still present
