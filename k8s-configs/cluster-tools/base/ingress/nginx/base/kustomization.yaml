@@ -258,21 +258,16 @@ patches:
       path: /spec/template/spec/containers/0/securityContext/runAsGroup
       value: 101
 
+    # Use topology Spread Constraints to spread pods accross az
     - op: add
-      path: /spec/template/spec/affinity
+      path: /spec/template/spec/topologySpreadConstraints
       value:
-          podAntiAffinity:
-            # Add a soft requirement for each nginx pod to be deployed to a different AZ
-            preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: app.kubernetes.io/name
-                      operator: In
-                      values:
-                        - ingress-nginx
-                topologyKey: "topology.kubernetes.io/zone"
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: ingress-nginx
+          maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
 
     # Removed metadata
     - op: remove
