@@ -1,12 +1,3 @@
-apiVersion: v1
-kind: Secret
-type: Opaque
-metadata:
-  name: nr-license-key
-  annotations:
-    sealedsecrets.bitnami.com/managed: "true"
-    argocd.argoproj.io/sync-options: Prune=false
-
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -167,11 +158,6 @@ spec:
                 configMapKeyRef:
                   name: cluster-info
                   key: cluster.name
-            - name: NR_LICENSE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: nr-license-key
-                  key: NEW_RELIC_LICENSE_KEY
           envFrom:
             - configMapRef:
                 name: elk-environment-variables
@@ -221,9 +207,6 @@ spec:
             - containerPort: 8082
               name: http-cw-input
               protocol: TCP
-            - containerPort: 8083
-              name: http-nr-input
-              protocol: TCP
           volumeMounts:
             - name: logstash-pipelines
               mountPath: /usr/share/logstash/config/pipelines.yml
@@ -240,9 +223,6 @@ spec:
               readOnly: true
             - name: logstash-pipeline-dlq
               mountPath: /usr/share/logstash/pipeline/dlq
-              readOnly: true
-            - name: logstash-pipeline-nr
-              mountPath: /usr/share/logstash/pipeline/newrelic
               readOnly: true
             - name: logstash-search-template
               mountPath: /etc/logstash/templates
@@ -302,9 +282,6 @@ spec:
         - name: logstash-pipeline-dlq
           configMap:
             name: logstash-pipeline-dlq
-        - name: logstash-pipeline-nr
-          configMap:
-            name: logstash-pipeline-nr
         - name: logstash-pipelines
           configMap:
             name: logstash-pipelines
@@ -360,8 +337,6 @@ spec:
       name: http-s3-input
     - port: 8082
       name: http-cw-input
-    - port: 8083
-      name: http-nr-input
     - port: 8084
       name: http-customer-input
 
