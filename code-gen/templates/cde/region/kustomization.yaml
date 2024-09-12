@@ -237,9 +237,3 @@ patchesStrategicMerge:
 
   ### CloudWatch is disabled by default but should be added for GA envs
   #- ../base/cluster-tools/monitoring/disable-cloudwatch.yaml
-
-  ### Developer CDE Environments - the following will be UNCOMMENTED if we are in a developer CDE
-
-  ### NR and CW logging are disabled by default in developer CDEs
-  ### If you want NR and CW logging enabled in a developer CDE, make sure the below is commented out *in your CSR*
-  #- ../base/cluster-tools/logging/remove-from-developer-cde-patch.yaml
