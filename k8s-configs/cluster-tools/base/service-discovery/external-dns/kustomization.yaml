@@ -5,4 +5,46 @@ namespace: external-dns
 
 resources:
 - namespace.yaml
-- external-dns.yaml
+- serviceaccount.yaml
+- clusterrole.yaml
+- clusterrolebinding.yaml
+- deployment.yaml
+
+images:
+- name: registry.k8s.io/external-dns/external-dns
+  newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/external-dns/external-dns
+  newTag: v0.14.2
+
+patches:
+- target:
+    kind: Deployment
+    name: external-dns
+  patch: |
+    - op: add
+      path: /metadata/labels
+      value: 
+          app: external-dns
+    - op: add 
+      path: /spec/template/spec/securityContext
+      value:
+          fsGroup: 65534 # For ExternalDNS to be able to read Kubernetes and AWS token files
+    - op: add
+      path: /spec/template/spec/containers/0/resources
+      value:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 300m
+            memory: 256Mi
+    - op: replace
+      path: /spec/template/spec/containers/0/args
+      value:
+          - --source=service
+          - --source=ingress
+          - --provider=aws
+          - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
+          - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
+          - --registry=txt
+          - --publish-internal-services
+          - --log-level=error
