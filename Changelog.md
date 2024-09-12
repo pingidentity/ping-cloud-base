@@ -18,6 +18,7 @@
 - Updating memory limits for thanos-storegateway
 - Updating memory limits plus other enhancements for thanos-compactor
 - Adding Cross zone load balancing and graceful shutdown to nginx
+- Upgrade External DNS to v0.14.2
 
 _Changes:_
 
@@ -40,6 +41,7 @@ _Changes:_
 - [X] PDO-7672 Thanos: Metrics older than 15 days are still present
 - [X] PDO-8085 Restrict PingFederate and PingAccess heartbeat response
 - [X] PDO-8150 Improve Stability and Shutdown Handling
+- [X] PDO-8194 Upgrade External DNS to v0.14.2
 
 ### 1.19.1.0
 
