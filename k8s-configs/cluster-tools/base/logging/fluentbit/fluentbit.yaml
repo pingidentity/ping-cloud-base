@@ -5,9 +5,13 @@ kind: ConfigMap
 metadata:
   name: cluster-info
 data:
+  cluster.name: cluster_name
+  logs.region: region_name
   log.level: "error"
   read.head: "True"
   read.tail: "Off"
+  tenant_domain: tenant_domain
+  primary_tenant_domain: tenant_domain
   newrelic_cluster_name: cluster_name
 ---
 apiVersion: v1
