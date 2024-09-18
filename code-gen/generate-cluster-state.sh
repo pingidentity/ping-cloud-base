@@ -1442,9 +1442,14 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   # Create temp dir for cloned profiles
   PROFILE_REPO_MIRROR_DIR="$(mktemp -d)"
   for app_repo in ${PROFILE_REPO_MIRRORS[@]}; do
-    app_repo_branch=$(yq e '.helmCharts[].version' ./templates/${app_repo}/region/kustomization.yaml)
-    # Remove '-latest' from app_repo_branch if present
-    app_repo_branch="${app_repo_branch%-latest}"
+    # First try to get the branch from the profileBranch key if it exists
+    app_repo_branch=$(yq e '.helmCharts[].valuesInline.profileBranch' ./templates/${app_repo}/region/kustomization.yaml)
+    # Otherwise, use the version key
+    if [ "${app_repo_branch}" == "null" ]; then
+      app_repo_branch=$(yq e '.helmCharts[].version' ./templates/${app_repo}/region/kustomization.yaml)
+      # Remove '-latest' from app_repo_branch if present
+      app_repo_branch="${app_repo_branch%-latest}"
+    fi
 
     # Remove 'p1as-' prefix from repository names
     product_name=${app_repo#p1as-}
