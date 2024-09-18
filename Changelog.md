@@ -43,6 +43,7 @@ _Changes:_
 - [X] PDO-7672 Thanos: Metrics older than 15 days are still present
 - [X] PDO-8085 Restrict PingFederate and PingAccess heartbeat response
 - [X] PDO-8150 Improve Stability and Shutdown Handling
+- [X] PDO-8193 Microservices profile repo feature branch testing fix
 - [X] PDO-8194 Upgrade External DNS to v0.14.2
 
 ### 1.19.1.0
