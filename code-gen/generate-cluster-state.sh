@@ -1329,13 +1329,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     echo >> "${BASE_ENV_VARS}"
     echo "IS_BELUGA_ENV=true" >> "${BASE_ENV_VARS}"
 
-    # Resetting to empty string , once versent is done https://pingidentity.atlassian.net/browse/PP-5719 and will remove this code as per PDO-5136
-    export IRSA_PING_ANNOTATION_KEY_VALUE=""
-    export IRSA_PA_ANNOTATION_KEY_VALUE=""
-    export IRSA_PD_ANNOTATION_KEY_VALUE=""
-    export IRSA_PF_ANNOTATION_KEY_VALUE=""
-    export IRSA_CWAGENT_ANNOTATION_KEY_VALUE=""
-
     sed -i.bak -e "/disable-karpenter/ s|^#*|#|g" "${K8S_CONFIGS_DIR}/base/cluster-tools/karpenter/kustomization.yaml"
     sed -i.bak -e "/disable-kubedownscaler/ s|^#*|#|g" "${K8S_CONFIGS_DIR}/base/cluster-tools/kube-downscaler/kustomization.yaml"
 
