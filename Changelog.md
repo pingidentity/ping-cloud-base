@@ -20,6 +20,7 @@
 - Adding Cross zone load balancing and graceful shutdown to nginx
 - Upgrade External DNS to v0.14.2
 - Disabling anonymous login for OpenSearch and removing prometheus_read role
+- log4j2.xml.subst root logger follows PF_DEBUG_LEVEL
 
 _Changes:_
 
@@ -42,6 +43,7 @@ _Changes:_
 - [X] PDO-7671 Thanos: Compactor is erroring with not enough ephemeral-storage
 - [X] PDO-7672 Thanos: Metrics older than 15 days are still present
 - [X] PDO-8085 Restrict PingFederate and PingAccess heartbeat response
+- [X] PDO-8121 log4j2.xml.subst root logger follows PF_DEBUG_LEVEL
 - [X] PDO-8150 Improve Stability and Shutdown Handling
 - [X] PDO-8193 Microservices profile repo feature branch testing fix
 - [X] PDO-8194 Upgrade External DNS to v0.14.2
