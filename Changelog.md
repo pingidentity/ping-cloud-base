@@ -31,6 +31,7 @@ _Changes:_
 - Updating memory limits for thanos-storegateway
 - Adding Cross zone load balancing and graceful shutdown to nginx
 - Upgrade External DNS to v0.14.2
+- Disabling anonymous login for OpenSearch and removing prometheus_read role
 
 _Changes:_
 
