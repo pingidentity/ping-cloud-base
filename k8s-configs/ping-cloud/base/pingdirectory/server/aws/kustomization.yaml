@@ -38,5 +38,13 @@ configMapGenerator:
       - restore-ops-template/restore-job.yaml
       - restore-ops-template/restore-pvc.yaml
 
+  - name: pingdirectory-backup-cronjob
+    # The following file will be added to cluster as a configmap.
+    # The backup-cronjob.sh will be called later via cronjob.
+    # It contains the logic that will create and remove the backup Job
+    # and PVC resources once successfully completed.
+    files:
+      - backup-ops-template/backup-cronjob.sh
+
 patchesStrategicMerge:
 - discovery-service.yaml

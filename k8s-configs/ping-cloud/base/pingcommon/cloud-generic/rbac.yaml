@@ -125,6 +125,9 @@ rules:
     verbs:
     - get
     - create
+    - delete
+    - list
+    - watch
   - apiGroups:
     - ""
     resources:
@@ -134,10 +137,20 @@ rules:
     - get
     - list
     - watch
+    - patch
   - apiGroups:
     - ""
     resources:
     - "pods"
+    verbs:
+    - get
+    - create
+    - delete
+    - list
+    - watch
+  - apiGroups:
+    - ""
+    resources:
     - "pods/log"
     - "secrets"
     verbs:
@@ -153,6 +166,8 @@ rules:
     - get
     - create
     - patch
+    - list
+    - watch
   - apiGroups:
     - ""
     - "apps"
