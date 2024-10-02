@@ -32,12 +32,23 @@ patchesStrategicMerge:
   kind: ConfigMap
   metadata:
     name: cluster-info
+    namespace: elastic-stack-logging
   data:
     cluster.name: ${CLUSTER_NAME}
     logs.region: ${REGION}
     tenant_domain: ${TENANT_DOMAIN}
     primary_tenant_domain: ${PRIMARY_TENANT_DOMAIN}
-    newrelic_cluster_name: ${NEW_RELIC_ENVIRONMENT_NAME}
+
+patchesJson6902:
+- target:
+    group: ""
+    version: v1
+    kind: ConfigMap
+    name: fluent-bit-config
+  patch: |-
+    - op: replace
+      path: /data/newrelic_cluster_name
+      value: "${NEW_RELIC_ENVIRONMENT_NAME}"
 
 ### enrichment-bootstrap service account ###
 - |-
