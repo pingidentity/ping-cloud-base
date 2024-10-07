@@ -26,6 +26,7 @@
 - Upgrade Cluster Autoscaler to v1.30.2
 - CT Upg: Upgrade Karpenter to 0.37.3
 - Remove oidc.properties.subst from PingFederate and use environment variables
+- Adding FluentBit timestamp to standard log data for all log streams
 
 _Changes:_
 
@@ -58,6 +59,8 @@ _Changes:_
 - [X] PDO-8193 Microservices profile repo feature branch testing fix
 - [X] PDO-8194 Upgrade External DNS to v0.14.2
 - [X] PDO-7564 Update number of shards for ingress index
+- [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
+
 
 ### 1.19.1.0
 
