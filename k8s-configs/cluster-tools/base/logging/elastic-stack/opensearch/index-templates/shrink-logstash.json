@@ -53,6 +53,9 @@
           "@timestamp": {
             "type": "date"
           },
+          "fluentbit_ingest_timestamp": {
+            "type": "date_nanos"
+          },
           "geoip": {
             "dynamic": "true",
             "properties": {

@@ -75,6 +75,9 @@
         "timestamp": {
           "type": "text"
         },
+        "fluentbit_ingest_timestamp": {
+          "type": "date_nanos"
+        },
         "cluster_name": {
           "type": "text",
           "fields": {
