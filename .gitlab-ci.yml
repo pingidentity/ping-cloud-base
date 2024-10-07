@@ -1,6 +1,6 @@
 workflow:
   rules:
-    - if: $CI_COMMIT_MESSAGE =~ /\[skip_pipeline\]/
+    - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
       when: never
     - if: $CI_MERGE_REQUEST_ID
       when: never
@@ -43,11 +43,15 @@ compile:
  before_script:
    - mkdir -p $YAML_OUT_DIR
  script:
-   - ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
+   - |
+     ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
+     echo COMPILE_RESULT=$? >> compile.env
  artifacts:
    paths:
      - out/
    expire_in: 1 day
+   reports:
+     dotenv: compile.env
 
 ## start security stage ##
 copy-images:
@@ -112,6 +116,8 @@ scan:
 ## Find cluster stage ##
 find-cluster:
   stage: find-cluster
+  # Run in parallel with compile stage
+  needs: []
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -124,6 +130,8 @@ find-cluster:
 ## Deploy stage ##
 deploy:
   stage: deploy
+  needs:
+    - find-cluster
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -137,6 +145,7 @@ deploy:
 # Common pre-check tests
 pre-check:
   stage: pre-check-test
+  retry: 1
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -148,6 +157,7 @@ pre-check:
 ## PA-WAS stage ##
 pa-was-integration-tests:
   stage: pa-was-test
+  retry: 1
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -206,6 +216,7 @@ pa-was-integration-tests:
   variables:
     TEST: ""
   stage: integration-test
+  retry: 1
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -253,6 +264,7 @@ integration-tests-chub:
 ## Chaos testing stage ##
 chaos-tests:
   stage: chaos
+  retry: 1
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
@@ -261,13 +273,34 @@ chaos-tests:
   dependencies:
     - find-cluster
 
-## Cleanup stage ##
-cleanup:
+.cleanup-base:
   stage: cleanup
   tags:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
+
+## Cleanup stage that runs when everything has succeeded ##
+cleanup-on-success:
+  extends: .cleanup-base
   dependencies:
     - find-cluster
+
+## Cleanup stage for failed compile stage ##
+cleanup-on-compile-failure:
+  extends: .cleanup-base
+  needs:
+    - compile
+    - find-cluster
+    - deploy
+  when: on_failure
+  script:
+    # Only cleanup when compile fails.
+    # If compile passes, deployment remains for troubleshooting
+    - |
+      if [ "$COMPILE_RESULT" != 0 ]; then
+        ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh;
+      else
+        echo "Compile passed, deployment not torn down to allow for troubleshooting";
+      fi
