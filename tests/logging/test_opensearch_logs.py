@@ -15,11 +15,11 @@ class TestOpenSearchLogs(unittest.TestCase):
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         # Port-forward the OpenSearch service (opensearch-cluster-headless)
         cls.port_forward_process = subprocess.Popen(
-            ["kubectl", "port-forward", "service/opensearch-cluster-headless", "9200:9200", 
+            ["kubectl", "port-forward", "service/opensearch-cluster-headless", "9200:9200",
              "-n", "elastic-stack-logging"], stdout=subprocess.PIPE
         )
          # Give port-forwarding time to establish
-        time.sleep(5) 
+        time.sleep(5)
         # Get OpenSearch Admin user/password from the secret in the 'opensearch-admin-credentials' secret
         opensearch_creds_secret = cls.k8s.get_namespaced_secret(
             "opensearch-admin-credentials", "elastic-stack-logging"
@@ -36,7 +36,7 @@ class TestOpenSearchLogs(unittest.TestCase):
         cls.opensearch_client = OpenSearch(
             hosts=[{'host': 'localhost', 'port': 9200}],
             http_auth=(username, password),
-            use_ssl=True, 
+            use_ssl=True,
             verify_certs=False,
             ssl_show_warn = False,
             timeout=240 # in seconds
@@ -50,7 +50,7 @@ class TestOpenSearchLogs(unittest.TestCase):
 
     def test_fluentbit_ingestion_field_timestamp(self):
         # Search logs in OpenSearch index template
-        index_name = "logstash-*"  
+        index_name = "logstash-*"
         query = {
             "query": {
                 "match_all": {}
@@ -70,6 +70,27 @@ class TestOpenSearchLogs(unittest.TestCase):
             match = re.match(timestamp_regex, timestamp_field)
             self.assertIsNotNone(match,
                 f"fluentbit_ingestion_field is not a valid timestamp: {timestamp_field}"
+            )
+    # Test verify the app_timestamp field
+    def test_app_timestamp_field_timestamp(self):
+        index_name = "ingress-access-*"
+        query = {
+            "query": {
+                "match_all": {}
+            },
+            "_source": ["app_timestamp"]
+        }
+        # Fetch indexes by regex
+        response = self.opensearch_client.search(index=index_name, body=query)
+
+        # Verify timestamp format for app_timestamp field
+        for hit in response['hits']['hits']:
+            timestamp_field = hit['_source'].get('app_timestamp')
+            self.assertIsNotNone(timestamp_field, "app_timestamp is missing")
+            timestamp_regex = r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,9}Z$'
+            match = re.match(timestamp_regex, timestamp_field)
+            self.assertIsNotNone(match,
+                f"app_timestamp field is not a valid timestamp: {timestamp_field}"
             )
 if __name__ == '__main__':
     unittest.main()
