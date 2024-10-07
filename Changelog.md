@@ -3,6 +3,8 @@
 _Changes:_
 
 - [X] PDO-8355 Cronjob delete Job and PersistentVolumeClaim resources for PingDirectory backups
+- [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
+
 
 ### 1.19.1.0
 
