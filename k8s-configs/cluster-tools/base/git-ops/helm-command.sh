@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $@ = pull* ]]; then
+if [[ $@ = pull* && $@ = *oci://* ]]; then
     # If the command is `helm pull (..)` skips --repo flag and chartName
     # from command line args to make helm pull run
 
