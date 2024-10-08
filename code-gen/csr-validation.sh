@@ -45,8 +45,10 @@ pull_helm_charts() {
       # use yq to get the chart's information (repo, version)
       chart_version="$(INDEX="${i}" yq ".helmCharts[strenv(INDEX)].version" "${chart_file}")"
       chart_repo="$(INDEX="${i}" yq ".helmCharts[strenv(INDEX)].repo" "${chart_file}")"
-      # pull the chart
-      helm pull --untar --untardir "${chart_dir}" "${chart_repo}" --version "${chart_version}"
+      if [[ $chart_repo = *oci://* ]]; then
+        # pull the chart
+        helm pull --untar --untardir "${chart_dir}" "${chart_repo}" --version "${chart_version}"
+      fi
     done
   done
 }

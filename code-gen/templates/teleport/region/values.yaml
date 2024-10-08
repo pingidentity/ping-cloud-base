@@ -1,0 +1,12 @@
+roles: kube
+authToken: ""
+proxyAddr: teleport.auth.forgeblocks.com:443
+kubeClusterName: "${TENANT_NAME}-${ENV}-${REGION_NICK_NAME}"
+labels:
+    teleport.internal/resource-id: ${TELEPORT_RESOURCE_ID}
+    platform: as
+    region: ${REGION_NICK_NAME}
+    env: ${ENV}
+    customer: ${TENANT_NAME}
+    stage: ${STAGE}
+enterprise: true

@@ -278,12 +278,18 @@
 #                                  | must also be provided and correspond to this       |
 #                                  | public key.                                        |
 #                                  |                                                    |
+# STAGE                            | The environment's "stage".                         | lab 
+#                                  | Lab/Preview/GA/Field/etc|                          |
+#                                  |                                                    |
 # SUPPORTED_ENVIRONMENT_TYPES      | The environment types that will be supported for   | dev test stage prod customer-hub
 #                                  | the customer                                       |
 #                                  |                                                    |
 # TARGET_DIR                       | The directory where the manifest files will be     | /tmp/sandbox
 #                                  | generated. If the target directory exists, it will |
 #                                  | be deleted.                                        |
+#                                  |                                                    |
+# TELEPORT_RESOURCE_ID             | The teleport resource ID provided by teleport      |
+#                                  | admin at initial setup time                        |
 #                                  |                                                    |
 # TENANT_DOMAIN                    | The tenant's domain suffix that's common to all    | ci-cd.ping-oasis.com
 #                                  | CDEs e.g. k8s-icecream.com. The tenant domain in   |
@@ -455,7 +461,9 @@ ${DASH_REPO_URL}
 ${DASH_REPO_BRANCH}
 ${APP_RESYNC_SECONDS}
 ${CERT_RENEW_BEFORE}
-${THANOS_S3_BUCKET_NAME}'
+${THANOS_S3_BUCKET_NAME}
+${TELEPORT_RESOURCE_ID}
+${STAGE}'
 
 # Variables to replace within the generated cluster state code
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
@@ -598,6 +606,11 @@ organize_code_for_csr() {
   for app_path in ${app_paths}; do
     local app_name=$(basename "${app_path}")
 
+    # set default env vars to prevent errors if they are not set
+    unset CDE_DEPLOY
+    unset CHUB_DEPLOY
+    unset DEVELOPER_DEPLOY
+
     # source the config or continue to next app if config not there
     source "${app_path}/config.sh" || continue
 
@@ -605,10 +618,16 @@ organize_code_for_csr() {
     echo "For app '${app_name}':"
     echo "Using CDE_DEPLOY: ${CDE_DEPLOY}"
     echo "Using CHUB_DEPLOY:  ${CHUB_DEPLOY}"
+    echo "Using DEVELOPER_DEPLOY: ${DEVELOPER_DEPLOY}"
     echo
 
+    # exclude anything that shouldn't deploy to dev envs
+    if (${IS_BELUGA_ENV} && test "${DEVELOPER_DEPLOY}" = "false"); then
+      continue
+    fi
+
     # Add the app directory to the tmp directory if the deploy env var aligns with the env env var
-    if (test "${ENV}" = "${CUSTOMER_HUB}" && ${CHUB_DEPLOY}) || (test "${ENV}" != "${CUSTOMER_HUB}" && ${CDE_DEPLOY}); then
+    if { test "${ENV}" = "${CUSTOMER_HUB}" && test "${CHUB_DEPLOY}" = "true"; } || { test "${ENV}" != "${CUSTOMER_HUB}" && test "${CDE_DEPLOY}" = "true"; }; then
       local app_target_dir=${ENV_DIR}/${app_name}
       mkdir -p "${app_target_dir}"
 
@@ -665,6 +684,7 @@ fi
 ########################################################################################################################
 echo "Initial TENANT_NAME: ${TENANT_NAME}"
 echo "Initial SIZE: ${SIZE}"
+echo "Initial STAGE: ${STAGE}"
 
 echo "Initial SUPPORTED_ENVIRONMENT_TYPES: ${SUPPORTED_ENVIRONMENT_TYPES}"
 echo "Initial ENVIRONMENTS: ${ENVIRONMENTS}"
@@ -759,6 +779,8 @@ echo "Initial DASHBOARD_REPO_URL: ${DASHBOARD_REPO_URL}"
 
 echo "Initial CERT_RENEW_BEFORE: ${CERT_RENEW_BEFORE}"
 
+echo "Initial TELEPORT_RESOURCE_ID: ${TELEPORT_RESOURCE_ID}"
+
 echo ---
 
 
@@ -797,6 +819,7 @@ export PRIMARY_REGION="${PRIMARY_REGION:-${REGION}}"
 PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
 export PRIMARY_TENANT_DOMAIN="${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN_NO_DOT_SUFFIX}}"
 export SECONDARY_TENANT_DOMAINS="${SECONDARY_TENANT_DOMAINS}"
+export STAGE="${STAGE:-lab}"
 
 if "${IS_BELUGA_ENV}"; then
   DERIVED_GLOBAL_TENANT_DOMAIN="global.${TENANT_DOMAIN_NO_DOT_SUFFIX}"
@@ -1292,6 +1315,8 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   echo "Using IRSA_INGRESS_ANNOTATION_KEY_VALUE: ${IRSA_INGRESS_ANNOTATION_KEY_VALUE}"
   echo "Using NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
   echo "Using CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
+  echo "Using TELEPORT_RESOURCE_ID: ${TELEPORT_RESOURCE_ID}"
+  echo "Using STAGE: ${STAGE}"
 
   ######################################################################################################################
   # Massage files into correct structure for push-cluster-state script
