@@ -6,6 +6,7 @@ _Changes:_
 - [X] PDO-8362 OpenSearch: Add app_timestamp field
 - [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
 - [X] PDO-8196 Include the Fluent Bit ingestion time field in the customer pipeline
+- [X] PDO-8783 Set AsyncRoot level to "INFO" in PF log4j2.xml file
 
 ### 1.19.1.0
 
