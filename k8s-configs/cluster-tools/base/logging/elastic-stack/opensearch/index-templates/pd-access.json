@@ -294,6 +294,9 @@
         "@timestamp": {
           "type": "date"
         },
+        "app_timestamp": {
+          "type": "date_nanos"
+        },
         "fluentbit_ingest_timestamp": {
           "type": "date_nanos"
         },
