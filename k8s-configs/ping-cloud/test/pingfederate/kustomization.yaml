@@ -1,9 +1,0 @@
-kind: Kustomization
-apiVersion: kustomize.config.k8s.io/v1beta1
-
-resources:
-- config
-- admin
-- engine
-# 'provisioning' is NOT included here because that would opt-in the entire 'test' parent directory referenced by the
-# top-level ping-cloud/kustomization.yaml file

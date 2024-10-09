@@ -1,9 +1,0 @@
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: pf-engine-pdb
-spec:
-  minAvailable: "30%"
-  selector:
-    matchLabels:
-      role: pingfederate-engine
