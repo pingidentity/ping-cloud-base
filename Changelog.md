@@ -61,7 +61,7 @@ _Changes:_
 - [X] PDO-8194 Upgrade External DNS to v0.14.2
 - [X] PDO-8212 Add teleport for cluster access
 - [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
-
+- [X] PDO-8196 Include the Fluent Bit ingestion time field in the customer pipeline
 
 ### 1.19.1.0
 
