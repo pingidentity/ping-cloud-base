@@ -157,7 +157,7 @@ spec:
         app.kubernetes.io/name: opensearch
         app.kubernetes.io/instance: opensearch-cluster-warm
       replicas: 3
-      diskSize: "140Gi"
+      diskSize: "250Gi"
       jvm: -Xmx3g -Xms3g
       pdb:
         enable: true
