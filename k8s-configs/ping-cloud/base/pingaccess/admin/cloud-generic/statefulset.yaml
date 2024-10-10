@@ -124,7 +124,7 @@ spec:
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
         imagePullPolicy: Always
         command: ["/bin/sh"]
-        args: ["-c", " /opt/in/hooks/22-upgrade-server.sh "]
+        args: ["-c", "/opt/in/hooks/22-upgrade-server.sh"]
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -145,8 +145,8 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
-        - name: data-dir
-          mountPath: /opt/staging/hooks/logger.lib.sh
+        - name: pingaccess-init
+          mountPath: /opt/in/hooks/logger.lib.sh
           subPath: logger.lib.sh
         - name: data-dir
           mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
