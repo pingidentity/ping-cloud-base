@@ -53,31 +53,6 @@ patchesStrategicMerge:
           }
         }
   - |-
-    apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      name: os-ism-policies
-      namespace: elastic-stack-logging
-    data:
-      ping-general.json: |-
-        {
-          "policy": {
-            "states": [
-              {
-                "name": "warm",
-                "transitions": [
-                  {
-                    "state_name": "delete",
-                    "conditions": {
-                      "min_index_age": "180d"
-                    }
-                  }
-                ]
-              }
-            ]
-          }
-        }
-  - |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -92,7 +67,6 @@ patchesStrategicMerge:
                 - --resources=persistentvolumeclaims,persistentvolumes,pods,nodes,endpoints
                 - --namespaces-denylist=default, health, kube-node-lease, kube-public, kube-system, pod-reaper, newrelic
 
-
 patchesJson6902:
   - target:
       version: v1
@@ -105,132 +79,132 @@ patchesJson6902:
         value: |-
           {
             "policy": {
-                "policy_id": "ping_standard_policy",
-                "description": "Standard ping policy (after 30 days read-only, after 90 days move to warm, after 180d delete)",
-                "last_updated_time": 1684846142111,
-                "schema_version": 17,
-                "error_notification": null,
-                "default_state": "hot",
-                "states": [
+              "policy_id": "ping_standard_policy",
+              "description": "Standard ping policy (after 30 days read-only, after 90 days move to warm, after 180d delete)",
+              "last_updated_time": 1684846142111,
+              "schema_version": 17,
+              "error_notification": null,
+              "default_state": "hot",
+              "states": [
+                {
+                  "name": "hot",
+                  "actions": [],
+                  "transitions": [
                     {
-                        "name": "hot",
-                        "actions": [],
-                        "transitions": [
-                            {
-                                "state_name": "RO",
-                                "conditions": {
-                                    "min_index_age": "30d"
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "name": "RO",
-                        "actions": [
-                            {
-                                "retry": {
-                                    "count": 3,
-                                    "backoff": "exponential",
-                                    "delay": "1m"
-                                },
-                                "read_only": {}
-                            }
-                        ],
-                        "transitions": [
-                            {
-                                "state_name": "warm",
-                                "conditions": {
-                                    "min_index_age": "90d"
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "name": "warm",
-                        "actions": [
-                            {
-                                "retry": {
-                                    "count": 3,
-                                    "backoff": "exponential",
-                                    "delay": "1m"
-                                },
-                                "replica_count": {
-                                    "number_of_replicas": 1
-                                }
-                            },
-                            {
-                                "retry": {
-                                    "count": 3,
-                                    "backoff": "exponential",
-                                    "delay": "1m"
-                                },
-                                "force_merge": {
-                                    "max_num_segments": 1
-                                }
-                            },
-                            {
-                                "retry": {
-                                    "count": 3,
-                                    "backoff": "exponential",
-                                    "delay": "1m"
-                                },
-                                "read_only": {}
-                            },
-                            {
-                                "retry": {
-                                    "count": 3,
-                                    "backoff": "exponential",
-                                    "delay": "1m"
-                                },
-                                "allocation": {
-                                    "require": {
-                                        "temp": "warm"
-                                    },
-                                    "include": {},
-                                    "exclude": {},
-                                    "wait_for": false
-                                }
-                            }
-                        ],
-                        "transitions": [
-                            {
-                                "state_name": "delete",
-                                "conditions": {
-                                    "min_index_age": "180d"
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "name": "delete",
-                        "actions": [
-                            {
-                                "retry": {
-                                    "count": 3,
-                                    "backoff": "exponential",
-                                    "delay": "1m"
-                                },
-                                "delete": {}
-                            }
-                        ],
-                        "transitions": []
+                      "state_name": "RO",
+                      "conditions": {
+                        "min_index_age": "30d"
+                      }
                     }
-                ],
-                "ism_template": [
+                  ]
+                },
+                {
+                  "name": "RO",
+                  "actions": [
                     {
-                        "index_patterns": [
-                            "pd-*",
-                            "pf-*",
-                            "pa-*",
-                            "pc-*",
-                            "pdg-*",
-                            "pds-*",
-                            "ingress-*",
-                            "logstash-*"
-                        ],
-                        "priority": 1,
-                        "last_updated_time": 1684842823048
+                      "retry": {
+                        "count": 3,
+                        "backoff": "exponential",
+                        "delay": "1m"
+                      },
+                      "read_only": {}
                     }
-                ]
+                  ],
+                  "transitions": [
+                    {
+                      "state_name": "warm",
+                      "conditions": {
+                        "min_index_age": "90d"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "warm",
+                  "actions": [
+                    {
+                      "retry": {
+                        "count": 3,
+                        "backoff": "exponential",
+                        "delay": "1m"
+                      },
+                      "replica_count": {
+                        "number_of_replicas": 1
+                      }
+                    },
+                    {
+                      "retry": {
+                        "count": 3,
+                        "backoff": "exponential",
+                        "delay": "1m"
+                      },
+                      "force_merge": {
+                        "max_num_segments": 1
+                      }
+                    },
+                    {
+                      "retry": {
+                        "count": 3,
+                        "backoff": "exponential",
+                        "delay": "1m"
+                      },
+                      "read_only": {}
+                    },
+                    {
+                      "retry": {
+                        "count": 3,
+                        "backoff": "exponential",
+                        "delay": "1m"
+                      },
+                      "allocation": {
+                        "require": {
+                          "temp": "warm"
+                        },
+                        "include": {},
+                        "exclude": {},
+                        "wait_for": false
+                      }
+                    }
+                  ],
+                  "transitions": [
+                    {
+                      "state_name": "delete",
+                      "conditions": {
+                        "min_index_age": "180d"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "delete",
+                  "actions": [
+                    {
+                      "retry": {
+                        "count": 3,
+                        "backoff": "exponential",
+                        "delay": "1m"
+                      },
+                      "delete": {}
+                    }
+                  ],
+                  "transitions": []
+                }
+              ],
+              "ism_template": [
+                {
+                  "index_patterns": [
+                    "pd-*",
+                    "pf-*",
+                    "pa-*",
+                    "pc-*",
+                    "pdg-*",
+                    "pds-*",
+                    "ingress-*",
+                    "logstash-*"
+                  ],
+                  "priority": 1,
+                  "last_updated_time": 1684842823048
+                }
+              ]
             }
-        }
+          }
