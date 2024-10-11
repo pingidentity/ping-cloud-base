@@ -68,7 +68,7 @@ data:
       "logs": {
         "metrics_collected": {
             "prometheus": {
-              "prometheus_config_path": "/etc/cwagentconfig/prometheus.yaml",
+              "prometheus_config_path": "/etc/prometheusconfig/prometheus.yaml",
               "emf_processor": {
                 "metric_declaration_dedup": true
               }
@@ -161,6 +161,8 @@ spec:
           volumeMounts:
             - name: cwagentconfig
               mountPath: /etc/cwagentconfig
+            - name: prometheusconfig
+              mountPath: /etc/prometheusconfig
             - name: rootfs
               mountPath: /rootfs
               readOnly: true
@@ -183,6 +185,15 @@ spec:
         - name: cwagentconfig
           configMap:
             name: cwagentconfig
+            items:
+            - key: cwagentconfig.json
+              path: cwagentconfig.json
+        - name: prometheusconfig
+          configMap:
+            name: cwagentconfig
+            items:
+            - key: prometheus.yaml
+              path: prometheus.yaml
         - name: rootfs
           hostPath:
             path: /
