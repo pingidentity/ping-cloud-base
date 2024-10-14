@@ -162,6 +162,20 @@ patches:
     kind: ValidatingWebhookConfiguration
     name: ingress-nginx-admission
 
+# Note: this patch must match against name/namespace prior to rest of patches in public/private kustomize dirs
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ingress-nginx-controller
+      namespace: ingress-nginx
+    spec:
+      template:
+        spec:
+          containers:
+            - name: controller
+              image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller/dev:v2.0-release-branch-latest
+
 - target:
     # Modifiying Deployment kind to P1AS needs
     kind: Deployment
@@ -198,9 +212,6 @@ patches:
       value: https
     - op: remove
       path: /spec/template/spec/containers/0/ports/1
-    - op: replace
-      path: /spec/template/spec/containers/0/image
-      value: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller/dev:v2.0-release-branch-latest
     - op: replace
       path: /spec/template/spec/containers/0/imagePullPolicy
       value: Always
@@ -435,3 +446,4 @@ configMapGenerator:
     behavior: create
     Options:
       disableNameSuffixHash: true
+

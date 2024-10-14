@@ -26,6 +26,7 @@
 - Upgrade Cluster Autoscaler to v1.30.2
 - CT Upg: Upgrade Karpenter to 0.37.3
 - Adding FluentBit timestamp to standard log data for all log streams
+- Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
 
 _Changes:_
 
@@ -60,6 +61,7 @@ _Changes:_
 - [X] PDO-8212 Add teleport for cluster access
 - [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
 - [X] PDO-8196 Include the Fluent Bit ingestion time field in the customer pipeline
+- [X] PDO-8144 Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
 
 ### 1.19.1.0
 
