@@ -184,6 +184,7 @@ pa-was-integration-tests:
   - pingone
 #  - ingress-nginx
   - cert-manager
+  - logging
 
 #################################################
 # All integration tests defined to run on the  #

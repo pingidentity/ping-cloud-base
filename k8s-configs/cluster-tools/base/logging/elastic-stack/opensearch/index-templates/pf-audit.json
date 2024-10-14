@@ -222,6 +222,9 @@
         "@timestamp": {
           "type": "date"
         },
+        "fluentbit_ingest_timestamp": {
+          "type": "date_nanos"
+        },        
         "company_name": {
           "type": "text",
           "fields": {
