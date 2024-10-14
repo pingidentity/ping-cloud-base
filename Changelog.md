@@ -56,6 +56,8 @@ _Changes:_
 - [X] PDO-8150 Improve Stability and Shutdown Handling
 - [X] PDO-8193 Microservices profile repo feature branch testing fix
 - [X] PDO-8194 Upgrade External DNS to v0.14.2
+- [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
+
 
 ### 1.19.1.0
 
