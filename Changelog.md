@@ -25,7 +25,6 @@
 - Enable runtime bulkhead via API for PingFederate
 - Upgrade Cluster Autoscaler to v1.30.2
 - CT Upg: Upgrade Karpenter to 0.37.3
-- Remove oidc.properties.subst from PingFederate and use environment variables
 - Adding FluentBit timestamp to standard log data for all log streams
 
 _Changes:_
@@ -55,7 +54,6 @@ _Changes:_
 - [X] PDO-7683 Enable runtime bulkhead via API for PingFederate
 - [X] PDO-8085 Restrict PingFederate and PingAccess heartbeat response
 - [X] PDO-8121 log4j2.xml.subst root logger follows PF_DEBUG_LEVEL
-- [X] PDO-8135 PingFederate SSO container set environment variables instead of .conf .property files
 - [X] PDO-8150 Improve Stability and Shutdown Handling
 - [X] PDO-8193 Microservices profile repo feature branch testing fix
 - [X] PDO-8194 Upgrade External DNS to v0.14.2

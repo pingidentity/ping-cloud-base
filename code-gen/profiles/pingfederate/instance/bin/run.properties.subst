@@ -24,11 +24,11 @@ pf.admin.https.port=${PF_ADMIN_PORT}
 # if pf.admin.baseurl is specified. But if only pf.admin.hostname is defined,
 # then the URL will be constructed the same way as in versions of PingFederate
 # before 10.3.
-pf.admin.baseurl=${PF_RUN_PF_ADMIN_BASEURL}
+pf.admin.baseurl=https://${PF_ADMIN_PUBLIC_HOSTNAME}:443
 
 #
-# This property defines the IP address over which the PingFederate 
-# administrative console communicates. Use for deployments where multiple 
+# This property defines the IP address over which the PingFederate
+# administrative console communicates. Use for deployments where multiple
 # network interfaces are installed on the machine running PingFederate.
 # The bind addresses can be ipv6 compliant: use "::" as a replacement
 # for "0.0.0.0".
@@ -36,16 +36,15 @@ pf.console.bind.address=0.0.0.0
 
 #   HTML page title
 #   ---------------
-# This property defines the browser window or tab title for the administrative 
+# This property defines the browser window or tab title for the administrative
 # console, used to make separate instances identifiable.
-# *** THIS VALUE GETS REPLACED BY PINGFEDERATE V12.1 USING THE ENV VAR PF_CONSOLE_TITLE ***
-pf.console.title=${PF_CONSOLE_TITLE}
+pf.console.title=${PF_ADMIN_CONSOLE_TITLE}
+
 #
 # This property defines the name of the PingFederate environment that will be
 # displayed in the administrative console, used to make separate environments
 # easily identifiable.
-# *** THIS VALUE DOES NOT GET REPLACED BY PINGFEDERATE V12.1 ENV VAR SUBSTITUTION ***
-pf.console.environment=${PF_CONSOLE_ENVIRONMENT}
+pf.console.environment=${PF_ADMIN_CONSOLE_ENVIRONMENT}
 
 #   HTML page background image
 #   ---------------
@@ -71,17 +70,17 @@ pf.pingone.admin.url.environment.id=
 #   Admin Console UI Timeout
 #   ------------------------
 #
-# This property defines the length of time (in minutes) until an inactive 
-# administrative console times out. The minimum setting is 1 minute; maximum is 
-# 8 hours (480 minutes). 
+# This property defines the length of time (in minutes) until an inactive
+# administrative console times out. The minimum setting is 1 minute; maximum is
+# 8 hours (480 minutes).
 # Default is 30 minutes.
 pf.console.session.timeout=30
 
 #   Login Mode
 #   ----------
 #
-# This property indicates whether more than one Admin user may access the 
-# administrative console at one time. 
+# This property indicates whether more than one Admin user may access the
+# administrative console at one time.
 #   Valid values are:
 #     single   - Only one Admin user may log on at a time.
 #     multiple - More than one Admin user may log on simultaneously.
@@ -90,7 +89,7 @@ pf.console.login.mode=multiple
 
 #   Authentication Mechanism
 #   ------------------------
-# This property defines whether administrators log on to PingFederate using 
+# This property defines whether administrators log on to PingFederate using
 # credentials managed internally, by PingFederate, or externally. Single sign-on
 # via the PingOne admin console is also available, and is independent of the
 # mechanism chosen here.
@@ -102,7 +101,6 @@ pf.console.login.mode=multiple
 #     RADIUS - External RADIUS authentication.
 #     OIDC   - External or Internal OIDC authentication.
 # Default is native.
-# *** THIS VALUE GETS REPLACED BY PINGFEDERATE V12.1 USING THE ENV VAR PF_CONSOLE_AUTHENTICATION ***
 pf.console.authentication=${PF_CONSOLE_AUTHENTICATION}
 
 # Authentication methods for the Admin API.
