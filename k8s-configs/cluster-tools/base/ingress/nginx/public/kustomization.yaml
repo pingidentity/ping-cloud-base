@@ -53,12 +53,6 @@ patchesJson6902:
     version: v1
     kind: Deployment
     name: nginx-ingress-controller
-- path: add-sigsci-configmap.yaml
-  target:
-    group: ""
-    version: v1
-    kind: ConfigMap
-    name: nginx-configuration
 - path: add-tcp-services-configmap.yaml
   target:
     group: ""
@@ -71,18 +65,6 @@ patchesJson6902:
     version: v1
     kind: Service
     name: ingress-nginx
-- path: add-custom-log-format.yaml
-  target:
-    group: ""
-    version: v1
-    kind: ConfigMap
-    name: nginx-configuration
-- path: add-custom-logic-to-filter-pf-pa-heartbeat-endpoint.yaml
-  target:
-    group: ""
-    version: v1
-    kind: ConfigMap
-    name: nginx-configuration
 - path: add-controller-resources.yaml
   target:
     group: apps
@@ -128,3 +110,8 @@ patches:
           app.kubernetes.io/name: ingress-nginx
           app.kubernetes.io/part-of: ingress-nginx
           app.kubernetes.io/role: ingress-nginx-public
+
+# Strategic merge patches for the 'nginx-configuration' ConfigMap
+- path: add-custom-log-format.yaml
+- path: add-custom-logic-to-filter-pf-pa-heartbeat-endpoint.yaml
+- path: add-sigsci-configmap.yaml
