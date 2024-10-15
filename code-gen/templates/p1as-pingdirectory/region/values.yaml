@@ -9,7 +9,7 @@ pingdirectory:
   # Changes PURGE_BATCH_SIZE for -Dcom.unboundid.directory.server.plugins.PurgeExpiredDataPlugin.BATCH_SIZE= - default is 10000
   purgeBatchSize: "10000"
   maxHeapSize: "3g"
-  # Set to false to avoid skipping liveness probe. Skipping the liveness (SKIP_LIVENESS=true) is the default for PingDirectory.
+  # Set false to avoid skipping liveness probe. Skipping the liveness (SKIP_LIVENESS=true) is the default for PingDirectory.
   skipLiveness: true
   # The IRSA role ARN to be used for the PingDirectory serviceAccount
   irsaPdAnnotationKeyValue: "${IRSA_PD_ANNOTATION_KEY_VALUE}"
