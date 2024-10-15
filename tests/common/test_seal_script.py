@@ -114,3 +114,19 @@ class TestSealScript(unittest.TestCase):
         results = run_seal_script(self.cert_file)
         self.assertEqual(results.returncode, 0, "seal script failed when it should have succeeded")
         self.assertIn("secrets were successfully sealed", results.stdout, "seal script returned incorrect response")
+
+    def test_empty_secret(self):
+        write_values_file({'global': {'sealedSecrets': False, 'secrets': {
+            'test-ns': {'valueone': 'VGhpcyBpcyBhIHRlc3Q=', 'valuetwo': '', 'valuethree': '  '}}}})
+        results = run_seal_script(self.cert_file)
+        self.assertEqual(results.returncode, 0, "seal script failed when it should have succeeded")
+        self.assertIn("secrets were successfully sealed", results.stdout, "seal script returned incorrect response")
+
+        # Get empty secret value to check it's still empty
+        p1 = subprocess.run(args=["yq", "-e", ".global.secrets.test-ns.valuetwo", VALUES_FILE_PATH + "/values.yaml"],
+                            capture_output=True, text=True)
+        self.assertEqual(p1.stdout.strip(), "", "empty secret not still empty")
+
+        p1 = subprocess.run(args=["yq", "-e", ".global.secrets.test-ns.valuethree", VALUES_FILE_PATH + "/values.yaml"],
+                            capture_output=True, text=True)
+        self.assertEqual(p1.stdout.strip(), "", "empty secret not still empty")
