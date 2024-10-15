@@ -32,6 +32,7 @@ _Changes:_
 - Adding Cross zone load balancing and graceful shutdown to nginx
 - Upgrade External DNS to v0.14.2
 - Disabling anonymous login for OpenSearch and removing prometheus_read role
+- Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
 
 _Changes:_
 
@@ -55,7 +56,7 @@ _Changes:_
 - [X] PDO-8193 Microservices profile repo feature branch testing fix
 - [X] PDO-8194 Upgrade External DNS to v0.14.2
 - [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
-
+- [X] PDO-8144 Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
 
 ### 1.19.1.0
 
