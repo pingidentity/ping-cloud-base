@@ -57,7 +57,7 @@ testOCSPEnabled() {
     else
       assertEquals "$expected_output" "$ocsp_response"
     fi
-  done 
+  done
 }
 
 # When arguments are passed to a script you must
