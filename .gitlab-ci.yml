@@ -32,6 +32,7 @@ variables:
     pingdirectory/08-test-http-connection-handler.sh
     monitoring/03-nri-kubernetes.sh
     ingress-nginx/01-test-ocsp-stapling.sh
+    monitoring/test_fluent_health.py
 
 ## Compile stage ##
 compile:
