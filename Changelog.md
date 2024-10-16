@@ -2,6 +2,7 @@
 
 _Changes:_
 
+- [X] PDO-7195 Alert when the PF connection to the datastore is lost or fails
 - [X] PDO-8355 Cronjob delete Job and PersistentVolumeClaim resources for PingDirectory backups
 - [X] PDO-8356 OpenSearch: Increase SC1 (warm) volume size
 - [X] PDO-8362 OpenSearch: Add app_timestamp field
