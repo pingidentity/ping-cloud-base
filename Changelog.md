@@ -8,6 +8,7 @@ _Changes:_
 - [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
 - [X] PDO-8196 Include the Fluent Bit ingestion time field in the customer pipeline
 - [X] PDO-8783 Set AsyncRoot level to "INFO" in PF log4j2.xml file
+- [X] PDO-8730 Prevent customer-p1-connection job from running on upgrades
 
 ### 1.19.1.0
 
