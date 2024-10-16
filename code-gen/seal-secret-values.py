@@ -78,7 +78,7 @@ class SealSecrets:
             for k8s_secret in self.values[GLOBAL_KEY][SECRETS_KEY][k8s_namespace]:
                 # Get the value
                 value = self.values[GLOBAL_KEY][SECRETS_KEY][k8s_namespace][k8s_secret]
-                if value is not None:
+                if value is not None and value.strip() != "":
                     # Try to base64 decode the value
                     try:
                         decoded_value = b64.b64decode(value.encode("ascii"), validate=True).decode("ascii")
