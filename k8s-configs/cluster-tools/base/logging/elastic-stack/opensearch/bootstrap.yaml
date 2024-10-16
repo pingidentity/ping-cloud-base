@@ -57,10 +57,6 @@ spec:
           - name: DASHBOARDS_PATH
             value: "/usr/share/opensearch/data/dashboards"
         volumeMounts:
-          - name: os-ism-policies
-            mountPath: /usr/share/opensearch/data/ism-policies
-          - name: os-index-templates
-            mountPath: /usr/share/opensearch/data/index-templates
           - name: os-notifications-channels
             mountPath: /usr/share/opensearch/data/notifications
           - name: os-dashboards-pd
@@ -73,22 +69,6 @@ spec:
             mountPath: /usr/share/opensearch/data/dashboards/pa
           - name: os-dashboards-pa-was
             mountPath: /usr/share/opensearch/data/dashboards/pa-was
-          - name: os-alerts-pd-1
-            mountPath: /usr/share/opensearch/data/alerts/pd-1
-          - name: os-alerts-pd-2
-            mountPath: /usr/share/opensearch/data/alerts/pd-2
-          - name: os-alerts-pd-3
-            mountPath: /usr/share/opensearch/data/alerts/pd-3
-          - name: os-alerts-pd-4
-            mountPath: /usr/share/opensearch/data/alerts/pd-4
-          - name: os-alerts-pd-5
-            mountPath: /usr/share/opensearch/data/alerts/pd-5
-          - name: os-alerts-pds
-            mountPath: /usr/share/opensearch/data/alerts/pds
-          - name: os-alerts-pf
-            mountPath: /usr/share/opensearch/data/alerts/pf
-          - name: os-alerts-ingress
-            mountPath: /usr/share/opensearch/data/alerts/nginx
         resources:
           requests:
             memory: "256Mi"
@@ -98,12 +78,6 @@ spec:
             cpu: "500m"
       restartPolicy: OnFailure
       volumes:
-        - name: os-ism-policies
-          configMap:
-            name: os-ism-policies
-        - name: os-index-templates
-          configMap:
-            name: os-index-templates
         - name: os-notifications-channels
           configMap:
             name: os-notifications-channels
@@ -122,27 +96,3 @@ spec:
         - name: os-dashboards-pa-was
           configMap:
             name: os-dashboards-pa-was
-        - name: os-alerts-pd-1
-          configMap:
-            name: os-alerts-pd-1
-        - name: os-alerts-pd-2
-          configMap:
-            name: os-alerts-pd-2
-        - name: os-alerts-pd-3
-          configMap:
-            name: os-alerts-pd-3
-        - name: os-alerts-pd-4
-          configMap:
-            name: os-alerts-pd-4
-        - name: os-alerts-pd-5
-          configMap:
-            name: os-alerts-pd-5
-        - name: os-alerts-pds
-          configMap:
-            name: os-alerts-pds
-        - name: os-alerts-pf
-          configMap:
-            name: os-alerts-pf
-        - name: os-alerts-ingress
-          configMap:
-            name: os-alerts-ingress
