@@ -8,7 +8,8 @@ resources:
 - custom-resources.yaml
 - argocd-p1as-bootstrap.yaml
 - customer-p1-app.yaml
-- customer-p1-connection.yaml
+# Toggling commenting of this job is controlled by git-ops-command.sh and the CUSTOMER_PINGONE_ENABLED flag
+#- customer-p1-connection.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
