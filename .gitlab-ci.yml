@@ -186,6 +186,7 @@ pa-was-integration-tests:
   - ingress-nginx
   - cert-manager
   - logging
+  - argocd
 
 #################################################
 # All integration tests defined to run on the  #
