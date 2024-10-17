@@ -58,6 +58,12 @@ _Changes:_
 - [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
 - [X] PDO-8144 Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
 
+### 1.19.2.0
+
+_Changes:_
+
+- [X] PDO-8730 Prevent customer-p1-connection job from running on upgrades
+
 ### 1.19.1.0
 
 _Changes:_
