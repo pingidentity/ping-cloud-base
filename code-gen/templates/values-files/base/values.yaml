@@ -122,7 +122,7 @@ global:
   k8sGitBranch: "${K8S_GIT_BRANCH}"
 
   # ecrRegistryName is the name of the Docker image registry
-  ecrRegistryName: "${ECR_REGISTRY_NAME}/dev"
+  ecrRegistryName: "${ECR_REGISTRY_NAME}"
 
   # clusterName is the eks cluster name
   clusterName: "${CLUSTER_NAME}"
@@ -203,4 +203,4 @@ global:
   ########################################################
   # newrelic tag-exporter application settings
   newRelic:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v2.0-release-branch-latest
+    image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v2.0.0-RC1
