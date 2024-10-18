@@ -278,8 +278,11 @@
 #                                  | must also be provided and correspond to this       |
 #                                  | public key.                                        |
 #                                  |                                                    |
-# STAGE                            | The environment's "stage".                         | lab 
-#                                  | Lab/Preview/GA/Field/etc|                          |
+# STAGE                            | The environment's "stage".                         | lab-us1
+#                                  | Lab/Preview/GA/Field/etc                           |
+#                                  | It is initially set by Versent as stage-region -   |
+#                                  | for example: ga-us1, then we consume only the      |
+#                                  | portion containing the stage in this script        |
 #                                  |                                                    |
 # SUPPORTED_ENVIRONMENT_TYPES      | The environment types that will be supported for   | dev test stage prod customer-hub
 #                                  | the customer                                       |
@@ -819,7 +822,11 @@ export PRIMARY_REGION="${PRIMARY_REGION:-${REGION}}"
 PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
 export PRIMARY_TENANT_DOMAIN="${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN_NO_DOT_SUFFIX}}"
 export SECONDARY_TENANT_DOMAINS="${SECONDARY_TENANT_DOMAINS}"
-export STAGE="${STAGE:-lab}"
+
+# Default stage to lab-us1
+STAGE="${STAGE:-lab-us1}"
+# Versent passes STAGE as "stage-region" (e.g. "ga-us1") so we need to strip the region suffix
+export STAGE="${STAGE%%-*}"
 
 if "${IS_BELUGA_ENV}"; then
   DERIVED_GLOBAL_TENANT_DOMAIN="global.${TENANT_DOMAIN_NO_DOT_SUFFIX}"
