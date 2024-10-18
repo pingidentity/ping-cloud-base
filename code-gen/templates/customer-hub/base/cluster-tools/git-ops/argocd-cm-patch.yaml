@@ -19,3 +19,7 @@
   value: |-
     jsonPointers:
     - /status
+# Use separate argo-specific instance label to prevent conflicts with app.kubernetes.io/instance
+- op: add
+  path: /data/application.instanceLabelKey
+  value: argocd.argoproj.io/instance
