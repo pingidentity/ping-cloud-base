@@ -28,6 +28,7 @@
 - CT Upg: Upgrade Karpenter to 0.37.3
 - Adding FluentBit timestamp to standard log data for all log streams
 - Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
+- Upgrade cert-manager to v1.16.1
 - Upgrade Argocd to v2.12.4
 
 _Changes:_
@@ -56,6 +57,7 @@ _Changes:_
 - [X] PDO-7671 Thanos: Compactor is erroring with not enough ephemeral-storage
 - [X] PDO-7672 Thanos: Metrics older than 15 days are still present
 - [X] PDO-7683 Enable runtime bulkhead via API for PingFederate
+- [X] PDO-7717 Upgrade cert-manager to v1.16.1
 - [X] PDO-8085 Restrict PingFederate and PingAccess heartbeat response
 - [X] PDO-8121 log4j2.xml.subst root logger follows PF_DEBUG_LEVEL
 - [X] PDO-8150 Improve Stability and Shutdown Handling
