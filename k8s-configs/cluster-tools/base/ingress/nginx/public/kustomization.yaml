@@ -20,10 +20,11 @@ labels:
       app.kubernetes.io/part-of: ingress-nginx
     includeTemplates: true
     includeSelectors: true
-  # Do NOT add the these labels to selectors - selectors changes on Deployments are immutable and lead to upgrade challenges
+  # Do NOT add these labels to selectors - selectors changes on Deployments are immutable and lead to upgrade challenges
   # and downtime
+  # NOTE: must be updated with each upgrade until we are using Helm
   - pairs:
-      app.kubernetes.io/version: 1.9.6
+      app.kubernetes.io/version: 1.11.2
       app: ingress-nginx
     includeTemplates: true
     includeSelectors: false
