@@ -4,23 +4,10 @@ metadata:
   name: ping-serviceaccount
 
 ---
-
-# apiVersion: v1
-# kind: ServiceAccount
-# metadata:
-#   name: pingdirectory-ops-serviceaccount
-
----
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: pingaccess-serviceaccount
-
----
-# apiVersion: v1
-# kind: ServiceAccount
-# metadata:
-#   name: pingdirectory-serviceaccount
 
 ---
 apiVersion: v1
@@ -113,87 +100,6 @@ rules:
 
 ---
 
-# apiVersion: rbac.authorization.k8s.io/v1
-# kind: Role
-# metadata:
-#   name: pingdirectory-ops-role
-# rules:
-#   - apiGroups:
-#     - "batch"
-#     resources:
-#     - "jobs"
-#     verbs:
-#     - get
-#     - create
-#   - apiGroups:
-#     - ""
-#     resources:
-#     - "configmaps"
-#     verbs:
-#     - create
-#     - get
-#     - list
-#     - watch
-#   - apiGroups:
-#     - ""
-#     resources:
-#     - "pods"
-#     - "pods/log"
-#     - "secrets"
-#     verbs:
-#     - get
-#     - list
-#     - watch
-#   - apiGroups:
-#     - ""
-#     resources:
-#     - "persistentvolumeclaims"
-#     verbs:
-#     - delete
-#     - get
-#     - create
-#     - patch
-#   - apiGroups:
-#     - ""
-#     - "apps"
-#     resources:
-#     - "statefulsets"
-#     - "deployments"
-#     verbs:
-#     - get
-#     - list
-#     - watch
-#   - apiGroups:
-#     - ""
-#     resources:
-#     - "pods/exec"
-#     verbs:
-#     - create
-#   - apiGroups:
-#       - networking.k8s.io
-#     resources:
-#       - ingresses
-#     verbs:
-#       - list
-#       - watch
-#       - get
-
----
-
-# apiVersion: rbac.authorization.k8s.io/v1
-# kind: RoleBinding
-# metadata:
-#   name: pingdirectory-ops-role-binding
-# roleRef:
-#   apiGroup: rbac.authorization.k8s.io
-#   kind: Role
-#   name: pingdirectory-ops-role
-# subjects:
-#   - kind: ServiceAccount
-#     name: pingdirectory-ops-serviceaccount
-
----
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -219,20 +125,6 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: pingaccess-serviceaccount
-
----
-
-# apiVersion: rbac.authorization.k8s.io/v1
-# kind: RoleBinding
-# metadata:
-#   name: pingdirectory-role-binding
-# roleRef:
-#   apiGroup: rbac.authorization.k8s.io
-#   kind: Role
-#   name: ping-role
-# subjects:
-#   - kind: ServiceAccount
-#     name: pingdirectory-serviceaccount
 
 ---
 
