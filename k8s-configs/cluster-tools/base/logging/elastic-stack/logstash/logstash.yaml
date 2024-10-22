@@ -208,24 +208,8 @@ spec:
               name: http-cw-input
               protocol: TCP
           volumeMounts:
-            - name: logstash-pipelines
-              mountPath: /usr/share/logstash/config/pipelines.yml
-              subPath: pipelines.yml
-              readOnly: true
-            - name: logstash-pipeline-main
-              mountPath: /usr/share/logstash/pipeline/main
-              readOnly: true
             - name: logstash-pipeline-customer
-              mountPath: /usr/share/logstash/pipeline/customer
-              readOnly: true
-            - name: logstash-pipeline-s3
-              mountPath: /usr/share/logstash/pipeline/s3
-              readOnly: true
-            - name: logstash-pipeline-dlq
-              mountPath: /usr/share/logstash/pipeline/dlq
-              readOnly: true
-            - name: logstash-search-template
-              mountPath: /etc/logstash/templates
+              mountPath: /usr/share/logstash/pipeline/customer  
               readOnly: true
             - name: enrichment-cache-files
               mountPath: /enrichment-cache-files
@@ -270,24 +254,9 @@ spec:
               memory: 100Mi
       terminationGracePeriodSeconds: 60
       volumes:
-        - name: logstash-pipeline-main
-          configMap:
-            name: logstash-pipeline-main
         - name: logstash-pipeline-customer
           configMap:
-            name: logstash-pipeline-customer
-        - name: logstash-pipeline-s3
-          configMap:
-            name: logstash-pipeline-s3
-        - name: logstash-pipeline-dlq
-          configMap:
-            name: logstash-pipeline-dlq
-        - name: logstash-pipelines
-          configMap:
-            name: logstash-pipelines
-        - name: logstash-search-template
-          configMap:
-            name: logstash-search-template
+            name: logstash-pipeline-customer      
         - name: enrichment-cache
           configMap:
             name: enrichment-cache
