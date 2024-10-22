@@ -11,15 +11,6 @@ resources:
 - pingaccess-was/engine
 - pingaccess-was/ff-external-ingress
 
-configMapGenerator:
-
-### PD topology descriptor.json file. ###
-### Refer to profiles/pingdirectory/topology/descriptor-profiles.json.sample for more details. ###
-# - name: topology-descriptor
-#   behavior: merge
-#   files:
-#   - descriptor.json
-
 patchesStrategicMerge:
 
 ### The removal of these patches is handled automatically via git-ops-command.sh script, manual toggling is not needed ###
