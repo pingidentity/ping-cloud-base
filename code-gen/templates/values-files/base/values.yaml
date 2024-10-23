@@ -180,6 +180,8 @@ global:
   userBaseDn_3: "${USER_BASE_DN_3}"
   userBaseDn_4: "${USER_BASE_DN_4}"
   userBaseDn_5: "${USER_BASE_DN_5}"
+  # The prefix of a SSM Param / Secret path that contains TLS config
+  customerTlsSsmPathPrefix: "${CUSTOMER_TLS_SSM_PATH_PREFIX}"
 
 
   #### FEATURE FLAGS ##################################################################################################
