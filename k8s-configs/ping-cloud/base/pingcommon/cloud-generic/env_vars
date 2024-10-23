@@ -71,4 +71,4 @@ DA_IDENTITY_MAPPER_NAME=DAEntryUUIDMatch
 # For ArgoCD-status slack notifications (notifications.argoproj.io/subscribe.on-sync-failed.slack)
 SLACK_CHANNEL=p1as-application-oncall
 
-KUBECTL_VERSION=v1.24.0
+KUBECTL_VERSION=v1.30.4
