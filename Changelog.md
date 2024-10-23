@@ -31,6 +31,7 @@
 - Upgrade cert-manager to v1.16.1
 - Upgrade Argocd to v2.12.4
 - Upgrade Kubectl to v1.30.4
+- Add p1as-self-service microservice
 
 _Changes:_
 
@@ -64,6 +65,7 @@ _Changes:_
 - [X] PDO-8085 Restrict PingFederate and PingAccess heartbeat response
 - [X] PDO-8121 log4j2.xml.subst root logger follows PF_DEBUG_LEVEL
 - [X] PDO-8150 Improve Stability and Shutdown Handling
+- [X] PDO-8158 Add p1as-self-service microservice
 - [X] PDO-8193 Microservices profile repo feature branch testing fix
 - [X] PDO-8194 Upgrade External DNS to v0.14.2
 - [X] PDO-8212 Add teleport for cluster access
