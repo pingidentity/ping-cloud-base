@@ -179,6 +179,12 @@ BOOTSTRAP_IMAGE_TAG=v2.1-release-branch-latest
 P14C_INTEGRATION_IMAGE_TAG=v2.1-release-branch-latest
 
 ############################################################
+# Ping observability image tags
+############################################################
+OPENSEARCH_BOOTSTRAP_IMAGE_TAG=v2.1-release-branch-latest
+LOGSTASH_IMAGE_TAG=v2.1-release-branch-latest
+
+############################################################
 # Cluster name variables
 ############################################################
 CLUSTER_NAME=${CLUSTER_NAME}

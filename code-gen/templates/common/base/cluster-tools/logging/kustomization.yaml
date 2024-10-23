@@ -5,6 +5,14 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/${KUSTOMIZE_BASE}/logging?ref=${K8S_GIT_BRANCH}
 - ${DASH_REPO_URL}/os-dashboards?ref=${DASH_REPO_BRANCH}
 
+images:
+- name: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/logstash${ECR_ENV}
+  newName: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/logstash${ECR_ENV}
+  newTag: ${LOGSTASH_IMAGE_TAG}
+- name: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/os-bootstrap${ECR_ENV}
+  newName: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/os-bootstrap${ECR_ENV}
+  newTag: ${OPENSEARCH_BOOTSTRAP_IMAGE_TAG}
+
 
 generatorOptions:
   disableNameSuffixHash: true

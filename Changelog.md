@@ -62,6 +62,7 @@ _Changes:_
 
 _Changes:_
 
+- [X] PDO-8404 Integrate Logstash and OpenSearch Config into container Image
 - [X] PDO-8730 Prevent customer-p1-connection job from running on upgrades
 
 ### 1.19.1.0
