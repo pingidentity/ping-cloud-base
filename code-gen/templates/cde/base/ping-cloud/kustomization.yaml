@@ -5,7 +5,6 @@ resources:
 
 # PingCloud common resources and configs. These should always be included. DO NOT comment them out.
 - pingcommon
-# - pingdirectory/config
 - pingaccess-was/config
 - pingaccess-was/ff-external-ingress
 - pingaccess/config
@@ -19,15 +18,6 @@ resources:
 # applications independent of one another to enforce proper dependency order. Refer to the docs in kustomization.yaml
 # under the granular-updates directory.
 - granular-updates
-
-configMapGenerator:
-
-### PD topology descriptor.json file. ###
-### Refer to profiles/pingdirectory/topology/descriptor-profiles.json.sample for more details. ###
-# - name: topology-descriptor
-#   behavior: merge
-#   files:
-#   - descriptor.json
 
 patchesStrategicMerge:
 
@@ -52,16 +42,6 @@ patchesStrategicMerge:
       purpose: service-account-for-ping-cloud-stack
       ${IRSA_PING_ANNOTATION_KEY_VALUE}
 
-### Ping directory backup restore  service account ###
-# - |-
-#   apiVersion: v1
-#   kind: ServiceAccount
-#   metadata:
-#     name: pingdirectory-ops-serviceaccount
-#     annotations:
-#       purpose: service-account-for-ping-directory-ops
-#       ${IRSA_PING_ANNOTATION_KEY_VALUE}
-
 ### Ping access service account ###
 - |-
   apiVersion: v1
@@ -71,16 +51,6 @@ patchesStrategicMerge:
     annotations:
       purpose: service-account-for-ping-access
       ${IRSA_PA_ANNOTATION_KEY_VALUE}
-
-### Ping directory service account ###
-# - |-
-#   apiVersion: v1
-#   kind: ServiceAccount
-#   metadata:
-#     name: pingdirectory-serviceaccount
-#     annotations:
-#       purpose: service-account-for-ping-directory
-#       ${IRSA_PD_ANNOTATION_KEY_VALUE}
 
 ### Ping federate service account ###
 - |-

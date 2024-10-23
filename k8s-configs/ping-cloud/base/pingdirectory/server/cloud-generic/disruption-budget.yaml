@@ -1,9 +1,0 @@
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: pd-pdb
-spec:
-  minAvailable: "30%"
-  selector:
-    matchLabels:
-      class: pingdirectory-server

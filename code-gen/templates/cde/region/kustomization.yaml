@@ -3,7 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
   - ../base
-  # - pingdirectory
   - pingfederate
   - pingaccess
   - pingdelegator
@@ -13,21 +12,6 @@ generatorOptions:
   disableNameSuffixHash: false
 
 configMapGenerator:
-
-# Pingdirectory
-# Create the config maps that hold the variable for triggering updates of PD servers
-# - name: pingdirectory-last-update-config
-#   namespace: ${PING_CLOUD_NAMESPACE}
-#   envs:
-#   - pingdirectory/env_vars
-
-# Merge all env_vars into Pingdirectory common environment variables configmap
-# - name: pingdirectory-environment-variables
-#   behavior: merge
-#   envs:
-#   - ../base/env_vars
-#   - env_vars
-#   - pingdirectory/env_vars
 
 # Pingdatasync
 # Create the config maps that hold the variable for triggering updates of PD servers
@@ -205,8 +189,6 @@ patchesStrategicMerge:
   ### Regional enablement - remove admins, backups, etc. from secondary ###
   ### The removal of these patches is handled automatically via generate-cluster-state script, manual toggling is not needed ###
 
-  # - ../base/ping-cloud/pingdirectory/server/remove-from-secondary-patch.yaml
-
   - ../base/ping-cloud/pingaccess-was/admin/remove-from-secondary-patch.yaml
   - ../base/ping-cloud/pingaccess-was/engine/remove-from-secondary-patch.yaml
 
@@ -225,7 +207,6 @@ patchesStrategicMerge:
 
   - pingaccess/ff-external-ingress/remove-external-ingress.yaml
   - pingdelegator/ff-external-ingress/remove-external-ingress.yaml
-  # - pingdirectory/ff-external-ingress/remove-external-ingress.yaml
   - pingfederate/ff-external-ingress/remove-external-ingress.yaml
   ### The patch is copied from pingcommon
   - ../base/ping-cloud/pingaccess-was/ff-external-ingress/remove-external-ingress.yaml
