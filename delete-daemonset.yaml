@@ -1,6 +1,0 @@
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: cloudwatch-agent
-  namespace: amazon-cloudwatch
-$patch: delete
