@@ -42,7 +42,7 @@ patchesStrategicMerge:
               runAsNonRoot: true
               runAsUser: 1000
               allowPrivilegeEscalation: false
-            image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.19.0
+            image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.22.0
             imagePullPolicy: IfNotPresent
             env:
             - name: URL
