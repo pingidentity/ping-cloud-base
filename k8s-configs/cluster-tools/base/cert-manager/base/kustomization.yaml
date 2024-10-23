@@ -81,3 +81,61 @@ patches:
       group: apps
       version: v1
       kind: Deployment
+
+  # Strategic merge patch for deployment resources - must exist here to avoid making changes to cert-manager post initial bootstrap
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cert-manager
+        namespace: cert-manager
+      spec:
+        template:
+          spec:
+            containers:
+              - name: cert-manager-controller
+                resources:
+                  limits:
+                    cpu: 100m
+                    memory: 128Mi
+                  requests:
+                    cpu: 50m
+                    memory: 80Mi
+
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cert-manager-cainjector
+        namespace: cert-manager
+      spec:
+        template:
+          spec:
+            containers:
+              - name: cert-manager-cainjector
+                resources:
+                  limits:
+                    cpu: 100m
+                    memory: 128Mi
+                  requests:
+                    cpu: 50m
+                    memory: 64Mi
+
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cert-manager-webhook
+        namespace: cert-manager
+      spec:
+        template:
+          spec:
+            containers:
+              - name: cert-manager-webhook
+                resources:
+                  limits:
+                    cpu: 100m
+                    memory: 128Mi
+                  requests:
+                    cpu: 50m
+                    memory: 64Mi
