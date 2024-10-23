@@ -230,48 +230,6 @@ spec:
 #                End Opensearch patches.
 ################################################
 ---
-################################################
-#                PingDirectory
-################################################
-
-### Update pingdirectory disk size, replicas, memory/cpu requests/limits  ###
-# apiVersion: apps/v1
-# kind: StatefulSet
-# metadata:
-#   name: pingdirectory
-#   namespace: ping-cloud
-# spec:
-#   replicas: 3
-#   volumeClaimTemplates:
-#   - metadata:
-#       name: out-dir
-#       labels:
-#         app: ping-cloud
-#         role: pingdirectory
-#         class: pingdirectory-server
-#       annotations:
-#         # This annotation is required to prevent volume-autoscaler to resize this volume
-#         volume.autoscaler.kubernetes.io/ignore: "true"
-#     spec:
-#       accessModes:
-#       - ReadWriteOnce
-#       storageClassName: pingdirectory-gp3
-#       resources:
-#         requests:
-#           storage: 40Gi
-#   template:
-#     spec:
-#       containers:
-#       - name: pingdirectory
-#         resources:
-#           requests:
-#             memory: "1Gi"
-#             cpu: "1"
-#           limits:
-#             memory: "1Gi"
-#             cpu: "1"
-
----
 
 ################################################
 #               PingAccess-WAS

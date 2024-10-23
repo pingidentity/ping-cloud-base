@@ -108,11 +108,11 @@
 #                                  | will be a subset of SUPPORTED_ENVIRONMENT_TYPES    |
 #                                  |                                                    |
 # EXTERNAL_INGRESS_ENABLED         | List of ping apps(pingaccess pingaccess-was        | No defaults
-#                                  | pingdirectory pingdelegator pingfederate) for      |
-#                                  | which you can enable external ingress(the values   |
-#                                  | are ping app names)                                |
-#                                  | Examplelist:"pingaccess pingdirectory pingfederate |
-#                                  | pingaccess-was pingdelegator"                      |
+#                                  | pingdelegator pingfederate) for which you can      |
+#                                  | enable external ingress(the values are ping app    |
+#                                  | names)                                             |
+#                                  | Examplelist:"pingaccess pingfederate pingdelegator |
+#                                  | pingaccess-was              "                      |
 #                                  |                                                    |
 # GLOBAL_TENANT_DOMAIN             | Region-independent URL used for DNS failover/      | Replaces the first segment of
 #                                  | routing.                                           | the TENANT_DOMAIN value with the
@@ -423,7 +423,6 @@ ${PINGCENTRAL_IMAGE_TAG}
 ${PINGACCESS_IMAGE_TAG}
 ${PINGACCESS_WAS_IMAGE_TAG}
 ${PINGFEDERATE_IMAGE_TAG}
-${PINGDIRECTORY_IMAGE_TAG}
 ${PINGDELEGATOR_IMAGE_TAG}
 ${OPENSEARCH_BOOTSTRAP_IMAGE_TAG}
 ${LOGSTASH_IMAGE_TAG}
