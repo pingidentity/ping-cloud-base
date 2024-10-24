@@ -70,7 +70,6 @@ _Changes:_
 - [X] PDO-8194 Upgrade External DNS to v0.14.2
 - [X] PDO-8212 Add teleport for cluster access
 - [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
-- [X] PDO-8196 Include the Fluent Bit ingestion time field in the customer pipeline
 - [X] PDO-8144 Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
 - [X] PDO-8373 Upgrade Argocd to v2.12.4
 
@@ -78,8 +77,15 @@ _Changes:_
 
 _Changes:_
 
+- [X] PDO-7195 Alert when the PF connection to the datastore is lost or fails
+- [X] PDO-8196 Include the Fluent Bit ingestion time field in the customer pipeline
+- [X] PDO-8355 Cronjob delete Job and PersistentVolumeClaim resources for PingDirectory backups
+- [X] PDO-8356 OpenSearch: Increase SC1 (warm) volume size
+- [X] PDO-8362 OpenSearch: Add app_timestamp field
+- [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
 - [X] PDO-8404 Integrate Logstash and OpenSearch Config into container Image
 - [X] PDO-8730 Prevent customer-p1-connection job from running on upgrades
+- [X] PDO-8783 Set AsyncRoot level to "INFO" in PF log4j2.xml file
 
 ### 1.19.1.0
 
