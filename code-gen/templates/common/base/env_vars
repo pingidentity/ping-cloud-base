@@ -178,7 +178,7 @@ BOOTSTRAP_IMAGE_TAG=v1.19-release-branch-latest
 P14C_INTEGRATION_IMAGE_TAG=v1.19-release-branch-latest
 
 ############################################################
-# Ping obvsevability image tags
+# Ping observability image tags
 ############################################################
 OPENSEARCH_BOOTSTRAP_IMAGE_TAG=v1.19-release-branch-latest
 LOGSTASH_IMAGE_TAG=v1.19-release-branch-latest
