@@ -37,11 +37,11 @@ check_configmap_key_exists() {
 ## Tests
 
 testNginxIngressClass(){
-    log "Checking number of ingress classes"
-    # Use xargs for whitespace trimming...
-    num_ingress_classes=$(kubectl get ingressclass -A -o json | jq -r '.items[].metadata.name' | wc -l | xargs)
-    expected_num_ingress_classes=2
-    assertEquals "Number of ingress classes should have been two - public and private" "${num_ingress_classes}" "${expected_num_ingress_classes}"
+  log "Checking number of ingress classes"
+  # Use xargs for whitespace trimming...
+  num_ingress_classes=$(kubectl get ingressclass -A -o json | jq -r '.items[].metadata.name' | wc -l | xargs)
+  expected_num_ingress_classes=2
+  assertEquals "Number of ingress classes should have been two - public and private" "${num_ingress_classes}" "${expected_num_ingress_classes}"
 }
 
 testNginxPrivateNlbService404(){

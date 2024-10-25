@@ -216,6 +216,7 @@ pa-was-integration-tests:
 .integration-tests-base:
   variables:
     TEST: ""
+    UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
   stage: integration-test
   retry: 1
   tags:
@@ -226,6 +227,7 @@ pa-was-integration-tests:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh ${TEST}
   dependencies:
     - find-cluster
+    - compile
   artifacts:
     name: "integration_test_logs"
     paths:
