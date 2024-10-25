@@ -8,10 +8,11 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testDisabledCertManagerPreferredChain() {
+testEnabledCertManagerPreferredChain() {
   preferred_chain_response=$(kubectl get clusterissuer letsencrypt-prod -o jsonpath='{.spec.acme.preferredChain}')
-  assertNull \
-    "The preferredChain from the k8s resource ClusterIssuer 'letsencrypt-prod' is meant to be empty. See PDO-6441 for more details" \
+  assertEquals \
+    "The preferredChain from the k8s resource ClusterIssuer 'letsencrypt-prod' should be set to ISRG Root X1" \
+    "ISRG Root X1" \
     "${preferred_chain_response}"
 }
 
