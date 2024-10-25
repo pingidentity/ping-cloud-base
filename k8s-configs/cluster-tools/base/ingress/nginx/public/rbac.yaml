@@ -1,5 +1,6 @@
 # ClusterRole kind rules needs to be copied from the base ingress-controller.yaml manually when upgrading INGRESS-NGINX
 # PDO-3541: Added get,create and update for resources secret as for ticket it required to create a secret in ingress-nginx-public namespace
+# PDO-7738: Added patch for resources secret its required to interact further with dhparam secret in ingress-nginx-public namespace
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -25,6 +26,7 @@ rules:
   - get
   - create
   - update
+  - patch
   - watch
 - apiGroups:
   - coordination.k8s.io
