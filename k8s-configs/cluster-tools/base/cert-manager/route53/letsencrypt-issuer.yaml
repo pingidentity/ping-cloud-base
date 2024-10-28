@@ -7,13 +7,11 @@ spec:
     # The ACME server URL
     server: https://acme-v02.api.letsencrypt.org/directory
 
-    # Chain to use for Let's Encrypt production server
-    # PDO-6441: Disable Cert Manager ClusterIssuer preferredChain
-    # The preferredChain will deploy as an empty string
-    # This workaround is for the cert-manager defect: https://github.com/cert-manager/cert-manager/pull/6755#issuecomment-1944231410
-    # Cert manager is still working on a formal fix. Once this is resolved we can revert back to 'ISRG Root X1'
-    # and will need to upgrade cert-manager to v1.15
-    preferredChain: ''
+    # Use ISRG Root X1 as the preferred certificate chain as it has better compatibility with all devices/browsers:
+    # https://letsencrypt.org/docs/certificate-compatibility/
+    # Pre-P1AS 2.0.0 this field was nulled out as there were issues in previous cert-manager versions, which are now
+    # fixed in cert-manager 1.15 and later: https://github.com/cert-manager/cert-manager/pull/6755
+    preferredChain: 'ISRG Root X1'
 
     # Email address used for ACME registration
     email: support@pingidentity.com

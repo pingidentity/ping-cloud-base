@@ -4,6 +4,14 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
   - cert-manager.yaml
 
+images:
+  - name: quay.io/jetstack/cert-manager-cainjector
+    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/jetstack/cert-manager-cainjector
+  - name: quay.io/jetstack/cert-manager-controller
+    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/jetstack/cert-manager-controller
+  - name: quay.io/jetstack/cert-manager-webhook
+    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/jetstack/cert-manager-webhook
+
 patches:
   # Add tolerations to all deployments so cert-manager launches immediately on core nodes
   # Patches are done here so that the bootstrap manifest also contains these patches
@@ -55,3 +63,79 @@ patches:
                 effect: NoSchedule
             nodeSelector:
               kubernetes.io/os: linux
+
+  # Args is a list so copy all args and replace with existing args + acmesolver image in our ECR
+  # NOTE: Be sure to check source args in cert-manager.yaml for updates and update here if needed
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/args
+        value:
+          - --v=2
+          - --cluster-resource-namespace=$(POD_NAMESPACE)
+          - --leader-election-namespace=kube-system
+          - --acme-http01-solver-image=public.ecr.aws/r2h3l6e4/pingcloud-clustertools/jetstack/cert-manager-acmesolver:v1.16.1
+          - --max-concurrent-challenges=60
+    target:
+      name: cert-manager
+      namespace: cert-manager
+      group: apps
+      version: v1
+      kind: Deployment
+
+  # Strategic merge patch for deployment resources - must exist here to avoid making changes to cert-manager post initial bootstrap
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cert-manager
+        namespace: cert-manager
+      spec:
+        template:
+          spec:
+            containers:
+              - name: cert-manager-controller
+                resources:
+                  limits:
+                    cpu: 100m
+                    memory: 128Mi
+                  requests:
+                    cpu: 50m
+                    memory: 80Mi
+
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cert-manager-cainjector
+        namespace: cert-manager
+      spec:
+        template:
+          spec:
+            containers:
+              - name: cert-manager-cainjector
+                resources:
+                  limits:
+                    cpu: 100m
+                    memory: 128Mi
+                  requests:
+                    cpu: 50m
+                    memory: 64Mi
+
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cert-manager-webhook
+        namespace: cert-manager
+      spec:
+        template:
+          spec:
+            containers:
+              - name: cert-manager-webhook
+                resources:
+                  limits:
+                    cpu: 100m
+                    memory: 128Mi
+                  requests:
+                    cpu: 50m
+                    memory: 64Mi
