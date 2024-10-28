@@ -13,7 +13,7 @@ data:
     if test -x ${SCRIPT}; then
       # Execute backup script if user has the permissions
       echo "Running backup script for PingDirectory"
-      ${SCRIPT}
+      ${SCRIPT} "p1as-automation"
       exit_code="${?}"
       if test ${exit_code} -ne 0; then
         echo "Backup script exited with code '${exit_code}'"
