@@ -31,4 +31,5 @@ export IMAGE_MAP="pingcloud-apps/pingaccess
    pingcloud-services/grp-radiusproxy
    pingcloud-services/ingress-bootstrap"
 
-export CHART_MAP="p1as-beluga-tools"
+export CHART_MAP="p1as-beluga-tools
+   p1as-pingdirectory"
