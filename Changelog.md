@@ -65,6 +65,8 @@ _Changes:_
 - [X] PDO-8194 Upgrade External DNS to v0.14.2
 - [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
 - [X] PDO-8144 Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
+- [X] PDO-8373 Upgrade Argocd to v2.12.4
+- [X] PDO-8418 Create and add TLS roles to PingOne
 
 ### 1.19.2.0
 
