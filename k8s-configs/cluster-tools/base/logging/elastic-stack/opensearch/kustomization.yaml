@@ -12,7 +12,6 @@ resources:
 - storageclass.yaml
 - serviceaccount.yaml
 - tenants.yaml
-- opensearch-service-monitor.yaml
 
 openapi:
   path: opensearch-schema.json
