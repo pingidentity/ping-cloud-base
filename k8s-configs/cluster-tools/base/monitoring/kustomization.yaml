@@ -4,10 +4,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - newrelic
 - prometheus
-- namespace.yaml
 - container-insights
 - grafana
 - grafana-operator/base
 - grafana-operator/controller
-- prometheus-operator/base
-- prometheus-operator/controller

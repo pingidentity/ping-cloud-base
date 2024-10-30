@@ -9,7 +9,7 @@ if skipTest "${0}"; then
 fi
 
 # Regex pattern for the grep over not ignored PVCs
-scalablePVCs="data-opensearch-cluster-*\|logstash-gp3-logstash-*\|prometheus-storage-volume-*\|data-thanos-receive-*\|data-thanos-storegateway-*\|thanos-compactor"
+scalablePVCs="data-opensearch-cluster-*\|logstash-gp3-logstash-*\|prometheus-storage-volume-*"
 
 # List of PVCs allowed for the volume autoscaler
 notIgnoredPVCs=$(kubectl get pvc -A -o json | jq '.items[].metadata|select(.annotations."volume.autoscaler.kubernetes.io/ignore"!="true")|.name')

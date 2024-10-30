@@ -256,88 +256,6 @@ patchesStrategicMerge:
               - name: "PROMETHEUS_LABEL_MATCH"
                 value: "k8s_cluster_name=\"${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}\""
 
-- |-
-  apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    namespace: prometheus
-    name: thanos-compactor
-    annotations:
-      purpose: thanos-compactor
-      ${IRSA_THANOS_ANNOTATION_KEY_VALUE}
-
-- |-
-  apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    namespace: prometheus
-    name: thanos-receive
-    annotations:
-      purpose: thanos-receiver
-      ${IRSA_THANOS_ANNOTATION_KEY_VALUE}
-
-- |-
-  apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    namespace: prometheus
-    name: thanos-storegateway
-    annotations:
-      purpose: thanos-storegateway
-      ${IRSA_THANOS_ANNOTATION_KEY_VALUE}
-
-- |-
-  apiVersion: v1
-  kind: Service
-  metadata:
-    namespace: prometheus
-    name: thanos-receive-headless
-    annotations:
-      external-dns.alpha.kubernetes.io/hostname: thanos-central.${DNS_ZONE}
-
-- |-
-  apiVersion: v1
-  kind: Service
-  metadata:
-    namespace: prometheus
-    name: thanos-query-frontend
-    annotations:
-      external-dns.alpha.kubernetes.io/hostname: thanos-query-central.${DNS_ZONE}
-
-- |-
-  apiVersion: v1
-  kind: Secret
-  metadata:
-    name: thanos-objstore-config
-    namespace: prometheus
-  type: Opaque
-  stringData:
-    objstore.yml: |
-      type: S3
-      config:
-        bucket: "${THANOS_S3_BUCKET_NAME}"
-        endpoint: "s3.${REGION_NICK_NAME}.amazonaws.com"
-        region: "${REGION_NICK_NAME}"
-        aws_sdk_auth: True
-      prefix: "${CLUSTER_NAME}-${TENANT_NAME}"
-
-- |-
-  apiVersion: apps/v1
-  kind: StatefulSet
-  metadata:
-    name: thanos-storegateway
-    namespace: prometheus
-  spec:
-    template:
-      spec:
-        containers:
-        - name: storegateway
-          resources:
-            limits:
-              memory: "8Gi"
-            requests:
-              memory: "3Gi"
-
 patchesJson6902:
 
 # Newrelic resources
@@ -351,3 +269,13 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/SECRET_NAMESPACE
       value: ${PING_CLOUD_NAMESPACE}
+
+# Prometheus cross-region communication
+- target:
+    kind: Service
+    name: prometheus
+    version: v1
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: prometheus-central.${DNS_ZONE}
