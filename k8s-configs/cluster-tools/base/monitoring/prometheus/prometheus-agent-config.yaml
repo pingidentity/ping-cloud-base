@@ -32,10 +32,15 @@ data:
       scrape_interval: 10s
       static_configs:
       - targets: ['localhost:9090']
+
     # Monitor kube-state-metrics
     - job_name: 'kube-state-metrics'
       static_configs:
       - targets: ['kube-state-metrics.kube-system.svc.cluster.local:8080']
+      metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: "kube_pod_status_phase|kube_pod_status_reason|kube_pod_tolerations"
+        action: drop
 
     # Other k8s jobs to scrape - see https://devopscube.com/setup-prometheus-monitoring-on-kubernetes/
     - job_name: 'kubernetes-apiservers'
@@ -49,7 +54,11 @@ data:
       - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
         action: keep
         regex: default;kubernetes;https
-   
+      metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: "apiserver_admission_controller_admission_duration_seconds_bucket|apiserver_request_sli_duration_seconds_bucket|apiserver_response_sizes_bucket|apiserver_storage_list_duration_seconds_bucket|apiserver_watch_events_sizes_bucket|kubernetes_feature_enabled|rest_client_request_duration_seconds_bucket|rest_client_request_size_bytes_bucket|rest_client_response_size_bytes_bucket"
+        action: drop
+
     - job_name: 'kubernetes-nodes'
       scheme: https
       tls_config:
@@ -66,7 +75,11 @@ data:
         regex: (.+)
         target_label: __metrics_path__
         replacement: /api/v1/nodes/${1}/proxy/metrics
-        
+      metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: "kubelet_http_requests_duration_seconds_bucket|kubelet_runtime_operations_duration_seconds_bucket|kubernetes_feature_enabled|rest_client_request_duration_seconds_bucket|rest_client_request_size_bytes_bucket|rest_client_response_size_bytes_bucket|storage_operation_duration_seconds_bucket"
+        action: drop
+
     - job_name: 'kubernetes-pods'
       kubernetes_sd_configs:
       - role: pod
@@ -91,7 +104,11 @@ data:
       - source_labels: [__meta_kubernetes_pod_name]
         action: replace
         target_label: instance
-    
+      metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: "nginx_ingress_controller_bytes_sent_bucket|nginx_ingress_controller_connect_duration_seconds_bucket|nginx_ingress_controller_header_duration_seconds_bucket|nginx_ingress_controller_request_size_bucket|nginx_ingress_controller_response_duration_seconds_bucket|nginx_ingress_controller_response_size_bucket|rest_client_request_duration_seconds_bucket|rest_client_request_size_bytes_bucket|rest_client_response_size_bytes_bucket"
+        action: drop
+
     - job_name: 'kubernetes-cadvisor'
       scheme: https
       tls_config:
@@ -108,7 +125,11 @@ data:
         regex: (.+)
         target_label: __metrics_path__
         replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
-    
+      metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: "container_blkio_device_usage_total|container_memory_failures_total|container_tasks_state"
+        action: drop
+
     - job_name: 'kubernetes-service-endpoints'
       kubernetes_sd_configs:
       - role: endpoints
@@ -142,7 +163,11 @@ data:
       - source_labels: [__meta_kubernetes_pod_name]
         action: replace
         target_label: instance
-    
+      metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: "kube_pod_status_phase|kube_pod_status_reason|kube_pod_tolerations"
+        action: drop
+
     - job_name: 'crunchy-postgres-exporter'
       kubernetes_sd_configs:
       - role: pod
