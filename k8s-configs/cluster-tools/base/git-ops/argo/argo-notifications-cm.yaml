@@ -75,7 +75,7 @@ data:
     - description: Application syncing has failed
       send:
       - app-sync-failed
-      when: app.status.operationState.phase in ['Error', 'Failed']
+      when: app.status.operationState != nil and app.status.operationState.phase in ['Error', 'Failed']
   trigger.on-sync-status-unknown: |
     - description: Application status is 'Unknown'
       send:
