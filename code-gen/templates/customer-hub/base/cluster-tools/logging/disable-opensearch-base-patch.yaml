@@ -17,5 +17,14 @@ spec:
         startupProbe:
           httpGet:
             port: 8081
-
----
+        volumeMounts:
+        - name: logstash-pipelines
+          mountPath: /usr/share/logstash/config/pipelines.yml
+          subPath: pipelines.yml
+      volumes:
+      - name: logstash-pipelines
+        configMap:
+          name: logstash-pipelines
+          items:
+          - key: pipelines.yml
+            path: pipelines.yml 

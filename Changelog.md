@@ -3,6 +3,7 @@
 _Changes:_
 
 - [X] PDO-7195 Alert when the PF connection to the datastore is lost or fails
+- [X] PDO-7765 Cost savings: Savings for 2.0.0 observability stack customer-hub
 - [X] PDO-8196 Include the Fluent Bit ingestion time field in the customer pipeline
 - [X] PDO-8355 Cronjob delete Job and PersistentVolumeClaim resources for PingDirectory backups
 - [X] PDO-8356 OpenSearch: Increase SC1 (warm) volume size
