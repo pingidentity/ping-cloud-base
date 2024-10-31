@@ -210,18 +210,45 @@ is_pingdirectory_backup_running() {
   return 1 # Fail if Job and PVC is not found after several attempts
 }
 
+# Function to determine if the current Job is ready to inspect.
+# This is needed because there may be a slight delay with k8s updating Job status.
+# To avoid the naive sleep command, this logic will keep trying up to 12 times (interval of 5 sec) giving the k8s API a
+# total of 60 seconds to update the current Job status.
+wait_for_current_job_is_ready() {
+  attempts=12
+  count=1
+  ready_job_by_name=
+
+  # Get current Job and wait until k8s update its status as ready
+  current_manual_job_name=$(get_current_job_name)
+  while [ -z "${ready_job_by_name}" ]; do
+    sleep 5 # Sleep to avoid exhausting kubectl API
+    ready_job_by_name=$(kubectl get jobs "${current_manual_job_name}" -o json -n "${NAMESPACE}" 2>/dev/null | jq -r 'select(.status.active == 1 and .status.ready == 1) | .metadata.name')
+
+    count=$((count + 1))  # Increment the counter
+    if [ ${count} -ge ${attempts} ]; then
+        echo "Exiting. Current ${current_manual_job_name} Job is NOT ready and it has exceeded its allotted time."
+        return 1
+    fi
+  done
+
+  echo "Current Job is ready to inspect"
+  return 0
+}
+
 ### Script execution begins here. ###
 
 # This guarantees that cleanup_resources method will always run, even if the script exits due to an error
 trap "cleanup_resources" EXIT
 
 # Before kicking off the PD backup. Check the following conditions:
-# 1) If there is a CronJob/manual Job collision.
-# 2) If user created manual Job but without the appropriate label.
-if ! is_only_one_backup_running || ! is_required_label_for_manual_job_provided; then
+# 1) Wait for k8s API to update current Job status as active. Once Job is actively running then we can proceed to inspect the next conditions.
+# 2) If there is a CronJob/manual Job collision.
+# 3) If user created manual Job but without the appropriate label.
+if ! wait_for_current_job_is_ready || ! is_only_one_backup_running || ! is_required_label_for_manual_job_provided; then
   # Avoid automation from deleting PVC. We need to avoid deleting if this is a CronJob/manual Job collision.
   SKIP_RESOURCE_CLEANUP="true"
-  exit 1 # Technically, this is not a PingDirectory backup error but a CronJob/Manual Job collision or user error.
+  exit 1
 fi
 
 # Before backup begins. Ensure lingering resources of Job and PVC have been removed when running prior backup
