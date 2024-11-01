@@ -1,3 +1,13 @@
+# Overwrite the configMap fluent-bit-pipeline-elk.conf
+# config in order to disable the main(opensearch) pipeline.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-pipeline-elk
+  namespace: elastic-stack-logging
+data:
+
+---
 # original port is 8080
 # that port is turned off as the main pipeline forwards logs to opensearch
 # 8081 is used by the s3 bucket pipeline
