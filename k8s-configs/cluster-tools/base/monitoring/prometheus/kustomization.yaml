@@ -3,31 +3,37 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 namespace: prometheus
 
 resources:
-  - apiservers-service-monitor.yaml
-  - ksm-service-monitor.yaml
-  - pgo-pod-monitor.yaml
-  - prometheus-agent.yaml
-  - prometheus-scrape-config.yaml
-  - prometheus-service.yaml
-  - rbac.yaml
-  - storage.yaml
-  - volume-autoscaler
-  - prometheus-job-exporter.yaml
-  - prometheus-scrape-config-cadvisor.yaml
-  - prometheus-scrape-config-pods.yaml
-  - prometheus-scrape-config-services.yaml
-  - prometheus-scrape-config-nodes.yaml
-  - prometheus-token.yaml
-  - thanos/thanos.yaml
-  - thanos/thanos-objstore-config.yaml
-
-images:
-  - name: docker.io/bitnami/thanos
-    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/thanos
+- storage.yaml
+- volume-autoscaler
+- namespace.yaml
+- prometheus.yaml
+- prometheus-job-exporter.yaml
+- prometheus-config.yaml
+- prometheus-agent-config.yaml
+- prometheus-agent.yaml
 
 configMapGenerator:
-  - name: prometheus-environment-variables
-    options:
-      disableNameSuffixHash: true
-    envs:
-      - env_vars
+- name: prometheus-environment-variables
+  envs:
+    - env_vars
+
+patchesJson6902:
+
+# Fix "User system:serviceaccount:prometheus:volume persistentvolumeclaims is forbidden" issue occured to k8s-volume-autoscaler
+- target:
+    group: rbac.authorization.k8s.io
+    version: v1
+    kind: ClusterRole
+    name: prometheus
+  patch: |
+    - op: add
+      path: /rules/0
+      value:
+        apiGroups:
+          - "" 
+        resources:
+          - persistentvolumeclaims
+        verbs:
+          - get
+          - list
+          - watch

@@ -1,26 +1,21 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: thanos-receive-headless
-  namespace: prometheus
-  annotations:
-    $patch: delete
-spec:
-  type: ExternalName
-  externalName: thanos-central.${PRIMARY_DNS_ZONE}
-  $patch: replace
----
-kind: Service
-apiVersion: v1
-metadata:
   name: prometheus
   namespace: prometheus
   annotations:
     $patch: delete
 spec:
   type: ExternalName
-  externalName: thanos-query-central.${PRIMARY_DNS_ZONE}
+  externalName: prometheus-central.${PRIMARY_DNS_ZONE}
   $patch: replace
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus
+  namespace: prometheus
+$patch: delete
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
@@ -134,6 +129,13 @@ metadata:
   namespace: prometheus
 $patch: delete
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: prometheus
+$patch: delete
+---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: Grafana
 metadata:
@@ -234,197 +236,5 @@ automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
   name: grafana-operator-controller-manager
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/bucketweb/networkpolicy.yaml
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: thanos-bucketweb
-  namespace: "prometheus"
-$patch: delete
----
-# Source: thanos/templates/compactor/networkpolicy.yaml
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: thanos-compactor
-  namespace: "prometheus"
-$patch: delete
----
-# Source: thanos/templates/query-frontend/networkpolicy.yaml
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: thanos-query-frontend
-  namespace: "prometheus"
-$patch: delete
----
-# Source: thanos/templates/query/networkpolicy.yaml
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: thanos-query
-  namespace: "prometheus"
-$patch: delete
----
-# Source: thanos/templates/receive/networkpolicy.yaml
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: thanos-receive
-  namespace: "prometheus"
-$patch: delete
----
-# Source: thanos/templates/ruler/networkpolicy.yaml
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: thanos-ruler
-  namespace: "prometheus"
-$patch: delete
----
-# Source: thanos/templates/storegateway/networkpolicy.yaml
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: thanos-storegateway
-  namespace: "prometheus"
-$patch: delete
----
-# Source: thanos/templates/compactor/serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: thanos-compactor
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/query-frontend/serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: thanos-query-frontend
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/query/serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: thanos-query
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/receive/serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: thanos-receive
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/storegateway/serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: thanos-storegateway
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/receive/configmap.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: thanos-receive
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/compactor/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: thanos-compactor
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/query-frontend/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: thanos-query-frontend
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/query/service-grpc.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: thanos-query-grpc
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/query/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: thanos-query
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/storegateway/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: thanos-storegateway
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/compactor/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: thanos-compactor
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/query-frontend/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: thanos-query-frontend
-  namespace: prometheus
-$patch: delete
-
----
-# Source: thanos/templates/query/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: thanos-query
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/receive/statefulset.yaml
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: thanos-receive
-  namespace: prometheus
-$patch: delete
----
-# Source: thanos/templates/storegateway/statefulset.yaml
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: thanos-storegateway
-  namespace: prometheus
-$patch: delete
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: thanos-objstore-config
   namespace: prometheus
 $patch: delete

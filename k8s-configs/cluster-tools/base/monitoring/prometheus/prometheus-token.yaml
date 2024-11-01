@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: Secret
-type: kubernetes.io/service-account-token
-metadata:
-  name: prometheus-token
-  annotations:
-    kubernetes.io/service-account.name: "prometheus"
-    sealedsecrets.bitnami.com/managed: "true"
-    argocd.argoproj.io/sync-options: Prune=false
