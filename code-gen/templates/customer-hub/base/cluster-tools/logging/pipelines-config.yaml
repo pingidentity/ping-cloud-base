@@ -1,0 +1,13 @@
+# ConfigMap to overwrite the container image pipelines.yml 
+# effectively disabling main pipeline (OpenSearch)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-pipelines
+  namespace: elastic-stack-logging
+data:
+  pipelines.yml: |
+    - pipeline.id: customer
+      path.config: "/usr/share/logstash/pipeline/customer"
+    - pipeline.id: s3
+      path.config: "/usr/share/logstash/pipeline/s3"
