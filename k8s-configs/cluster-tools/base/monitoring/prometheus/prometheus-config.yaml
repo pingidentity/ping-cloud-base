@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: prometheus
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
+  labels:
+    name: prometheus-config
+data:
+  prometheus.yml: |-
+    global:
+      # How frequently to scrape targets by default.
+      scrape_interval: 15s
+      # How long until a scrape request times out.
+      scrape_timeout: 5s
+      # How frequently to evaluate rules.
+      evaluation_interval: 5s
+      external_labels:
+        k8s_cluster_name: ${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}
+        k8s_cluster_region: ${REGION_NICK_NAME}
+    storage:
+      tsdb:
+        out_of_order_time_window: 1d
+    scrape_configs:
+    # Monitor prometheus itself
+    - job_name: 'prometheus'
+      scrape_interval: 10s
+      static_configs:
+      - targets: ['localhost:9090']
+
+---

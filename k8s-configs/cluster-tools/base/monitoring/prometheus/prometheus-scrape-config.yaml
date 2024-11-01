@@ -1,9 +1,0 @@
-apiVersion: monitoring.coreos.com/v1alpha1
-kind: ScrapeConfig
-metadata:
-  name: prometheus
-  labels:
-    prometheus: system-monitoring-prometheus
-spec:
-  staticConfigs:
-    - targets: [ 'localhost:9090' ]

@@ -304,8 +304,6 @@
 #                                  | name and must have the correct case (e.g. ci-cd    | for tenant domain "ci-cd.ping-oasis.com"
 #                                  | vs. CI-CD).                                        |
 #                                  |                                                    |
-# THANOS_S3_BUCKET_NAME            | Name of the thanos bucket                          | Empty string
-#                                  |                                                    |
 # UPGRADE                          | Indicates generate-cluster-state.sh is running as  | The string "false"
 #                                  | an upgrade not an initial generation               |
 #                                  |                                                    |
@@ -444,7 +442,7 @@ ${IRSA_LOGSTASH_ANNOTATION_KEY_VALUE}
 ${IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE}
 ${IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE}
 ${IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE}
-${IRSA_THANOS_ANNOTATION_KEY_VALUE}
+${IRSA_CLUSTER_AUTOSCALER_KEY_VALUE}
 ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
 ${PF_PROVISIONING_ENABLED}
@@ -462,7 +460,8 @@ ${DASH_REPO_URL}
 ${DASH_REPO_BRANCH}
 ${APP_RESYNC_SECONDS}
 ${CERT_RENEW_BEFORE}
-${THANOS_S3_BUCKET_NAME}'
+${TELEPORT_RESOURCE_ID}
+${STAGE}'
 
 # Variables to replace within the generated cluster state code
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
@@ -745,7 +744,7 @@ echo "Initial IRSA_ARGOCD_ANNOTATION_KEY_VALUE: ${IRSA_ARGOCD_ANNOTATION_KEY_VAL
 echo "Initial IRSA_CWAGENT_ANNOTATION_KEY_VALUE: ${IRSA_CWAGENT_ANNOTATION_KEY_VALUE}"
 echo "Initial IRSA_LOGSTASH_ANNOTATION_KEY_VALUE: ${IRSA_LOGSTASH_ANNOTATION_KEY_VALUE}"
 echo "Initial IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE: ${IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE}"
-echo "Initial IRSA_THANOS_ANNOTATION_KEY_VALUE: ${IRSA_THANOS_ANNOTATION_KEY_VALUE}"
+echo "Initial IRSA_CLUSTER_AUTOSCALER_KEY_VALUE: ${IRSA_CLUSTER_AUTOSCALER_KEY_VALUE}"
 echo "Initial IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE: ${IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE}"
 echo "Initial IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE: ${IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE}"
 echo "Initial IRSA_INGRESS_ANNOTATION_KEY_VALUE: ${IRSA_INGRESS_ANNOTATION_KEY_VALUE}"
@@ -857,7 +856,6 @@ export ACCOUNT_BASE_PATH=${ACCOUNT_BASE_PATH:-ssm://pcpt/config/k8s-config/accou
 export ACCOUNT_PATH_PREFIX=${ACCOUNT_BASE_PATH#ssm:/}
 export IRSA_BASE_PATH=${IRSA_BASE_PATH:-ssm://pcpt/irsa-role/}
 export PGO_BUCKET_URI_SUFFIX=${PGO_BUCKET_URI_SUFFIX:-/pgo-bucket/uri}
-export THANOS_BUCKET_URI_SUFFIX=${THANOS_BUCKET_URI_SUFFIX:-/service/storage/thanos/uri}
 
 # IRSA for ping product pods. The role name is predefined as a part of the interface contract.
 export IRSA_PING_ANNOTATION_KEY_VALUE=${IRSA_PING_ANNOTATION_KEY_VALUE:-''}
@@ -869,7 +867,7 @@ export IRSA_ARGOCD_ANNOTATION_KEY_VALUE=${IRSA_ARGOCD_ANNOTATION_KEY_VALUE:-''}
 export IRSA_CWAGENT_ANNOTATION_KEY_VALUE=${IRSA_CWAGENT_ANNOTATION_KEY_VALUE:-''}
 export IRSA_LOGSTASH_ANNOTATION_KEY_VALUE=${IRSA_LOGSTASH_ANNOTATION_KEY_VALUE:-''}
 export IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE=${IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE:-''}
-export IRSA_THANOS_ANNOTATION_KEY_VALUE=${IRSA_THANOS_ANNOTATION_KEY_VALUE:-''}
+export IRSA_CLUSTER_AUTOSCALER_KEY_VALUE=${IRSA_CLUSTER_AUTOSCALER_KEY_VALUE:-''}
 export IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE=${IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE:-''}
 export IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE=${IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE:-''}
 export IRSA_INGRESS_ANNOTATION_KEY_VALUE=${IRSA_INGRESS_ANNOTATION_KEY_VALUE:-''}
@@ -1059,7 +1057,7 @@ echo "Using IRSA_ARGOCD_ANNOTATION_KEY_VALUE: ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE
 echo "Using IRSA_CWAGENT_ANNOTATION_KEY_VALUE: ${IRSA_CWAGENT_ANNOTATION_KEY_VALUE}"
 echo "Using IRSA_LOGSTASH_ANNOTATION_KEY_VALUE: ${IRSA_LOGSTASH_ANNOTATION_KEY_VALUE}"
 echo "Using IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE: ${IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE}"
-echo "Using IRSA_THANOS_ANNOTATION_KEY_VALUE: ${IRSA_THANOS_ANNOTATION_KEY_VALUE}"
+echo "Using IRSA_CLUSTER_AUTOSCALER_KEY_VALUE: ${IRSA_CLUSTER_AUTOSCALER_KEY_VALUE}"
 echo "Using IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE: ${IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE}"
 echo "Using IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE: ${IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE}"
 echo "Using IRSA_INGRESS_ANNOTATION_KEY_VALUE: ${IRSA_INGRESS_ANNOTATION_KEY_VALUE}"
@@ -1127,8 +1125,6 @@ cp ../.gitignore "${PROFILE_REPO_DIR}"
 
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 
-set_var "THANOS_S3_BUCKET_NAME" "" "${ACCOUNT_BASE_PATH}customer-hub" "${THANOS_BUCKET_URI_SUFFIX}"
-export THANOS_S3_BUCKET_NAME="${THANOS_S3_BUCKET_NAME#s3://}"
 
 # The SUPPORTED_ENVIRONMENT_TYPES variable can either be the CDE names (e.g. dev, test, stage, prod) or the CHUB name "customer-hub",
 # or the corresponding branch names (e.g. v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master, v1.8.0-customer-hub).
@@ -1262,7 +1258,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   set_var "IRSA_CWAGENT_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/cloudwatch-agent/arn" "${IRSA_TEMPLATE}"
   set_var "IRSA_LOGSTASH_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/logstash/arn" "${IRSA_TEMPLATE}"
   set_var "IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/opensearch/arn" "${IRSA_TEMPLATE}"
-  set_var "IRSA_THANOS_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/thanos/arn" "${IRSA_TEMPLATE}"
+  set_var "IRSA_CLUSTER_AUTOSCALER_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/cluster-autoscaler/arn" "${IRSA_TEMPLATE}"
   # ArgoCD only for customer-hub
   set_var "IRSA_ARGOCD_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "irsa-argocd/arn" "${IRSA_TEMPLATE}"
   set_var "IRSA_INGRESS_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/ingress-controller/arn" "${IRSA_TEMPLATE}"

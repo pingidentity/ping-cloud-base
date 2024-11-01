@@ -28,7 +28,6 @@ _Changes:_
 - Fluentbit - remove unnecessary configuration
 - Grafana fix PGO dashboard
 - Making Graviton as default for NON-GA environment, fix GA consistency across envs
-- Updating memory limits for thanos-storegateway
 - Adding Cross zone load balancing and graceful shutdown to nginx
 - Upgrade External DNS to v0.14.2
 - Disabling anonymous login for OpenSearch and removing prometheus_read role
@@ -37,6 +36,7 @@ _Changes:_
 - Upgrade Argocd to v2.12.4
 - Upgrade Kubectl to v1.30.4
 - Add p1as-self-service microservice
+- Remove Thanos resources and use Prometheus standalone
 
 _Changes:_
 
@@ -56,7 +56,6 @@ _Changes:_
 - [X] PDO-7482 Fluentbit - remove unnecessary configuration
 - [X] PDO-7527 Grafana: Update PGO dashboards to be compatible with the current PGO version
 - [X] PDO-7608 Making Graviton as default for NON-GA environment, fix GA consistency across envs
-- [X] PDO-7669 Thanos: Storage Gateway crashlooping with OOM killed when choosing old range of data on Prometheus/Grafana UI
 - [X] PDO-7717 Upgrade cert-manager to v1.16.1
 - [X] PDO-7738 Upgrade kubectl to v1.30.4
 - [X] PDO-8150 Improve Stability and Shutdown Handling
@@ -67,6 +66,7 @@ _Changes:_
 - [X] PDO-8144 Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
 - [X] PDO-8373 Upgrade Argocd to v2.12.4
 - [X] PDO-8418 Create and add TLS roles to PingOne
+- [X] PDO-8788 Thanos: Disable in 2.0 Release
 
 ### 1.19.2.0
 

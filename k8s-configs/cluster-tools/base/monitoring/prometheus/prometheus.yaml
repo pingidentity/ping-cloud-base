@@ -1,0 +1,147 @@
+# For more information on prometheus configuration go to https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus
+  namespace: prometheus
+  labels:
+    app: prometheus
+spec:
+  serviceName: prometheus
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      serviceAccountName: prometheus
+      securityContext:
+        fsGroup: 65534
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+      # Note: If the order of containers changes, update the corresponding patch files in patchesJson6902
+      containers:
+      - name: prometheus
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/prometheus:v2.47.0
+        args:
+          - "--config.file=/etc/prometheus/prometheus.yml"
+          - "--storage.tsdb.retention.time=$(PROMETHEUS_RETENTION_TIME)"
+          - "--web.enable-remote-write-receiver"
+          - "--enable-feature=memory-snapshot-on-shutdown"
+          - "--enable-feature=expand-external-labels"
+          - "--enable-feature=memory-snapshot-on-shutdown"
+        env:
+          - name: PROMETHEUS_RETENTION_TIME
+            valueFrom:
+              configMapKeyRef:
+                key: PROMETHEUS_RETENTION_TIME
+                name: prometheus-environment-variables
+        envFrom:
+          - configMapRef:
+              name: prometheus-environment-variables
+        volumeMounts:
+          - name: prometheus-config-volume
+            mountPath: /etc/prometheus/
+          - name: prometheus-storage-volume
+            mountPath: /prometheus/data
+
+        ports:
+        - containerPort: 9090
+        resources:
+          limits:
+            cpu: "2000m"  # 2 Cores
+            memory: "8Gi"
+          requests:
+            cpu: "1000m"  # 1 Core
+            memory: "4Gi"
+      volumes:
+      - name: prometheus-config-volume
+        configMap:
+          name: prometheus-config
+
+  volumeClaimTemplates:
+  - metadata:
+      name: prometheus-storage-volume
+      annotations:
+        volume.autoscaler.kubernetes.io/scale-above-percent: "80"
+        volume.autoscaler.kubernetes.io/scale-up-percent: "20"
+      labels:
+        app: prometheus
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: prometheus-gp3
+      resources:
+        requests:
+          storage: 30Gi
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus
+  namespace: prometheus
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: prometheus-central-dev.ping-demo.com
+spec:
+  selector:
+    app: prometheus
+  ports:
+  - port: 9090
+    name: prometheus
+  clusterIP: None
+
+---
+
+# Define role which allows access to endpoint /metrics within the cluster
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+rules:
+- apiGroups: [""]
+  resources:
+  - nodes
+  - nodes/proxy
+  - services
+  - endpoints
+  - pods
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources:
+  - configmaps
+  verbs: ["get"]
+- nonResourceURLs: ["/metrics"]
+  verbs: ["get"]
+- apiGroups: [ "" ]
+  resources: [ "pods/exec" ]
+  verbs: [ "create" ]
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: prometheus
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+- kind: ServiceAccount
+  name: prometheus
+  namespace: prometheus
+
