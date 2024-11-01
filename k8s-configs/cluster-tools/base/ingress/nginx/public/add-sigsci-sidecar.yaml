@@ -13,7 +13,7 @@
 - op: add
   path: /spec/template/spec/containers/-
   value:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-agent/dev:v1.19-release-branch-latest
+    image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-agent:v1.19.2.0_RC1
     imagePullPolicy: Always
     name: sigsci-agent
     securityContext:
