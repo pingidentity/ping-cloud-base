@@ -35,7 +35,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.0-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v99.0.0-rc-latest
         imagePullPolicy: Always
         env:
         - name: NAMESPACE
@@ -90,7 +90,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v2.0-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v99.0.0-rc-latest
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
@@ -146,7 +146,7 @@ spec:
             name: pingcommon-environment-variables
       containers:
       - name: pingfederate-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate/dev:v2.0-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate/dev:v99.0.0-rc-latest
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true

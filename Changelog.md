@@ -1,5 +1,13 @@
 # Changelog
 
+### 99.0.0-rc
+
+- No Changes
+
+_Changes:_
+
+- None
+
 ### 2.0.0
 
 - Update version regexes from v*.*.*.* to v*.*.*

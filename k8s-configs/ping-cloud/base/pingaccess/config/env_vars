@@ -2,7 +2,7 @@ ORCHESTRATION_TYPE=kubernetes
 #VERBOSE=true
 SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
 SERVER_PROFILE_PATH=profiles/pingaccess
-SERVER_PROFILE_BRANCH=v2.0-release-branch
+SERVER_PROFILE_BRANCH=v99.0.0-rc
 
 REGION=us-west-2
 
