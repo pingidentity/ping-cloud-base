@@ -74,7 +74,7 @@ def login_as_pingone_user(browser: webdriver.Chrome, console_url: str, username:
 
 class PingOneUITestConfig:
 
-    def __init__(self, app_name: str, console_url: str, roles: {}, access_granted_xpaths: [str], access_denied_xpaths: [str]):
+    def __init__(self, app_name: str, console_url: str, roles: {}, access_granted_xpaths: [str], access_denied_xpaths: [str], create_local_only: bool = False):
         self.app_name = app_name
         self.console_url = console_url
         self.roles = roles
@@ -82,6 +82,7 @@ class PingOneUITestConfig:
         self.access_denied_xpaths = access_denied_xpaths
         self.tenant_name = os.getenv("TENANT_NAME")
         self.client = p1_utils.get_client()
+        self.create_local_only = create_local_only
         self.session = requests_oauthlib.OAuth2Session(
             self.client["client_id"], token=self.client["token"]
         )
@@ -95,17 +96,6 @@ class PingOneUITestConfig:
             name=self.tenant_name,
         )
 
-        # User with no roles for negative testing
-        self.no_role_user = PingOneUser(
-            session=self.session,
-            environment_endpoints=self.p1as_endpoints,
-            username=f"{self.app_name}-no-role-{self.tenant_name}",
-            roles=None,
-            population_id=self.population_id,
-        )
-        self.no_role_user.delete()
-        self.no_role_user.create()
-
         # User local to the P1AS shared tenant environment
         self.local_user = PingOneUser(
             session=self.session,
@@ -117,62 +107,75 @@ class PingOneUITestConfig:
         self.local_user.delete()
         self.local_user.create(add_p1_role=True)
 
-        # Default population user for negative testing
-        self.default_pop_user = PingOneUser(
-            session=self.session,
-            environment_endpoints=self.p1as_endpoints,
-            username=f"{self.app_name}-default-pop-{self.tenant_name}",
-            roles=self.roles,
-        )
-        self.default_pop_user.delete()
-        self.default_pop_user.create()
+        if not self.create_local_only:
+            # User with no roles for negative testing
+            self.no_role_user = PingOneUser(
+                session=self.session,
+                environment_endpoints=self.p1as_endpoints,
+                username=f"{self.app_name}-no-role-{self.tenant_name}",
+                roles=None,
+                population_id=self.population_id,
+            )
+            self.no_role_user.delete()
+            self.no_role_user.create()
 
-        # External IdP setup
-        self.external_idp_env_id = os.getenv("EXTERNAL_IDP_ENVIRONMENT_ID")
-        self.external_idp_endpoints = p1_utils.EnvironmentEndpoints(
-            p1_utils.API_LOCATION, self.external_idp_env_id
-        )
-        # External IdP user for P1-to-P1 SSO testing
-        self.external_user = PingOneUser(
-            session=self.session,
-            environment_endpoints=self.external_idp_endpoints,
-            username=f"{self.app_name}-external-idp-test-user-{self.tenant_name}",
-            roles=self.roles,
-        )
-        self.external_user.delete()
-        self.external_user.create()
-        self.shadow_external_user = PingOneUser(
-            session=self.session,
-            environment_endpoints=self.p1as_endpoints,
-            username=f"{self.external_user.username}-{self.tenant_name}",
-        )
-        # Do not create shadow external user, delete only in case it exists from a previous run
-        self.shadow_external_user.delete()
+            # Default population user for negative testing
+            self.default_pop_user = PingOneUser(
+                session=self.session,
+                environment_endpoints=self.p1as_endpoints,
+                username=f"{self.app_name}-default-pop-{self.tenant_name}",
+                roles=self.roles,
+            )
+            self.default_pop_user.delete()
+            self.default_pop_user.create()
 
-        # External IdP user without roles for P1-to-P1 SSO negative testing
-        self.no_role_external_user = PingOneUser(
-            session=self.session,
-            environment_endpoints=self.external_idp_endpoints,
-            username=f"{self.app_name}-no-role-external-idp-test-user-{self.tenant_name}",
-        )
-        self.no_role_external_user.delete()
-        self.no_role_external_user.create()
-        self.no_role_shadow_external_user = PingOneUser(
-            session=self.session,
-            environment_endpoints=self.p1as_endpoints,
-            username=f"{self.no_role_external_user.username}-{self.tenant_name}",
-        )
-        # Do not create shadow external user, delete only in case it exists from a previous run
-        self.no_role_shadow_external_user.delete()
+            # External IdP setup
+            self.external_idp_env_id = os.getenv("EXTERNAL_IDP_ENVIRONMENT_ID")
+            self.external_idp_endpoints = p1_utils.EnvironmentEndpoints(
+                p1_utils.API_LOCATION, self.external_idp_env_id
+            )
+            # External IdP user for P1-to-P1 SSO testing
+            self.external_user = PingOneUser(
+                session=self.session,
+                environment_endpoints=self.external_idp_endpoints,
+                username=f"{self.app_name}-external-idp-test-user-{self.tenant_name}",
+                roles=self.roles,
+            )
+            self.external_user.delete()
+            self.external_user.create()
+            self.shadow_external_user = PingOneUser(
+                session=self.session,
+                environment_endpoints=self.p1as_endpoints,
+                username=f"{self.external_user.username}-{self.tenant_name}",
+            )
+            # Do not create shadow external user, delete only in case it exists from a previous run
+            self.shadow_external_user.delete()
+
+            # External IdP user without roles for P1-to-P1 SSO negative testing
+            self.no_role_external_user = PingOneUser(
+                session=self.session,
+                environment_endpoints=self.external_idp_endpoints,
+                username=f"{self.app_name}-no-role-external-idp-test-user-{self.tenant_name}",
+            )
+            self.no_role_external_user.delete()
+            self.no_role_external_user.create()
+            self.no_role_shadow_external_user = PingOneUser(
+                session=self.session,
+                environment_endpoints=self.p1as_endpoints,
+                username=f"{self.no_role_external_user.username}-{self.tenant_name}",
+            )
+            # Do not create shadow external user, delete only in case it exists from a previous run
+            self.no_role_shadow_external_user.delete()
 
     def delete_users(self):
         self.local_user.delete()
-        self.external_user.delete()
-        self.shadow_external_user.delete()
-        self.no_role_user.delete()
-        self.default_pop_user.delete()
-        self.no_role_external_user.delete()
-        self.no_role_shadow_external_user.delete()
+        if not self.create_local_only:
+            self.external_user.delete()
+            self.shadow_external_user.delete()
+            self.no_role_user.delete()
+            self.default_pop_user.delete()
+            self.no_role_external_user.delete()
+            self.no_role_shadow_external_user.delete()
 
 
 class PingOneUser:
@@ -341,6 +344,10 @@ class ConsoleUILoginTestBase(unittest.TestCase):
                 f"{self.config.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
             )
 
+    @unittest.skipIf(
+        os.environ.get("CUSTOMER_PINGONE_ENABLED", "false") == "false",
+        "Customer PingOne not enabled, skipping test",
+    )
     def test_external_user_can_access_console(self):
         # Wait for admin console to be reachable if it has been restarted by another test
         self.wait_until_url_is_reachable(self.config.console_url)
@@ -364,6 +371,10 @@ class ConsoleUILoginTestBase(unittest.TestCase):
                 f"{self.config.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
             )
 
+    @unittest.skipIf(
+        os.environ.get("CUSTOMER_PINGONE_ENABLED", "false") == "false",
+        "Customer PingOne not enabled, skipping test",
+    )
     def test_external_user_without_role_cannot_access_console(self):
         # Wait for admin console to be reachable if it has been restarted by another test
         self.wait_until_url_is_reachable(self.config.console_url)
