@@ -68,6 +68,7 @@ _Changes:_
 - [X] PDO-8363 OpenSearch: Add the Fluent Bit ingestion time field
 - [X] PDO-8144 Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
 - [X] PDO-8373 Upgrade Argocd to v2.12.4
+- [x] PDO-8416 Implement OIDC auth with RBAC in self-service
 - [X] PDO-8418 Create and add TLS roles to PingOne
 - [X] PDO-8788 Thanos: Disable in 2.0 Release
 

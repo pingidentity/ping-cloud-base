@@ -32,10 +32,18 @@ class TestP1EnvSetupAndTeardown(p1_test_base.P1TestBase):
                     f"Authentication policy '{self.auth_policy_name}' action '{action}' not added",
                 )
 
+    @unittest.skipIf(
+        os.environ.get("CUSTOMER_PINGONE_ENABLED", "false") == "false",
+        "Customer PingOne not enabled, skipping test",
+    )
     def test_external_idp_created(self):
         p1_idp = self.get(self.cluster_env_endpoints.identity_providers, self.external_idp_name)
         self.assertTrue(p1_idp, f"External IDP '{self.external_idp_name}' not created")
 
+    @unittest.skipIf(
+        os.environ.get("CUSTOMER_PINGONE_ENABLED", "false") == "false",
+        "Customer PingOne not enabled, skipping test",
+    )
     def test_external_idp_added_to_authentication_policy(self):
         p1_idp = self.get(self.cluster_env_endpoints.identity_providers, self.external_idp_name)
         p1_auth_policy = self.get(self.cluster_env_endpoints.sign_on_policies, self.auth_policy_name)
