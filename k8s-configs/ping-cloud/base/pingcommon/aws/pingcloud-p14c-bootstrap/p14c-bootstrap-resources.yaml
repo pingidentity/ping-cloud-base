@@ -26,3 +26,17 @@ davinci-configuration:
   values_container_key: davinciConfiguration
   ssm_type: json
   ssm_path_prefix: CUSTOMER_SSO_SSM_PATH_PREFIX
+cert:
+  kind: Secret
+  template: templates/tls-secret.yaml
+  ssm_type: json
+  ssm_path_prefix: CUSTOMER_TLS_SSM_PATH_PREFIX
+  source: secretsManager
+  match_type: prefix
+ingress:
+  kind: Ingress
+  template: templates/tls-ingress.yaml
+  ssm_type: json
+  ssm_path_prefix: CUSTOMER_TLS_SSM_PATH_PREFIX
+  source: paramStore
+  match_type: prefix
