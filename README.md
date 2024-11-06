@@ -13,3 +13,4 @@ The patch described on this page is only applicable to the Beluga 1.18.0, 1.18.1
 Ref: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/884178997/Observability+Patch+for+Beluga+Release+Versions+1.18
 
 
+NOTE: Releasing this patch on top of the earlier v1.18_Patch_Observability release to address an issue with the Elasticsearch/OpenSearch cluster facing shard limit problems. This patch updates the Index State Management (ISM) policy to delete shards after 60 days.
