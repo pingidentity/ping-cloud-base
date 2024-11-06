@@ -11,7 +11,7 @@ images:
   newTag: ${LOGSTASH_IMAGE_TAG}
 - name: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/os-bootstrap${ECR_ENV}
   newName: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/os-bootstrap${ECR_ENV}
-  newTag: ${OPENSEARCH_BOOTSTRAP_IMAGE_TAG}
+  newTag: ${OS_BOOTSTRAP_IMAGE_TAG}
 
 
 generatorOptions:
