@@ -174,7 +174,7 @@ P14C_INTEGRATION_IMAGE_TAG=v2.0-release-branch-latest
 ############################################################
 # Ping observability image tags
 ############################################################
-OPENSEARCH_BOOTSTRAP_IMAGE_TAG=v2.0-release-branch-latest
+OS_BOOTSTRAP_IMAGE_TAG=v2.0-release-branch-latest
 LOGSTASH_IMAGE_TAG=v2.0-release-branch-latest
 
 ############################################################

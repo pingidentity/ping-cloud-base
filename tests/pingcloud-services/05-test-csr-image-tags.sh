@@ -166,15 +166,15 @@ testOpensearchBootstrapImageTag() {
     echo "Skipping testOpensearchBootstrapImageTag as ENV_TYPE is customer-hub"
     return
   fi
-  $(test "${OPENSEARCH_BOOTSTRAP_IMAGE_TAG}")
-  assertEquals "OPENSEARCH_BOOTSTRAP_IMAGE_TAG missing from env_vars file" 0 $?
+  $(test "${OS_BOOTSTRAP_IMAGE_TAG}")
+  assertEquals "OS_BOOTSTRAP_IMAGE_TAG missing from env_vars file" 0 $?
 
   local osBootstrapImage=$(kubectl get pods -n elastic-stack-logging -l job-name=opensearch-bootstrap -o jsonpath='{.items[*].spec.containers[*].image}' | awk -F: '{print $2}')
-  assertEquals "os-bootstrap CSR image tag doesn't match Beluga default image tag" "${OPENSEARCH_BOOTSTRAP_IMAGE_TAG}" "${osBootstrapImage}" 
+  assertEquals "os-bootstrap CSR image tag doesn't match Beluga default image tag" "${OS_BOOTSTRAP_IMAGE_TAG}" "${osBootstrapImage}" 
   # unique_count=$(getUniqueTagCount "os-bootstrap")
   # assertEquals "OpensearchBootstrap is using multiple image tag versions" 1 "${unique_count}"
 
-  # matched_count=$(getMatchedTagCount "${OPENSEARCH_BOOTSTRAP_IMAGE_TAG}" "os-bootstrap")
+  # matched_count=$(getMatchedTagCount "${OS_BOOTSTRAP_IMAGE_TAG}" "os-bootstrap")
   # assertEquals "os-bootstrap CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
   # Uncomment when https://pingidentity.atlassian.net/browse/PDO-8803 is resolved
 }
