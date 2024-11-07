@@ -183,6 +183,11 @@ global:
   # The prefix of a SSM Param / Secret path that contains TLS config
   customerTlsSsmPathPrefix: "${CUSTOMER_TLS_SSM_PATH_PREFIX}"
 
+  ########################################################
+  # Public Hostnames
+  ########################################################
+  pdClusterPublicHostname: "pingdirectory-cluster.${PRIMARY_DNS_ZONE}"
+
 
   #### FEATURE FLAGS ##################################################################################################
   # Most are disabled by default
