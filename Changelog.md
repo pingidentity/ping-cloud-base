@@ -30,7 +30,6 @@ _Changes:_
 - Making Graviton as default for NON-GA environment, fix GA consistency across envs
 - Adding Cross zone load balancing and graceful shutdown to nginx
 - Upgrade External DNS to v0.14.2
-- Disabling anonymous login for OpenSearch and removing prometheus_read role
 - Upgrade nginx-ingress-controller to v1.11.2 and SigSci agent to 4.57.0
 - Upgrade cert-manager to v1.16.1
 - Upgrade Argocd to v2.12.4
