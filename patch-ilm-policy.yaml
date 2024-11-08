@@ -18,24 +18,8 @@ data:
               }
             }
           },
-          "warm": {
-            "min_age": "90d",
-            "actions": {
-              "forcemerge": {
-                "max_num_segments": 1,
-                "index_codec": "best_compression"
-              },
-              "readonly": {},
-              "set_priority": {
-                "priority": 50
-              },
-              "allocate": {
-                "number_of_replicas": 1
-              }
-            }
-          },
           "delete": {
-            "min_age": "180d",
+            "min_age": "60d",
             "actions": {
               "delete": {}
             }
