@@ -105,7 +105,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v99.0.0-rc-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v99.0.0-rc
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
@@ -135,7 +135,7 @@ spec:
           mountPath: /opt/shared-dir
       containers:
       - name: pingaccess
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v99.0.0-rc-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v99.0.0-rc
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -219,7 +219,7 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v99.0.0-rc-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v99.0.0-rc
         imagePullPolicy: Always
         env:
           - name: SERVICE_SHORTNAME

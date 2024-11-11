@@ -205,8 +205,8 @@ global:
   ########################################################
   # newrelic tag-exporter application settings
   newRelic:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v99.0.0-rc-latest
+    image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v99.0.0-rc
 
   # pingcloud-p14c-bootstrap application settings
   p14cIntegration:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v99.0.0-rc-latest
+    image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v99.0.0-rc

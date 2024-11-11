@@ -174,7 +174,7 @@ patches:
         spec:
           containers:
             - name: controller
-              image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller/dev:v99.0.0-rc-latest
+              image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller/dev:v99.0.0-rc
 
 - target:
     # Modifiying Deployment kind to P1AS needs
