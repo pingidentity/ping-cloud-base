@@ -74,7 +74,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v99.0.0-rc
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v99.0.0-rc-latest
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
@@ -109,7 +109,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v99.0.0-rc
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v99.0.0-rc-latest
         imagePullPolicy: Always
         resources:
           requests:

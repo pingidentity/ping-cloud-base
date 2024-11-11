@@ -24,7 +24,7 @@ spec:
     serviceName: opensearch
     serviceAccount: opensearch
     version: 2.11.1
-    image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/opensearch/dev:v99.0.0-rc
+    image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/opensearch/dev:v99.0.0-rc-latest
     podSecurityContext:
       runAsNonRoot: true
       runAsUser: 1000

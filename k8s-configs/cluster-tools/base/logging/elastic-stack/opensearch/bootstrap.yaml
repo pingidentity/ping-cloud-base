@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: opensearch-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v99.0.0-rc
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v99.0.0-rc-latest
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true

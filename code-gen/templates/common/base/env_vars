@@ -158,24 +158,24 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=v99.0.0-rc
-PINGACCESS_WAS_IMAGE_TAG=v99.0.0-rc
-PINGFEDERATE_IMAGE_TAG=v99.0.0-rc
-PINGDELEGATOR_IMAGE_TAG=v99.0.0-rc
-PINGCENTRAL_IMAGE_TAG=v99.0.0-rc
-PINGDATASYNC_IMAGE_TAG=v99.0.0-rc
+PINGACCESS_IMAGE_TAG=v99.0.0-rc-latest
+PINGACCESS_WAS_IMAGE_TAG=v99.0.0-rc-latest
+PINGFEDERATE_IMAGE_TAG=v99.0.0-rc-latest
+PINGDELEGATOR_IMAGE_TAG=v99.0.0-rc-latest
+PINGCENTRAL_IMAGE_TAG=v99.0.0-rc-latest
+PINGDATASYNC_IMAGE_TAG=v99.0.0-rc-latest
 
 ############################################################
 # Ping solution image tags
 ############################################################
-BOOTSTRAP_IMAGE_TAG=v99.0.0-rc
-P14C_INTEGRATION_IMAGE_TAG=v99.0.0-rc
+BOOTSTRAP_IMAGE_TAG=v99.0.0-rc-latest
+P14C_INTEGRATION_IMAGE_TAG=v99.0.0-rc-latest
 
 ############################################################
 # Ping observability image tags
 ############################################################
-OPENSEARCH_BOOTSTRAP_IMAGE_TAG=v99.0.0-rc
-LOGSTASH_IMAGE_TAG=v99.0.0-rc
+OPENSEARCH_BOOTSTRAP_IMAGE_TAG=v99.0.0-rc-latest
+LOGSTASH_IMAGE_TAG=v99.0.0-rc-latest
 
 ############################################################
 # Cluster name variables
