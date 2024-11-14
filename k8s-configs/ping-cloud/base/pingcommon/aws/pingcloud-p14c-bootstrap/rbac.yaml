@@ -36,6 +36,7 @@ rules:
     - update
     - patch
     - delete
+    - get
 
 ---
 

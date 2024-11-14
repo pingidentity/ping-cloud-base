@@ -1,8 +1,8 @@
 # Test frameworks
-pytest==7.1.2
+pytest==8.3.3
 
 # Web browser testing
-seleniumbase==2.5.4
+seleniumbase==4.32.9
 chromedriver-autoinstaller
 
 # AWS Boto3 library
@@ -18,3 +18,5 @@ tenacity==8.2.3
 # Not currently used by python directly, but is used by common/01-test-csr.sh tests within PCB, hence being installed
 # in PCB only
 git-remote-codecommit==1.16
+
+cryptography == 43.0.3
