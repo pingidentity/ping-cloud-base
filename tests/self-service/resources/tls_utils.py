@@ -32,7 +32,6 @@ def create_self_signed_cert(common_name: str = "*.ping-demo.com"):
     # path_len=0 means this cert can only sign itself, not other certs.
     basic_contraints = x509.BasicConstraints(ca=True, path_length=0)
     now = datetime.now(timezone.utc)
-    exp_date = now + timedelta(days=10 * 365)
     cert = (
         x509.CertificateBuilder()
         .subject_name(name)
@@ -40,11 +39,12 @@ def create_self_signed_cert(common_name: str = "*.ping-demo.com"):
         .public_key(key.public_key())
         .serial_number(1000)
         .not_valid_before(now)
-        .not_valid_after(exp_date)
+        .not_valid_after(now + timedelta(days=365))
         .add_extension(basic_contraints, False)
         .add_extension(san, False)
         .sign(key, hashes.SHA256(), default_backend())
     )
+    exp_date = cert.not_valid_after_utc
     fullchain = cert.public_bytes(encoding=serialization.Encoding.PEM).decode("utf-8")
     privkey = key.private_bytes(
         encoding=serialization.Encoding.PEM,
