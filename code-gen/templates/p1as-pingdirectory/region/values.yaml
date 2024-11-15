@@ -5,6 +5,9 @@ pingdirectory:
   # Seperated with a semi-colon(;) Example: userRoot;userRoot_2
   # No values set would just restore all backends in PD
   backendsToRestore: ""
+  backupRestorePod: "pingdirectory-0"
+  # Uncomment below to set the backup PVC size. If not set, the default PVC size will be used.
+  # backupPVCSize: ""
   monitorBucketUrl: "${PD_MONITOR_BUCKET_URL}"
   # Changes PURGE_BATCH_SIZE for -Dcom.unboundid.directory.server.plugins.PurgeExpiredDataPlugin.BATCH_SIZE= - default is 10000
   purgeBatchSize: "10000"
