@@ -69,6 +69,7 @@ _Changes:_
 - [x] PDO-8416 Implement OIDC auth with RBAC in self-service
 - [X] PDO-8418 Create and add TLS roles to PingOne
 - [X] PDO-8788 Thanos: Disable in 2.0 Release
+- [X] PDO-8944 Exclude ping-cloud-dashboards repo from git branch reference replacement
 
 ### 1.19.2.0
 
