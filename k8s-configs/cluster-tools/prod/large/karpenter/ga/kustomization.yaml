@@ -19,7 +19,7 @@ patches:
         value: '120Gi'
   - target:
       kind: EC2NodeClass
-      name: pd-only
+      name: non-consolidating
     patch: |-
       - op: replace
         path: /spec/blockDeviceMappings/0/ebs/volumeSize
@@ -62,7 +62,7 @@ patchesStrategicMerge:
   apiVersion: karpenter.sh/v1beta1
   kind: NodePool
   metadata:
-    name: pd-only
+    name: non-consolidating
   spec:
     template:
       spec:
