@@ -28,6 +28,20 @@ spec:
         lastUpdateReason: "NA"
     spec:
       serviceAccountName: pingfederate-admin-serviceaccount
+      affinity:
+        nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: pingidentity.com/non-consolidating
+                      operator: In
+                      values:
+                        - "true"
+      tolerations:
+        - key: "pingidentity.com/non-consolidating"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
       initContainers:
       - name: pingfederate-p1as-sso
         securityContext:

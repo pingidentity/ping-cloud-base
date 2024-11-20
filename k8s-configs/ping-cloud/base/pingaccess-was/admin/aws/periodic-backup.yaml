@@ -24,6 +24,11 @@ spec:
                     values:
                     - "pingaccess-was-admin-0"
                 topologyKey: "kubernetes.io/hostname"
+          tolerations:
+            - key: "pingidentity.com/non-consolidating"
+              operator: "Equal"
+              value: "true"
+              effect: "NoSchedule"
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-was-backup
