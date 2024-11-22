@@ -92,7 +92,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v2.0-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v97.0.0-RC1
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
@@ -121,7 +121,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: pingaccess-upgrade
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.0-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:v97.0.0-RC1
         imagePullPolicy: Always
         command: ["/bin/sh"]
         args: ["-c", " /opt/in/hooks/22-upgrade-server.sh "]
@@ -202,7 +202,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.0-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v97.0.0-RC1
         imagePullPolicy: Always
         env:
           - name: NAMESPACE
@@ -217,7 +217,7 @@ spec:
         # Add an infinite sleep after sso configuration so that pingaccess container continues to run
         args: [ "python3 -u /app/oauth_client_services_controller.py --app pingaccess && while true; do sleep 30; done" ]
       - name: pingaccess-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.0-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:v97.0.0-RC1
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
