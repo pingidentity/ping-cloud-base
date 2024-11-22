@@ -307,10 +307,14 @@ if test -f 'env_vars'; then
     for kust_file in ${kust_files}; do
       rel_resource_dir="$(relative_path "$(dirname "${kust_file}")" "${PCB_TMP}")"
       log "replacing ${K8S_GIT_URL} in file ${kust_file} with ${rel_resource_dir}"
-      sed -i.bak \
-          -e "s|${K8S_GIT_URL}|${rel_resource_dir}|g" \
-          -e "s|\?ref=${K8S_GIT_BRANCH}$||g" \
-          "${kust_file}"
+      # Replace K8S_GIT_URL with rel_resource_dir and remove git branch reference,
+      # but skip these operations for lines containing "ping-cloud-dashboards"
+      sed -i.bak '
+      /ping-cloud-dashboards/!{
+          s|'"${K8S_GIT_URL}"'|'"${rel_resource_dir}"'|g
+          s|\?ref='"${K8S_GIT_BRANCH}"'$||g
+      }
+      ' "${kust_file}"
       rm -f "${kust_file}".bak
     done
 
