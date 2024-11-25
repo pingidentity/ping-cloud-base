@@ -200,7 +200,7 @@ patches:
       path: /spec/template/spec/containers/0/ports/1
     - op: replace
       path: /spec/template/spec/containers/0/image
-      value: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller/dev:v1.19-release-branch-latest
+      value: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller:v1.19.2.0
     - op: replace
       path: /spec/template/spec/containers/0/imagePullPolicy
       value: Always

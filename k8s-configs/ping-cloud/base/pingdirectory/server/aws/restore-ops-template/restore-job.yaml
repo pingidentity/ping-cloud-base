@@ -93,7 +93,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:v1.19.2.0
         imagePullPolicy: Always
         command: [ "/bin/sh","-c" ]
         # 1) Copy P1AS hooks to staging

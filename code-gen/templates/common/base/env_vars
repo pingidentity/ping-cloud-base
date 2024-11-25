@@ -121,7 +121,7 @@ USER_BACKEND_ID_3=userRoot_3
 USER_BACKEND_ID_4=userRoot_4
 USER_BACKEND_ID_5=userRoot_5
 
-ECR_ENV=/dev
+ECR_ENV=
 
 ############################################################
 # PingFederate variables for environment
@@ -163,25 +163,25 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=v1.19-release-branch-latest
-PINGACCESS_WAS_IMAGE_TAG=v1.19-release-branch-latest
-PINGFEDERATE_IMAGE_TAG=v1.19-release-branch-latest
-PINGDIRECTORY_IMAGE_TAG=v1.19-release-branch-latest
-PINGDELEGATOR_IMAGE_TAG=v1.19-release-branch-latest
-PINGCENTRAL_IMAGE_TAG=v1.19-release-branch-latest
-PINGDATASYNC_IMAGE_TAG=v1.19-release-branch-latest
+PINGACCESS_IMAGE_TAG=v1.19.2.0
+PINGACCESS_WAS_IMAGE_TAG=v1.19.2.0
+PINGFEDERATE_IMAGE_TAG=v1.19.2.0
+PINGDIRECTORY_IMAGE_TAG=v1.19.2.0
+PINGDELEGATOR_IMAGE_TAG=v1.19.2.0
+PINGCENTRAL_IMAGE_TAG=v1.19.2.0
+PINGDATASYNC_IMAGE_TAG=v1.19.2.0
 
 ############################################################
 # Ping solution image tags
 ############################################################
-BOOTSTRAP_IMAGE_TAG=v1.19-release-branch-latest
-P14C_INTEGRATION_IMAGE_TAG=v1.19-release-branch-latest
+BOOTSTRAP_IMAGE_TAG=v1.19.2.0
+P14C_INTEGRATION_IMAGE_TAG=v1.19.2.0
 
 ############################################################
 # Ping observability image tags
 ############################################################
-OS_BOOTSTRAP_IMAGE_TAG=v1.19-release-branch-latest
-LOGSTASH_IMAGE_TAG=v1.19-release-branch-latest
+OS_BOOTSTRAP_IMAGE_TAG=v1.19.2.0
+LOGSTASH_IMAGE_TAG=v1.19.2.0
 
 ############################################################
 # Cluster name variables
@@ -268,7 +268,7 @@ SLACK_CHANNEL=${SLACK_CHANNEL}
 
 # Dashboards repo variables
 DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
-DASH_REPO_BRANCH=v1.19-dev-branch
+DASH_REPO_BRANCH=v1.19-release-branch
 
 # Healthcheck variables
 CLUSTER_HEALTHCHECK_SCHEDULE="* * * * *"

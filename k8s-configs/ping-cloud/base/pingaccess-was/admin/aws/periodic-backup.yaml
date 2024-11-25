@@ -27,7 +27,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-was-backup
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v1.19-release-branch-latest
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:v1.19.2.0
             imagePullPolicy: Always
             securityContext:
               runAsGroup: 9999

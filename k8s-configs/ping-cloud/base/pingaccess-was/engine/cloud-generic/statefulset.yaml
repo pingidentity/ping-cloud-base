@@ -101,7 +101,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.19-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.19.2.0
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
@@ -131,7 +131,7 @@ spec:
           mountPath: /opt/shared-dir
       containers:
       - name: pingaccess-was
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v1.19-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:v1.19.2.0
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
