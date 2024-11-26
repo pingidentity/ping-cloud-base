@@ -604,6 +604,12 @@ organize_code_for_csr() {
   for app_path in ${app_paths}; do
     local app_name=$(basename "${app_path}")
 
+    # set default env vars to prevent errors if they are not set
+    unset CDE_DEPLOY
+    unset CHUB_DEPLOY
+    unset DEVELOPER_DEPLOY
+    unset PRIMARY_REGION_ONLY_DEPLOY
+
     # source the config or continue to next app if config not there
     source "${app_path}/config.sh" || continue
 
@@ -611,6 +617,8 @@ organize_code_for_csr() {
     echo "For app '${app_name}':"
     echo "Using CDE_DEPLOY: ${CDE_DEPLOY}"
     echo "Using CHUB_DEPLOY:  ${CHUB_DEPLOY}"
+    echo "Using DEVELOPER_DEPLOY: ${DEVELOPER_DEPLOY}"
+    echo "Using PRIMARY_REGION_ONLY_DEPLOY: ${PRIMARY_REGION_ONLY_DEPLOY}"
     echo
 
     # Add the app directory to the tmp directory if the deploy env var aligns with the env env var
@@ -622,8 +630,13 @@ organize_code_for_csr() {
       rsync -rR * --exclude config.sh "${app_target_dir}"
       cd - >/dev/null 2>&1
 
-      # Rename to the actual region nick name.
-      mv "${app_target_dir}/region" "${app_target_dir}/${REGION_NICK_NAME}"
+      if { test "${REGION}" != "${PRIMARY_REGION}" && test "${PRIMARY_REGION_ONLY_DEPLOY}" = "true"; }; then
+        # Remove the region directory if not primary region and PRIMARY_REGION_ONLY_DEPLOY is true.
+        rm -rf "${app_target_dir}/region"
+      else
+        # Rename to the actual region nick name.
+        mv "${app_target_dir}/region" "${app_target_dir}/${REGION_NICK_NAME}"
+      fi
 
       # Handle prod vs. non-prod values files
       case "${ENV}" in
