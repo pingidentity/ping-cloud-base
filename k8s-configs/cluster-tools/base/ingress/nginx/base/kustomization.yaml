@@ -6,6 +6,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - ingress-controller.yaml
 
+patchesStrategicMerge:
+- ingress-toleration.yaml
+
 # Removing the ingress-nginx namespace as we have two namespace in P1AS - ingress-nginx-private and nginx-nginx-public
 patches:
 - patch: |
@@ -315,6 +318,18 @@ patches:
         annotations:
           prometheus.io/port: "10254"
           prometheus.io/scrape: "true"
+
+    - op: add
+      path: /spec/template/spec/affinity
+      value: 
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: pingidentity.com/non-consolidating
+                      operator: In
+                      values:
+                        - "true"
 
 - target:
       # Modifiying Service kind to P1AS needs

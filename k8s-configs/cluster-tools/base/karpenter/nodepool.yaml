@@ -27,9 +27,10 @@ spec:
     cpu: "300"
     memory: 750Gi
   disruption:
-    consolidationPolicy: WhenEmpty
-    consolidateAfter: 30s
+    consolidationPolicy: WhenUnderutilized
     expireAfter: Never
+    budgets:
+    - nodes: 10%
     
 ---
 apiVersion: karpenter.sh/v1beta1
