@@ -29,7 +29,6 @@ variables:
     pingaccess/08-artifact-test.sh
     pingdelegator/01-admin-user-login.sh
     monitoring/03-nri-kubernetes.sh
-    monitoring/test_cloudwatch_logs.py
     ingress-nginx/01-test-ocsp-stapling.sh
     monitoring/test_fluent_health.py
 
