@@ -47,17 +47,6 @@ patchesStrategicMerge:
     tenant_domain: ${TENANT_DOMAIN}
     primary_tenant_domain: ${PRIMARY_TENANT_DOMAIN}
 
-patchesJson6902:
-- target:
-    group: ""
-    version: v1
-    kind: ConfigMap
-    name: fluent-bit-config
-  patch: |-
-    - op: replace
-      path: /data/newrelic_cluster_name
-      value: "${NEW_RELIC_ENVIRONMENT_NAME}"
-
 ### enrichment-bootstrap service account ###
 - |-
   apiVersion: v1
@@ -103,3 +92,14 @@ patchesJson6902:
     - op: replace
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: opensearch.${DNS_ZONE}
+
+- target:
+    group: ""
+    version: v1
+    kind: ConfigMap
+    name: fluent-bit-config
+  patch: |-
+    - op: replace
+      path: /data/newrelic_cluster_name
+      value: "${NEW_RELIC_ENVIRONMENT_NAME}"
+
