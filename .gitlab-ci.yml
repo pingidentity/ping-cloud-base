@@ -30,7 +30,6 @@ variables:
     pingdelegator/01-admin-user-login.sh
     monitoring/03-nri-kubernetes.sh
     ingress-nginx/01-test-ocsp-stapling.sh
-    monitoring/test_fluent_health.py
 
 ## Compile stage ##
 compile:
