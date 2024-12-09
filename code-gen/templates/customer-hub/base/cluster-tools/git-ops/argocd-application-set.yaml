@@ -78,16 +78,16 @@ spec:
               # Reference the branch metadata in the cluster to generate per-app for that branch
               revision: "{{metadata.annotations.argocd-branch}}"
               directories:
-                - path: "*"
-                - path: k8s-configs
+                - path: "*/${REGION_NICK_NAME}"
+                - path: k8s-configs/*
                   exclude: true
-                - path: values-files
+                - path: values-files/*
                   exclude: true
 
   template:
     metadata:
-      # metadata comes from argocd-bootstrap, path.basename from the git generator
-      name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.annotations.argocd-env}}-{{path.basename}}"
+      # metadata comes from argocd-bootstrap, path from the git generator
+      name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.annotations.argocd-env}}-{{path[0]}}"
       annotations:
         notifications.argoproj.io/subscribe.on-sync-failed.slack: "{{metadata.annotations.argocd-slack-channel}}"
         notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: "{{metadata.annotations.argocd-slack-channel}}"
@@ -96,7 +96,7 @@ spec:
       source:
         repoURL: ${CLUSTER_STATE_REPO_URL}
         targetRevision: "{{metadata.annotations.argocd-branch}}"
-        path: "{{path}}/${REGION_NICK_NAME}"
+        path: "{{path}}"
       destination:
         server: "{{server}}"
       ignoreDifferences:

@@ -195,8 +195,6 @@ patchesStrategicMerge:
   - ../base/ping-cloud/pingfederate/admin/remove-from-secondary-patch.yaml
   - ../base/ping-cloud/pingaccess/admin/remove-from-secondary-patch.yaml
 
-  - ../base/ping-cloud/pingcommon/remove-from-secondary-patch.yaml
-
   - ../base/ping-cloud/pingdatasync/server/remove-from-secondary-patch.yaml
   - ../base/cluster-tools/monitoring/remove-from-secondary-patch.yaml
 
