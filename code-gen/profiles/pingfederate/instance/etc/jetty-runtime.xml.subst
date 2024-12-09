@@ -432,7 +432,7 @@
                                     <!-- Writer -->
                                     <Arg>
                                         <New class="org.eclipse.jetty.server.RequestLogWriter">
-                                            <Arg><SystemProperty name="pf.log.dir" default="."/>/yyyy_mm_dd.request.log</Arg>
+                                            <Arg><SystemProperty name="pf.log.dir" default="."/>/request.log</Arg>
                                             <Set name="filenameDateFormat"><Property name="jetty.runtime.requestlog.filenameDateFormat" default="yyyy_MM_dd"/></Set>
                                             <Set name="retainDays"><Property name="jetty.runtime.requestlog.retainDays" default="90"/></Set>
                                             <Set name="append"><Property name="jetty.runtime.requestlog.append" default="false"/></Set>
