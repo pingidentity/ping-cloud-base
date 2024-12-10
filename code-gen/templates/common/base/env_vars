@@ -116,7 +116,7 @@ USER_BASE_DN_3=${USER_BASE_DN_3}
 USER_BASE_DN_4=${USER_BASE_DN_4}
 USER_BASE_DN_5=${USER_BASE_DN_5}
 
-ECR_ENV=/dev
+ECR_ENV=
 
 ############################################################
 # PingFederate variables for environment
@@ -158,24 +158,24 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=v2.0-release-branch-latest
-PINGACCESS_WAS_IMAGE_TAG=v2.0-release-branch-latest
-PINGFEDERATE_IMAGE_TAG=v2.0-release-branch-latest
-PINGDELEGATOR_IMAGE_TAG=v2.0-release-branch-latest
-PINGCENTRAL_IMAGE_TAG=v2.0-release-branch-latest
-PINGDATASYNC_IMAGE_TAG=v2.0-release-branch-latest
+PINGACCESS_IMAGE_TAG=v2.0.0-RC2
+PINGACCESS_WAS_IMAGE_TAG=v2.0.0-RC2
+PINGFEDERATE_IMAGE_TAG=v2.0.0-RC2
+PINGDELEGATOR_IMAGE_TAG=v2.0.0-RC2
+PINGCENTRAL_IMAGE_TAG=v2.0.0-RC2
+PINGDATASYNC_IMAGE_TAG=v2.0.0-RC2
 
 ############################################################
 # Ping solution image tags
 ############################################################
-BOOTSTRAP_IMAGE_TAG=v2.0-release-branch-latest
-P14C_INTEGRATION_IMAGE_TAG=v2.0-release-branch-latest
+BOOTSTRAP_IMAGE_TAG=v2.0.0-RC4
+P14C_INTEGRATION_IMAGE_TAG=v2.0.0-RC2
 
 ############################################################
 # Ping observability image tags
 ############################################################
-OS_BOOTSTRAP_IMAGE_TAG=v2.0-release-branch-latest
-LOGSTASH_IMAGE_TAG=v2.0-release-branch-latest
+OS_BOOTSTRAP_IMAGE_TAG=v2.0.0-RC2
+LOGSTASH_IMAGE_TAG=v2.0.0-RC2
 
 ############################################################
 # Cluster name variables
@@ -262,7 +262,7 @@ SLACK_CHANNEL=${SLACK_CHANNEL}
 
 # Dashboards repo variables
 DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
-DASH_REPO_BRANCH=v2.0-dev-branch
+DASH_REPO_BRANCH=v2.0-release-branch
 
 # Healthcheck variables
 CLUSTER_HEALTHCHECK_SCHEDULE="* * * * *"
