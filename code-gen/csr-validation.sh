@@ -20,38 +20,6 @@ usage() {
 }
 
 ########################################################################################################################
-# Pulls all helm charts in the provided directory, so that kustomize runs with locally pulled chart
-# This is the workaround for https://github.com/kubernetes-sigs/kustomize/issues/4381
-#
-# Arguments
-#   ${1} -> The directory that contains the helm chart(s) definition.
-########################################################################################################################
-pull_helm_charts() {
-  local app_dir="${1}"
-
-  # make the charts dir if it doesn't exist
-  local chart_dir="${app_dir}/charts"
-  mkdir -p "${chart_dir}"
-
-  # find all files with "helmCharts" definitions and loop through them
-  chart_files=$(grep -Rl "helmCharts:" "${app_dir}")
-  for chart_file in ${chart_files}; do
-    # determine the number of chart definitions in the kustomization.yaml file
-    num_charts=$(yq ".helmCharts | length" "${chart_file}")
-
-    # loop through chart definitions in the file
-    for (( i=0; i<num_charts; i++ ))
-    do
-      # use yq to get the chart's information (repo, version)
-      chart_version="$(INDEX="${i}" yq ".helmCharts[strenv(INDEX)].version" "${chart_file}")"
-      chart_repo="$(INDEX="${i}" yq ".helmCharts[strenv(INDEX)].repo" "${chart_file}")"
-      # pull the chart
-      helm pull --untar --untardir "${chart_dir}" "${chart_repo}" --version "${chart_version}"
-    done
-  done
-}
-
-########################################################################################################################
 # Removes "charts" directories
 ########################################################################################################################
 cleanup_charts() {
@@ -106,6 +74,14 @@ failures_list=""
 RED="\033[0;31m"
 NO_COLOR="\033[0m"
 
+# Check for correct kustomize version
+# Kustomize version returned contains 'v' prefix, so we ignore that for consistency sake across references to version
+KUSTOMIZE_VERSION="5.5.0"
+if ! kustomize version | grep -q "${KUSTOMIZE_VERSION}"; then
+  echo "Error: Kustomize version must be ${KUSTOMIZE_VERSION}"
+  exit 1
+fi
+
 # delete any "charts" directories that exist from previous runs to force helm to pull new charts
 cleanup_charts
 
@@ -122,9 +98,6 @@ echo "${app_region_paths}"
 
 # validate kustomize build succeeds for each app
 for app_path in ${app_region_paths}; do
-  # pull the helm charts
-  pull_helm_charts "${app_path}"
-  
   # kustomize build
   if test -z "${OUT_DIR}"; then
     result=$( (kustomize build --load-restrictor LoadRestrictionsNone --enable-helm "${app_path}" ) 2>&1)

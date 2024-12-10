@@ -231,7 +231,7 @@ patches:
           ignoreDifferences: |
             jsonPointers:
             - /webhooks/0/clientConfig/caBundle
-      kustomize.buildOptions: --load-restrictor LoadRestrictionsNone --enable-helm --helm-command /usr/local/bin/helm-command.sh
+      kustomize.buildOptions: --load-restrictor LoadRestrictionsNone --enable-helm
 - patch: |-
       # Mount Beluga-specific scripts within the container
       apiVersion: apps/v1
@@ -247,9 +247,6 @@ patches:
               - name: git-ops-command
                 mountPath: /usr/local/bin/git-ops-command.sh
                 subPath: git-ops-command.sh
-              - name: helm-command
-                mountPath: /usr/local/bin/helm-command.sh
-                subPath: helm-command.sh
               - name: tools-dir
                 mountPath: /usr/local/bin/envsubst
                 subPath: envsubst
@@ -294,9 +291,6 @@ patches:
               - mountPath: /usr/local/bin/git-ops-command.sh
                 name: git-ops-command
                 subPath: git-ops-command.sh
-              - name: helm-command
-                mountPath: /usr/local/bin/helm-command.sh
-                subPath: helm-command.sh
               - name: tools-dir
                 mountPath: /usr/local/bin/envsubst
                 subPath: envsubst
@@ -373,10 +367,6 @@ patches:
           - name: git-ops-command
             configMap:
               name: git-ops-command
-              defaultMode: 0555
-          - name: helm-command
-            configMap:
-              name: helm-command
               defaultMode: 0555
           - name: install-custom-tools
             configMap:

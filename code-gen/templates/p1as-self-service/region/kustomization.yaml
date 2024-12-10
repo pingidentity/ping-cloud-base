@@ -14,7 +14,7 @@ helmCharts:
       - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
       - values.yaml   # app specific values.yaml
     version: v2.1-release-branch-latest
-    repo: oci://${ECR_REGISTRY_NAME}/dev/p1as-self-service
+    repo: oci://${ECR_REGISTRY_NAME}/dev
 
 ### This field is used to trigger a resync of the p1as-self-service helm chart ###
 configMapGenerator:

@@ -19,7 +19,7 @@ rm -rf /var/lib/apt/lists/*
 cp /usr/bin/envsubst /tools
 
 ### Install specific Kustomize version ###
-KUSTOMIZE_VERSION=5.0.3
+KUSTOMIZE_VERSION="5.5.0"
 
 if [ "`uname -m`" = "aarch64" ] ; then
     wget -qO /tools/kustomize \

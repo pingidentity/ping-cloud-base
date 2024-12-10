@@ -185,28 +185,6 @@ disable_os_operator_crds() {
     done
 }
 
-
-########################################################################################################################
-# Format the provided kustomize version for numeric comparison. For example, if the kustomize version is 4.0.5, it
-# returns 004000005000.
-#
-# Arguments
-#   ${1} -> The kustomize short version, e.g. v4.0.5.
-########################################################################################################################
-format_version() {
-  version="$1"
-  printf "%03d%03d%03d%03d" $(echo "${version}" | tr '.' ' ')
-}
-
-########################################################################################################################
-# Returns the version of kustomize formatted for numeric comparison. For example, if the kustomize version is 4.0.5,
-# it returns 004000005000.
-########################################################################################################################
-kustomize_version() {
-  version="$(kustomize version --short | grep -oE '[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+')"
-  format_version "${version}"
-}
-
 ########################################################################################################################
 # Clean up on exit. If non-zero exit, then print the log file to stdout before deleting it. Change back to the previous
 # directory. Delete the kustomize build directory, if it exists.
@@ -232,6 +210,14 @@ on_terminate() {
 # Main script
 
 trap on_terminate SIGTERM
+
+# Check for correct kustomize version
+# Kustomize version returned contains 'v' prefix, so we ignore that for consistency sake across references to version
+KUSTOMIZE_VERSION="5.5.0"
+if ! kustomize version | grep -q "${KUSTOMIZE_VERSION}"; then
+  log "Error: Kustomize version must be ${KUSTOMIZE_VERSION}"
+  exit 1
+fi
 
 TARGET_DIR="${1:-.}"
 cd "${TARGET_DIR}" >/dev/null 2>&1
@@ -324,23 +310,6 @@ if test -f 'env_vars'; then
   test $? -ne 0 && exit 1
 fi
 
-KUST_VER="$(kustomize_version)"
-log "detected kustomize version ${KUST_VER}"
-
-# The load restriction build arg name and value are different starting in kustomize v4.0.1. This argument allows
-# kustomize to load patch files that are not directly under the kustomize root. For example, we need this option for
-# the remove-from-secondary-patch.yaml because it lives in base and is outside of the kustomize root of the region
-# directories.
-VER_4_0_1="$(format_version '4.0.1')"
-
-if test ${KUST_VER} -ge ${VER_4_0_1}; then
-  build_load_arg='--load-restrictor'
-  build_load_arg_value='LoadRestrictionsNone'
-else
-  build_load_arg='--load_restrictor'
-  build_load_arg_value='none'
-fi
-
 if ! command -v argocd &> /dev/null ; then
   disable_grafana_crds
   disable_os_operator_crds
@@ -349,11 +318,11 @@ fi
 # Build the uber deploy yaml
 if [[ $(lowercase "${DEBUG}") == "true" ]]; then
   log "DEBUG - generating uber yaml file from '${BUILD_DIR}' to /tmp/uber-debug.yaml"
-  kustomize build ${build_load_arg} ${build_load_arg_value} "${BUILD_DIR}" --output /tmp/uber-debug.yaml
+  kustomize build --load-restrictor LoadRestrictionsNone "${BUILD_DIR}" --output /tmp/uber-debug.yaml
 # Output the yaml to stdout for Argo when operating normally
 elif test -z "${OUT_DIR}" || test ! -d "${OUT_DIR}"; then
   log "generating uber yaml file from '${BUILD_DIR}' to stdout"
-  kustomize build ${build_load_arg} ${build_load_arg_value} "${BUILD_DIR}" &
+  kustomize build --load-restrictor LoadRestrictionsNone "${BUILD_DIR}" &
   kustomize_pid=$!
   # Wait for the process ID of the Kustomize build to forward the corresponding return code to Argo CD.
   wait $kustomize_pid
@@ -363,7 +332,7 @@ elif test -z "${OUT_DIR}" || test ! -d "${OUT_DIR}"; then
 # it isn't clear if this is still used in actual CDEs
 else
   log "generating yaml files from '${BUILD_DIR}' to '${OUT_DIR}'"
-  kustomize build ${build_load_arg} ${build_load_arg_value} "${BUILD_DIR}" --output "${OUT_DIR}"
+  kustomize build --load-restrictor LoadRestrictionsNone "${BUILD_DIR}" --output "${OUT_DIR}"
 fi
 
 exit 0
