@@ -1,0 +1,34 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: teleport
+
+resources:
+  - ../base/custom-resources
+  - custom-resources
+  - namespace.yaml
+
+helmCharts:
+  - name: teleport-kube-agent
+    namespace: teleport
+    valuesFile: values.yaml
+    version: 16.2.0
+    repo: https://charts.releases.teleport.dev
+    includeCRDs: true
+    releaseName: teleport
+
+
+### This field is used to trigger a resync of the p1as-beluga-tools helm chart ###
+configMapGenerator:
+  - name: teleport-last-update-reason
+    literals:
+      - UPDATE_REASON=""
+  ### This is needed for the empty custom-patches.yaml file to work ###
+  - name: teleport-custom-placeholder
+  ### This is needed for the empty custom-patches.yaml file to work in base folder ###
+  - name: teleport-custom-placeholder-base      
+
+patchesStrategicMerge:
+  ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
+  - custom-patches.yaml
+  - ../base/custom-patches.yaml

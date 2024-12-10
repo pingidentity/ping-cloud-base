@@ -291,6 +291,9 @@
 #                                  | generated. If the target directory exists, it will |
 #                                  | be deleted.                                        |
 #                                  |                                                    |
+# TELEPORT_RESOURCE_ID             | The teleport resource ID provided by teleport      |
+#                                  | admin at initial setup time                        |
+#                                  |                                                    |
 # TENANT_DOMAIN                    | The tenant's domain suffix that's common to all    | ci-cd.ping-oasis.com
 #                                  | CDEs e.g. k8s-icecream.com. The tenant domain in   |
 #                                  | each CDE is assumed to have the CDE name as the    |
@@ -621,8 +624,13 @@ organize_code_for_csr() {
     echo "Using PRIMARY_REGION_ONLY_DEPLOY: ${PRIMARY_REGION_ONLY_DEPLOY}"
     echo
 
+    # exclude anything that shouldn't deploy to dev envs
+    if (${IS_BELUGA_ENV} && test "${DEVELOPER_DEPLOY}" = "false"); then
+      continue
+    fi
+
     # Add the app directory to the tmp directory if the deploy env var aligns with the env env var
-    if (test "${ENV}" = "${CUSTOMER_HUB}" && ${CHUB_DEPLOY}) || (test "${ENV}" != "${CUSTOMER_HUB}" && ${CDE_DEPLOY}); then
+    if { test "${ENV}" = "${CUSTOMER_HUB}" && test "${CHUB_DEPLOY}" = "true"; } || { test "${ENV}" != "${CUSTOMER_HUB}" && test "${CDE_DEPLOY}" = "true"; }; then
       local app_target_dir=${ENV_DIR}/${app_name}
       mkdir -p "${app_target_dir}"
 
@@ -684,6 +692,7 @@ fi
 ########################################################################################################################
 echo "Initial TENANT_NAME: ${TENANT_NAME}"
 echo "Initial SIZE: ${SIZE}"
+echo "Initial STAGE: ${STAGE}"
 
 echo "Initial SUPPORTED_ENVIRONMENT_TYPES: ${SUPPORTED_ENVIRONMENT_TYPES}"
 echo "Initial ENVIRONMENTS: ${ENVIRONMENTS}"
@@ -777,6 +786,8 @@ echo "Initial APP_RESYNC_SECONDS: ${APP_RESYNC_SECONDS}"
 echo "Initial DASHBOARD_REPO_URL: ${DASHBOARD_REPO_URL}"
 
 echo "Initial CERT_RENEW_BEFORE: ${CERT_RENEW_BEFORE}"
+
+echo "Initial TELEPORT_RESOURCE_ID: ${TELEPORT_RESOURCE_ID}"
 
 echo ---
 
@@ -1313,6 +1324,8 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   echo "Using IRSA_INGRESS_ANNOTATION_KEY_VALUE: ${IRSA_INGRESS_ANNOTATION_KEY_VALUE}"
   echo "Using NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
   echo "Using CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
+  echo "Using TELEPORT_RESOURCE_ID: ${TELEPORT_RESOURCE_ID}"
+  echo "Using STAGE: ${STAGE}"
 
   ######################################################################################################################
   # Massage files into correct structure for push-cluster-state script
