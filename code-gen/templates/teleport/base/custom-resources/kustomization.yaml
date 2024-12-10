@@ -1,0 +1,10 @@
+### PSO/GSO teams should only add new custom resources in this directory. ###
+### This directory will be ignored by the upgrade-cluster-state-wrapper.sh script ###
+
+# When adding new resources, ensure that its namespace is explicitly provided. Otherwise, the resources may end up
+# in an unexpected namespace (e.g. default) and not work as expected.
+
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
