@@ -18,6 +18,7 @@ configMapGenerator:
   namespace: elastic-stack-logging
   behavior: merge
   files:
+    - fluent-bit.conf
     - cw.conf
     - nr.conf
 
