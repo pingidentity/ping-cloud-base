@@ -21,6 +21,7 @@ configMapGenerator:
     - fluent-bit.conf
     - cw.conf
     - nr.conf
+    - s3.conf
 
 patchesStrategicMerge:
   - patch-ilm-policy.yaml
