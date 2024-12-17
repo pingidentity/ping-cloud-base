@@ -34,19 +34,6 @@ spec:
                       values:
                         - pingcentral
                 topologyKey: "topology.kubernetes.io/zone"
-        nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-                - matchExpressions:
-                    - key: pingidentity.com/non-consolidating
-                      operator: In
-                      values:
-                        - "true"
-      tolerations:
-        - key: "pingidentity.com/non-consolidating"
-          operator: "Equal"
-          value: "true"
-          effect: "NoSchedule"
       initContainers:
       - name: pingcentral-init
         securityContext:

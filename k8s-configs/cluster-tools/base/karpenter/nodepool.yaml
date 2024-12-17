@@ -75,19 +75,19 @@ spec:
 apiVersion: karpenter.sh/v1beta1
 kind: NodePool
 metadata:
-  name: non-consolidating
+  name: pd-only
 spec:
   template:
     metadata:
       labels:
-        nodeType: non-consolidating
-        pingidentity.com/non-consolidating: "true"
+        nodeType: pingdirectory
+        pingidentity.com/pd: "true"
     spec:
       nodeClassRef:
-        name: non-consolidating
+        name: pd-only
       taints:
         - effect: NoSchedule
-          key: pingidentity.com/non-consolidating
+          key: pingidentity.com/pd-only
           value: "true"
       requirements:
         - key: "karpenter.k8s.aws/instance-category"
@@ -137,7 +137,7 @@ spec:
 apiVersion: karpenter.k8s.aws/v1beta1
 kind: EC2NodeClass
 metadata:
-  name: non-consolidating
+  name: pd-only
 spec:
   amiFamily: AL2 # Amazon Linux 2
   detailedMonitoring: true
@@ -153,8 +153,8 @@ spec:
         volumeType: gp3
         encrypted: true
   tags:
-    KarpenerProvisionerName: "non-consolidating"
-    Name: karpenter.sh/nodepool/non-consolidating
+    KarpenerProvisionerName: "pd-only"
+    Name: karpenter.sh/nodepool/pd-only
     managed-by: "karpenter"
 ---
 apiVersion: karpenter.k8s.aws/v1beta1
