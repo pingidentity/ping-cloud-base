@@ -20,6 +20,13 @@ patchesStrategicMerge:
       - dns01:
           route53:
             region: ${REGION}
+            role: ${GLOBAL_DNS_IAM_ROLE}
+        selector:
+          dnsZones:
+          - ${GLOBAL_TENANT_DOMAIN}
+      - dns01:
+          route53:
+            region: ${REGION}
         selector:
           dnsZones:
           - ${DNS_ZONE}
@@ -33,6 +40,7 @@ patchesStrategicMerge:
     namespace: cert-manager
   spec:
     dnsNames:
+    - '*.${ENV}.${GLOBAL_TENANT_DOMAIN}'
     - '*.${DNS_ZONE}'
     keystores:
       pkcs12:
