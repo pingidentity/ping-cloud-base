@@ -21,6 +21,7 @@ _Changes:_
 - [X] PDO-8205 Enable consolidation for default nodepool and add multiple instance type
 - [X] PDO-8371 Remove helm-command.sh shim workaround
 - [X] PDO-8372 Upgrade Kustomize to 5.5.0
+- [X] PDO-8958 Global DNS: Implement Changes in PCB
 
 ### 2.0.0
 
