@@ -18,6 +18,7 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
         tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
         cls.pa_was_app_name = f"client-{tenant_name}-pa-was"
         cls.auth_policy_name = f"client-{tenant_name}"
+        cls.resource_name = "pa-was"
         cls.account_type_scope_name = "account_type"
         cls.pa_was_secret_name = "pingaccess-was-admin-p14c"
         cls.ping_cloud_ns = os.getenv("PING_CLOUD_NAMESPACE", "ping-cloud")
@@ -128,32 +129,12 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
         )
 
     def test_pa_was_account_type_scope_granted_to_application(self):
-        app = self.get(self.cluster_env_endpoints.applications, self.pa_was_app_name)
-        grants = self.get(
-            f"{self.cluster_env_endpoints.applications}/{app['id']}/grants"
-        )
-        # Get granted resource and scope IDs
-        granted_resource_ids = []
-        granted_scope_ids = []
-        for grant in grants:
-            granted_resource_ids.append(grant["resource"]["id"])
-            granted_scope_ids += [scope["id"] for scope in grant["scopes"]]
+        app_scope_ids = self.get_app_scope_ids(self.pa_was_app_name)
+        account_type_scope_id = self.get_resource_scope_id(self.resource_name, self.account_type_scope_name)
 
-        # Get account_type scope IDs from granted resources
-        account_type_scope_ids = []
-        for resource_id in granted_resource_ids:
-            scope = self.get(
-                endpoint=f"{self.cluster_env_endpoints.resources}/{resource_id}/scopes",
-                name=self.account_type_scope_name,
-            )
-            account_type_scope_ids.append(scope["id"])
-
-        # Check that one of the granted scope IDs is an account_type scope
+        # Check that one of the granted scope IDs is the operator scope
         self.assertTrue(
-            any(
-                granted_scope_id in account_type_scope_ids
-                for granted_scope_id in granted_scope_ids
-            ),
+            account_type_scope_id in app_scope_ids,
             f"No grant for scope '{self.account_type_scope_name}' found for application '{self.pa_was_app_name}'",
         )
 

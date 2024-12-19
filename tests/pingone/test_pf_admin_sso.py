@@ -23,6 +23,8 @@ class TestPFAdminSSO(p1_test_base.P1TestBase):
         self.auth_policy_name = f"client-{self.tenant_name}"
         self.k8s = K8sUtils()
         self.namespace = os.getenv("PING_CLOUD_NAMESPACE", "ping-cloud")
+        self.operator_resource_name = f"client-{self.tenant_name}-pf-operator"
+        self.operator_scope_name = "p1asPFOperatorRoles"
 
     def test_roles_created(self):
         existing_attribute_names = self.get_user_attribute_values(self.user_attribute_name)
@@ -61,6 +63,20 @@ class TestPFAdminSSO(p1_test_base.P1TestBase):
                                                            configmap_name="pingfederate-sso-status")
         self.assertTrue(json.loads(sso_configmap_data["sso.configured"].lower()))
 
+
+    def test_operator_resource_created(self):
+        resource = self.get(self.cluster_env_endpoints.resources, self.operator_resource_name)
+        self.assertTrue(resource, f"Resource '{self.operator_resource_name}' not created")
+
+    def test_operator_scope_granted_to_app(self):
+        app_scope_ids = self.get_app_scope_ids(self.app_name)
+        operator_scope_id = self.get_resource_scope_id(self.operator_resource_name, self.operator_scope_name)
+
+        # Check that one of the granted scope IDs is the operator scope
+        self.assertTrue(
+            operator_scope_id in app_scope_ids,
+            f"No grant for scope '{self.operator_scope_name}' found for application '{self.app_name}'",
+        )
 
 if __name__ == "__main__":
     unittest.main()
