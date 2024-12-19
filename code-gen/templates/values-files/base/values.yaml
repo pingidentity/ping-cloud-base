@@ -23,11 +23,19 @@ global:
       newrelicLicenseKey: dW51c2VkCg==
       # Profile Repo SSH Id key secret
       sshIdKeyBase64: ${SSH_ID_KEY_BASE64}
+      # Used as default password for PD admins (used by PD and datasync)
+      rootUserPassword: MkZlZGVyYXRlTTByZQ==
+      # Default Admin User Password for PingFederate
+      pfAdminUserPassword: MkZlZGVyYXRlTTByZQ==
+      # Used as default password for PF admin users interacting with PD
+      pfLdapPassword: MkZlZGVyYXRlTTByZQ==
+      # Password used to authenticate to PD keystore (used by PD and certmanager)
+      acmeCertKeystorePassword: MkZlZGVyYXRlTTByZQ==
+      # Secret synced between DelegatedAdmin and PingDirectory
+      daOauthTokenValidatorSecret: MkZlZGVyYXRlTTByZQ==
       
       ###### PingDirectory Secrets #####
 
-      # Used as default password for PD admins
-      rootUserPassword: MkZlZGVyYXRlTTByZQ==
       # Mounted as a file on PD container and used for dsreplication commands
       adminUserPassword: MkZlZGVyYXRlTTByZQ==
       # Mounted as a file on PD container and used for encryption/decryption of database
@@ -44,14 +52,6 @@ global:
       p14cEnvironmentId: YzNlMzczNTctNTA2Mi00MWJjLTk5NzItYTdlYTlkMTRhNWEy
       # The DManager password for new P1AS clients,  who will inherit the default permissions associated with PingDirectory.
       dmanagerPassword: MkZlZGVyYXRlTTByZQ==
-      # Default Admin User Password for PingFederate
-      pfAdminUserPassword: MkZlZGVyYXRlTTByZQ==
-      # Used as default password for PF admin users interacting with PD
-      pfLdapPassword: MkZlZGVyYXRlTTByZQ==
-      # Password used to authenticate to PD keystore
-      acmeCertKeystorePassword: MkZlZGVyYXRlTTByZQ==
-      # Secret synced between DelegatedAdmin and PingDirectory
-      daOauthTokenValidatorSecret: MkZlZGVyYXRlTTByZQ==
       # Cert used for inter-PD communication
       adsCrt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN2akNDQWFZQ0NRQ3NMaEptdEYwQ3VEQU5CZ2txaGtpRzl3MEJBUXNGQURBZ01SNHdIQVlEVlFRRERCVnMKYjJOaGJHaHZjM1F1Ykc5allXeGtiMjFoYVc0d0lCY05NakF3TmpNd01UZ3hOekkwV2hnUE1qRXlNREEyTURZeApPREUzTWpSYU1DQXhIakFjQmdOVkJBTU1GV3h2WTJGc2FHOXpkQzVzYjJOaGJHUnZiV0ZwYmpDQ0FTSXdEUVlKCktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQUtmalRHZVgweHhubG5LbXBodFB1Z21jRjNXRHREZmsKOUgyWGh4aXpsTzliNzhPWlk3ZGRxZXVpRktBU3ZZZEtzSE80cUVLMXhtMitvTHZaa2RIandFYlc5dVJYQ2Zucgo3cUpRaHpiemZpemtFOXE2MVBHazJTNGNlcytyUlBDZVlFSEUrd1J5bUdnMnNabXgrdVNLb1RvQk5lMnNnQ2lWCkw0YmpBZ3NKdkdxUzI2T0ZleTF6WTVRYXRmUkI0QlFKSis1eFJ3Z3BCSXdJOExRN3ozS0pkQlVyTll3TDlUemYKSVc2UjcxMHlORVhWWkxqa0pwemJTeGtub3kxQlc3SFJwYmxxNFZaWEFEWDNSYlpuV2xKRWhubkRBVGxPcWtregp5cHBUSnhvaEtkK0pZYXRFRUxWNC9DajkyR3UwcEJtSXorazkrWnJob3J1RTBkSHM2T0tlYStVQ0F3RUFBVEFOCkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQVNVcUU1RUw1ZEttNDJWcmFEclpRM0prNXlTUUNtZE1HNGFoYmFndVUKNDk1aEV5NDlhNVhDL3NoS0hCUnJaVy95RTJiS1dTOTBKdzA2aVpUWkk0a3JXZnk5NUtxVlJhWkNYUHc4K0lWdwpLMjJZSTJ1MWVUNlpWYkpuL1dJL2VuMDBwNk1mRjhFTmF3STZTc081dzlVUnRhSFpRK2lhc1BSUERqeVljUC93CnNpbWlBeTB2a2hZSUM5Qmw1K0QxV3FwWm1PRnMvdW5EZC8xUFRxSXF5cHZINUcyYjBvUmdLTTUzQlBIZFBKajAKcEpObFBTblJFNThVNkM5RG5BcSt2cFlJZFE1UWdtQWVaMVA0T2E0cGdHY0NHNlBVYVRoalUxeFhFL01CQWFFRgpwV0pYT2pqWHUwdVpFbXE0bHFJakZEcmZDSkVISkliRmtzMUJjZVVQK3BkU2F3PT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
       # Key used for inter-PD communication
