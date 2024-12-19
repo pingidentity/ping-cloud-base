@@ -76,3 +76,23 @@ class P1TestBase(unittest.TestCase):
             if attr["name"] == attribute_name
         )
         return [attr["value"] for attr in attribute_values]
+
+    def get_app_scope_ids(self, app_name: str) -> []:
+        app = self.get(self.cluster_env_endpoints.applications, app_name)
+        grants = self.get(
+            f"{self.cluster_env_endpoints.applications}/{app['id']}/grants"
+        )
+        # Get granted scope IDs
+        scope_ids = []
+        for grant in grants:
+            scope_ids += [scope["id"] for scope in grant["scopes"]]
+
+        return scope_ids
+
+    def get_resource_scope_id(self, resource_name: str, scope_name: str) -> str:
+        resource = self.get(self.cluster_env_endpoints.resources, resource_name)
+        scopes = self.get(resource["_links"]["scopes"]["href"])
+        for scope in scopes:
+            if scope["name"] == scope_name:
+                return scope["id"]
+        return ""
