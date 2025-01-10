@@ -187,6 +187,7 @@ global:
   # Public Hostnames
   ########################################################
   pdClusterPublicHostname: "pingdirectory-cluster.${PRIMARY_DNS_ZONE}"
+  selfServicePublicHostname: "self-service-api.${PRIMARY_DNS_ZONE}"
 
 
   #### FEATURE FLAGS ##################################################################################################

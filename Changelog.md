@@ -10,6 +10,7 @@
 - Remove helm-command.sh shim workaround
 - Upgrade Kustomize to 5.5.0
 - Enable default ingress object to accept LDAPS traffic through Nginx Private
+- Add self-service URL to env_vars
 
 _Changes:_
 
@@ -22,6 +23,7 @@ _Changes:_
 - [X] PDO-8371 Remove helm-command.sh shim workaround
 - [X] PDO-8372 Upgrade Kustomize to 5.5.0
 - [X] PDO-8958 Global DNS: Implement Changes in PCB
+- [X] PDO-8981 Add self-service URL to env_vars
 
 ### 2.0.0
 
