@@ -21,7 +21,7 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap:v97.0.0-RC1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap:v97.0.0
         imagePullPolicy: Always
         env:
           - name: NAMESPACE

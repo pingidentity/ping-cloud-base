@@ -17,7 +17,7 @@ helmCharts:
       - ../../values-files/base/values.yaml   # base values.yaml
       - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
       - values.yaml   # app specific values.yaml
-    version: v97.0.0-RC1
+    version: v97.0.0
     repo: oci://${ECR_REGISTRY_NAME}/p1as-pingdirectory
 
 ### This field is used to trigger a resync of the p1as-pingdirectory helm chart ###
