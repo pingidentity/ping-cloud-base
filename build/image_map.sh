@@ -23,7 +23,6 @@ export IMAGE_MAP="pingcloud-apps/pingaccess
    pingcloud-monitoring/opensearch
    pingcloud-monitoring/prometheus-json-exporter
    pingcloud-monitoring/prometheus-job-exporter
-   pingcloud-monitoring/newrelic-tags-exporter
    pingcloud-monitoring/nri-kubernetes
    pingcloud-services/robot-framework
    pingcloud-services/sigsci-nginx-ingress-controller
