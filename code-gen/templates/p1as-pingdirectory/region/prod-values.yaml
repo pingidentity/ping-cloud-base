@@ -10,6 +10,7 @@ pingdirectory:
         requests:
           memory: "26Gi"
     statsdExporter:
+      resources:
         requests:
           memory: "300Mi"
   # Persistent volume size configuration.
