@@ -1,2 +1,5 @@
-# Intentionally left blank - this file will be overwritten by the code-gen/templates/customer-hub/base/cluster-tools/git-ops/kustomization.yaml
-# when in customer-hub, otherwise it is left blank for use in all other CDEs
+# Intentionally left as is - this file will be overwritten by the code-gen/templates/customer-hub/base/cluster-tools/git-ops/kustomization.yaml
+# when in customer-hub, otherwise it is left as is for use in all other CDEs
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+resources: []
