@@ -28,7 +28,6 @@ variables:
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
     pingdelegator/01-admin-user-login.sh
-    monitoring/03-nri-kubernetes.sh
     ingress-nginx/01-test-ocsp-stapling.sh
 
 ## Compile stage ##
