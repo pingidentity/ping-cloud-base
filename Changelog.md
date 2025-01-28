@@ -12,10 +12,12 @@
 - Enable default ingress object to accept LDAPS traffic through Nginx Private
 - Add self-service URL to env_vars
 - Removing value for newrelic-tags-exporter image and hardcoding in statefulset manifests
+- Added p1as-observability and cloudwatch deployment to pcb
 
 _Changes:_
 
 - [X] PDO-4881 Use code sharing methods for Logger.lib.sh
+- [X] PDO-5995 Add p1as-observability to PCB: Cloudwatch Agent
 - [X] PDO-6116 Kustomize: Fix kustomizations to not be completely empty in order to support v5.1+
 - [X] PDO-7593 Create default ingress object to accept LDAPS traffic through Nginx Private
 - [X] PDO-7616 Update PingDirectory resource limits
