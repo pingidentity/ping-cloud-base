@@ -57,6 +57,83 @@ patchesJson6902:
                   ]
                 },
                 {
+                  "name": "RO",
+                  "actions": [
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "read_only": {}
+                    }
+                  ],
+                  "transitions": [
+                    {
+                      "state_name": "delete",
+                      "conditions": {
+                        "min_index_age": "1d"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "warm",
+                  "actions": [
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "replica_count": {
+                            "number_of_replicas": 1
+                        }
+                    },
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "force_merge": {
+                            "max_num_segments": 1
+                        }
+                    },
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "read_only": {}
+                    },
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "allocation": {
+                            "require": {
+                                "temp": "warm"
+                            },
+                            "include": {},
+                            "exclude": {},
+                            "wait_for": false
+                        }
+                    }
+                  ],
+                  "transitions": [
+                    {
+                      "state_name": "delete",
+                      "conditions": {
+                        "min_index_age": "1d"
+                      }
+                    }
+                  ]
+                },
+                {
                   "name": "delete",
                   "actions": [
                     {
