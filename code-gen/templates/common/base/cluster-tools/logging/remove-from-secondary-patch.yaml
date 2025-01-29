@@ -21,13 +21,6 @@ spec:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: opensearch-sc1
-provisioner: ebs.csi.aws.com
-$patch: delete
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
   name: opensearch-gp3
 provisioner: ebs.csi.aws.com
 $patch: delete

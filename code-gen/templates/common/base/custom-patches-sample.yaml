@@ -168,8 +168,6 @@ spec:
   nodePools:
     - component: hot
       diskSize: "500Gi"
-    - component: warm
-      diskSize: "500Gi"
 ---
 # Increase CPU resources
 apiVersion: opensearch.opster.io/v1
@@ -184,12 +182,6 @@ spec:
           cpu: "3"
         limits:
           cpu: "6"
-    - component: warm
-      resources:
-        requests:
-          cpu: "2"
-        limits:
-          cpu: "4"
 ---
 # Increase Memory Resources
 apiVersion: opensearch.opster.io/v1
@@ -199,13 +191,6 @@ metadata:
 spec:
   nodePools:
     - component: hot
-      jvm: -Xmx5g -Xms5g
-      resources:
-        requests:
-          memory: 6Gi
-        limits:
-          memory: 6Gi
-    - component: warm
       jvm: -Xmx5g -Xms5g
       resources:
         requests:
@@ -223,8 +208,6 @@ spec:
   nodePools:
     - component: hot
       replicas: 5 # Scale down is not supported
-    - component: warm
-      replicas: 3
 
 ################################################
 #                End Opensearch patches.

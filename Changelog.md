@@ -13,6 +13,7 @@
 - Add self-service URL to env_vars
 - Removing value for newrelic-tags-exporter image and hardcoding in statefulset manifests
 - Added p1as-observability and cloudwatch deployment to pcb
+- Removed the warm node pool and its associated opensearch-sc1 StorageClass
 
 _Changes:_
 
@@ -28,6 +29,7 @@ _Changes:_
 - [X] PDO-8782 Figure out different setup for newrelic-tags-exporter for microservices
 - [X] PDO-8958 Global DNS: Implement Changes in PCB
 - [X] PDO-8981 Add self-service URL to env_vars
+- [X] PDO-9122 Revise the ISM and remove WARM node pools and its components
 
 ### 2.0.0
 
