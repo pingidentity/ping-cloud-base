@@ -1,0 +1,199 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus
+  namespace: prometheus
+  annotations:
+    $patch: delete
+spec:
+  type: ExternalName
+  externalName: prometheus-central.${PRIMARY_DNS_ZONE}
+  $patch: replace
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: karpentercapacity
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: karpenterperformance
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: kubernetesapiserver
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: kubernetesapiserverperfomance
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: kubernetesclusterautoscaler
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: kubernetesclusterstorage
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: kubernetesstoragenamespace
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: logging
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: opensearch
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: p1asingress
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: prometheus
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: os-pa-audit
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: os-pf-audit
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: kubernetesdashboards
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: monitoringdashboards
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: pingdashboards
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+  namespace: prometheus
+$patch: delete
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: grafana
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: volume-autoscaler
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grafana-operator-controller-manager
+  name: grafana-operator-controller-manager
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: grafana-operator-controller-manager
+  name: grafana-operator-metrics-service
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: grafana-operator-permissions
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: grafana-operator-permissions
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  name: grafana-operator-controller-manager
+  namespace: prometheus
+$patch: delete
+
