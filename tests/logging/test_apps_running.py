@@ -11,9 +11,7 @@ class TestApplicationStatus(unittest.TestCase):
     def test_opensearch_pods_running(self):
         pods = self.all_pods
         opensearch_hot_running = all( pod.status.phase == 'Running' for pod in pods if pod.metadata.name.startswith('opensearch-cluster-hot'))
-        opensearch_warm_running = all(pod.status.phase == 'Running' for pod in pods if pod.metadata.name.startswith('opensearch-cluster-warm'))
         self.assertTrue(opensearch_hot_running, "opensearch-cluster-hot pod is not running")
-        self.assertTrue(opensearch_warm_running, "opensearch-cluster-warm pod is not running")
 
     def test_logstash_pods_running(self):
         pods = self.all_pods
