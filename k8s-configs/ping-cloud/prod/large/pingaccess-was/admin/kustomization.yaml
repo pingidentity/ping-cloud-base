@@ -20,14 +20,14 @@ patchesJson6902:
       name: pingaccess-was-admin
     patch: |-
       - op: replace
-        path: /spec/template/spec/initContainers/5/resources/limits/cpu
+        path: /spec/template/spec/initContainers/6/resources/limits/cpu
         value: 2
       - op: replace
-        path: /spec/template/spec/initContainers/5/resources/limits/memory
+        path: /spec/template/spec/initContainers/6/resources/limits/memory
         value: 6Gi
       - op: replace
-        path: /spec/template/spec/initContainers/5/resources/requests/cpu
+        path: /spec/template/spec/initContainers/6/resources/requests/cpu
         value: 2
       - op: replace
-        path: /spec/template/spec/initContainers/5/resources/requests/memory
+        path: /spec/template/spec/initContainers/6/resources/requests/memory
         value: 6Gi

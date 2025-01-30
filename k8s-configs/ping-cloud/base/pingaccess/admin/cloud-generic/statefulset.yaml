@@ -120,6 +120,29 @@ spec:
         volumeMounts:
         - name: shared-dir
           mountPath: /opt/shared-dir
+      - name: perpetual-license
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
+        imagePullPolicy: Always
+        command: [ "sh", "-c", "python3 /opt/in/perpetual_license.py" ]
+        env:
+        - name: PRODUCT_LICENSE_NAME
+          value: "pingaccess"
+        - name: LICENSE_EMPTY_DIR_PATH
+          value: "/opt/license"
+        envFrom:
+        - configMapRef:
+            name: pingaccess-admin-environment-variables
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - name: pingaccess-init
+          mountPath: /opt/in/perpetual_license.py
+          subPath: perpetual_license.py
+        - name: license-dir
+          mountPath: /opt/license
       - name: pingaccess-upgrade
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
         imagePullPolicy: Always
@@ -165,6 +188,8 @@ spec:
         - name: upgrade-dir
           mountPath: /tmp/instance
           subPath: instance
+        - name: license-dir
+          mountPath: /opt/license
         ports:
         - containerPort: 9000
         - containerPort: 9090
@@ -259,6 +284,8 @@ spec:
         - name: upgrade-dir
           mountPath: /tmp/instance
           subPath: instance
+        - name: license-dir
+          mountPath: /opt/license
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/85-pa-admin-readiness.sh ]
@@ -309,6 +336,8 @@ spec:
       - name: shared-dir
         emptyDir: {}
       - name: data-dir
+        emptyDir: {}
+      - name: license-dir
         emptyDir: {}
       - name: upgrade-dir
         emptyDir: {}
