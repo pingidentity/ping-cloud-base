@@ -133,6 +133,29 @@ spec:
         volumeMounts:
         - name: shared-dir
           mountPath: /opt/shared-dir
+      - name: perpetual-license
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
+        imagePullPolicy: Always
+        command: [ "sh", "-c", "python3 /opt/in/perpetual_license.py" ]
+        env:
+        - name: PRODUCT_LICENSE_NAME
+          value: "pingaccess"
+        - name: LICENSE_EMPTY_DIR_PATH
+          value: "/opt/license"
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - name: pingaccess-init
+          mountPath: /opt/in/perpetual_license.py
+          subPath: perpetual_license.py
+        - name: license-dir
+          mountPath: /opt/license
       containers:
       - name: pingaccess
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
@@ -172,6 +195,8 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/ds_env_vars
           subPath: ds_env_vars
+        - name: license-dir
+          mountPath: /opt/license
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/99-pa-engine-liveness.sh ]
@@ -251,6 +276,8 @@ spec:
       - name: shared-dir
         emptyDir: {}
       - name: data-dir
+        emptyDir: {}
+      - name: license-dir
         emptyDir: {}
       - name: pingaccess-init
         configMap:

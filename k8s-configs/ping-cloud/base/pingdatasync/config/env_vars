@@ -64,3 +64,7 @@ P1AS_PD_HOST_INITIAL_CONNECTIONS=1
 P1AS_PD_HOST_MAX_CONNECTIONS=4
 
 IS_P1AS_TEST_MODE=false
+
+# Only use if you want to provide your own SSM path to perpetual license
+# The default is that automation will determine SSM path to retrieve product license
+OVERRIDE_PRODUCT_LICENSE=

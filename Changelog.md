@@ -9,6 +9,7 @@
 - Enable consolidation for default nodepool and add multiple instance type
 - Remove helm-command.sh shim workaround
 - Upgrade Kustomize to 5.5.0
+- Integrate init-container to use perpetual license
 - Enable default ingress object to accept LDAPS traffic through Nginx Private
 - Add self-service URL to env_vars
 - Removing value for newrelic-tags-exporter image and hardcoding in statefulset manifests
@@ -20,6 +21,7 @@ _Changes:_
 - [X] PDO-4881 Use code sharing methods for Logger.lib.sh
 - [X] PDO-5995 Add p1as-observability to PCB: Cloudwatch Agent
 - [X] PDO-6116 Kustomize: Fix kustomizations to not be completely empty in order to support v5.1+
+- [X] PDO-7396 Integrate init-container to use perpetual license
 - [X] PDO-7593 Create default ingress object to accept LDAPS traffic through Nginx Private
 - [X] PDO-7616 Update PingDirectory resource limits
 - [X] PDO-8109 Reconcile Grafana differences with p1as-observability

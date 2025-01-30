@@ -39,3 +39,7 @@ PING_CENTRAL_LOG_LEVEL=ERROR
 PING_CENTRAL_VERIFY_HOSTNAME=true
 PING_CENTRAL_SERVER_PORT=9022
 DEV_ENDPOINTS_ENABLED=false
+
+# Only use if you want to provide your own SSM path to perpetual license
+# The default is that automation will determine SSM path to retrieve product license
+OVERRIDE_PRODUCT_LICENSE=

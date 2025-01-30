@@ -93,6 +93,29 @@ spec:
         envFrom:
           - configMapRef:
               name: pingdatasync-environment-variables
+      - name: perpetual-license
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync/dev:v2.1-release-branch-latest
+        imagePullPolicy: Always
+        command: [ "sh", "-c", "python3 /opt/in/perpetual_license.py" ]
+        env:
+        - name: PRODUCT_LICENSE_NAME
+          value: "pingdirectory"
+        - name: LICENSE_EMPTY_DIR_PATH
+          value: "/opt/license"
+        envFrom:
+        - configMapRef:
+            name: pingdatasync-environment-variables
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - name: pingdatasync-init
+          mountPath: /opt/in/perpetual_license.py
+          subPath: perpetual_license.py
+        - name: license-dir
+          mountPath: /opt/license
       containers:
       - name: pingdatasync
         securityContext:
@@ -207,12 +230,16 @@ spec:
           - name: pingdatasync-truststore-certs
             mountPath: /usr/local/secrets/truststore_certs
             readOnly: true
+          - name: license-dir
+            mountPath: /opt/license
       securityContext:
         fsGroup: 9999
       volumes:
         - name: ssh-dir
           emptyDir: {}
         - name: data-dir
+          emptyDir: {}
+        - name: license-dir
           emptyDir: {}
         - name: pingdatasync-init
           configMap:
