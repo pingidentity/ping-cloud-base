@@ -71,7 +71,7 @@ _Changes:_
 - [X] PDO-8418 Create and add TLS roles to PingOne
 - [X] PDO-8788 Thanos: Disable in 2.0 Release
 - [X] PDO-8944 Exclude ping-cloud-dashboards repo from git branch reference replacement
-- [X] PDO-9123 Fix NewRelic license key value substitution in values.yaml
+- [X] PDO-9213 Fix NewRelic license key value substitution in values.yaml
 
 ### 1.19.2.0
 
