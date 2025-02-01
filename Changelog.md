@@ -15,6 +15,7 @@
 - Removing value for newrelic-tags-exporter image and hardcoding in statefulset manifests
 - Added p1as-observability and cloudwatch deployment to pcb
 - Removed the warm node pool and its associated opensearch-sc1 StorageClass
+- Cost Savings: NGINX  (public and private): Reduce CPU and mem requests
 
 _Changes:_
 
@@ -24,6 +25,7 @@ _Changes:_
 - [X] PDO-7396 Integrate init-container to use perpetual license
 - [X] PDO-7593 Create default ingress object to accept LDAPS traffic through Nginx Private
 - [X] PDO-7616 Update PingDirectory resource limits
+- [X] PDO-7763 Cost Savings: NGINX  (public and private): Reduce CPU and mem requests
 - [X] PDO-8109 Reconcile Grafana differences with p1as-observability
 - [X] PDO-8205 Enable consolidation for default nodepool and add multiple instance type
 - [X] PDO-8371 Remove helm-command.sh shim workaround
