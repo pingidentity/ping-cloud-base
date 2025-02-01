@@ -1,6 +1,6 @@
 - op: replace
   path: /spec/template/spec/containers/0/resources/limits/memory
-  value: 4Gi
+  value: 2.5Gi
 - op: replace
   path: /spec/template/spec/containers/0/resources/requests/memory
-  value: 4Gi
+  value: 2Gi

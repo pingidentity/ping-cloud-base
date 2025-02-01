@@ -28,11 +28,11 @@
       runAsGroup: 1000
     resources:
       limits:
-        cpu: 2
-        memory: 2Gi
+        cpu: 1500m
+        memory: 1Gi
       requests:
-        cpu: 2
-        memory: 2Gi
+        cpu: 1200m
+        memory: 500Mi
     env:
     - name: AWS_REGION
       value: us-east-2
