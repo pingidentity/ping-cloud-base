@@ -48,3 +48,7 @@ pingdirectory:
   pdUseSharedCache: "false"
   # Set this to define overall cache size .This would to be shared across all local backends
   sharedCachePercent: "55"
+  license:
+    # Only use if you want to provide your own SSM path to perpetual license
+    # The default is that automation will determine SSM path to retrieve product license
+    overrideProductLicense: ""
