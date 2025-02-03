@@ -177,9 +177,9 @@ patches:
                 memory: "500Mi"
                 cpu: "500m"
               # The ArgoCD server gets hit especially hard by requests from the UI, this will hopefully be fixed by
-              # https://github.com/argoproj/argo-cd/issues/14947 in 2.10 (2.10 RC is already out),
+              # https://github.com/argoproj/argo-cd/issues/14947 in future Argocd releases,
               # https://github.com/argoproj/argo-cd/issues/15509 is another related ticket
-              # We have PDO-6569 to upgrade ArgoCD to 2.10+ in order to take advantage once these issues are solved
+              # We have PDO-6569 to upgrade ArgoCD to 2.13+ in order to take advantage once these issues are solved
               limits:
                 cpu: "1000m"
 - patch: |-
@@ -272,7 +272,7 @@ patches:
           - name: git-ops-command
             command: [/var/run/argocd/argocd-cmp-server] # Entrypoint should be Argo CD lightweight CMP server i.e. argocd-cmp-server
             # We don't need to use the full ArgoCD image here but we use it for consistency sake when installing all of the tools for both containers.
-            image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/argo/argocd:v2.8.3
+            image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/argo/argocd:v2.12.4
             securityContext:
               runAsNonRoot: true
               runAsUser: 999
