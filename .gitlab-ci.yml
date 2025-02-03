@@ -184,6 +184,7 @@ pa-was-integration-tests:
   - cert-manager
   - logging
   - self-service
+  - argocd
 
 #################################################
 # All integration tests defined to run on the  #
