@@ -97,6 +97,8 @@ spec:
         repoURL: ${CLUSTER_STATE_REPO_URL}
         targetRevision: "{{metadata.annotations.argocd-branch}}"
         path: "{{path}}"
+        plugin:
+          name: git-ops-command
       destination:
         server: "{{server}}"
       ignoreDifferences:
