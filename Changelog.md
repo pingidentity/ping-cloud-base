@@ -7,7 +7,6 @@
 - Reconcile Grafana differences with p1as-observability
 - Kustomize: Fix kustomizations to not be completely empty in order to support v5.1+
 - Enable consolidation for default nodepool and add multiple instance type
-- Remove helm-command.sh shim workaround
 - Upgrade Kustomize to 5.5.0
 - Integrate init-container to use perpetual license
 - Enable default ingress object to accept LDAPS traffic through Nginx Private
@@ -28,7 +27,6 @@ _Changes:_
 - [X] PDO-7763 Cost Savings: NGINX  (public and private): Reduce CPU and mem requests
 - [X] PDO-8109 Reconcile Grafana differences with p1as-observability
 - [X] PDO-8205 Enable consolidation for default nodepool and add multiple instance type
-- [X] PDO-8371 Remove helm-command.sh shim workaround
 - [X] PDO-8372 Upgrade Kustomize to 5.5.0
 - [X] PDO-8782 Figure out different setup for newrelic-tags-exporter for microservices
 - [X] PDO-8958 Global DNS: Implement Changes in PCB
