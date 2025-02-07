@@ -453,6 +453,8 @@ patches:
             envFrom:
               - configMapRef:
                   name: argocd-bootstrap
+              - configMapRef:
+                  name: p14c-environment-variables
             command:
               - /bin/sh
               - -c
