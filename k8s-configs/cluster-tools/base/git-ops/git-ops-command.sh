@@ -238,12 +238,17 @@ set_helm_flags() {
 ########################################################################################################################
 # Clean up on exit. If non-zero exit, then print the log file to stdout before deleting it. Change back to the previous
 # directory. Delete the kustomize build directory, if it exists.
+# NOTE: Even with bash -e set for the script overall, this function will not exit on error if called by a trap.
 ########################################################################################################################
 cleanup() {
+  # Capture original exit code passed via trap on exit
+  orig_exit_code=$?
   test $? -ne 0 && cat "${LOG_FILE}"
   rm -f "${LOG_FILE}"
   cd - >/dev/null 2>&1
   test ! -z "${TMP_DIR}" && rm -rf "${TMP_DIR}"
+  # NOTE: the final command of the script should always exit zero for success. We rely on the trap to pass the code.
+  exit "${orig_exit_code}"
 }
 
 ########################################################################################################################
@@ -370,8 +375,6 @@ monorepo_main() {
     log "generating yaml files from '${BUILD_DIR}' to '${OUT_DIR}'"
     eval "${KUSTOMIZE_EXECUTABLE} build --load-restrictor LoadRestrictionsNone ${BUILD_DIR} --output ${OUT_DIR}"
   fi
-
-  exit 0
 }
 
 ########################################################################################################################
