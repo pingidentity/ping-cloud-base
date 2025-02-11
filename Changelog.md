@@ -15,6 +15,7 @@
 - Added p1as-observability and cloudwatch deployment to pcb
 - Removed the warm node pool and its associated opensearch-sc1 StorageClass
 - Cost Savings: NGINX  (public and private): Reduce CPU and mem requests
+- Properly handle failures for cluster-state and profile-repo scripts
 
 _Changes:_
 
@@ -22,6 +23,7 @@ _Changes:_
 - [X] PDO-5995 Add p1as-observability to PCB: Cloudwatch Agent
 - [X] PDO-6116 Kustomize: Fix kustomizations to not be completely empty in order to support v5.1+
 - [X] PDO-7396 Integrate init-container to use perpetual license
+- [X] PDO-7425 Properly handle failures for cluster-state and profile-repo scripts
 - [X] PDO-7510 Create an "easy" way for BeOps users to get user credentials token OS/Argo
 - [X] PDO-7593 Create default ingress object to accept LDAPS traffic through Nginx Private
 - [X] PDO-7616 Update PingDirectory resource limits

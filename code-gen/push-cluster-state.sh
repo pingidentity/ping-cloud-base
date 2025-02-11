@@ -2,6 +2,7 @@
 
 # If VERBOSE is true, then output line-by-line execution
 "${VERBOSE:-false}" && set -x
+"${EXIT_ON_FAILURE:-true}" && set -e
 
 # PREREQUISITES: Should be compatible with Debian.
 #                This script is used by platform automation on Ubuntu (Debian) to push generated K8s manifest.
