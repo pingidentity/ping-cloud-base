@@ -2,7 +2,7 @@
 
 # If VERBOSE is true, then output line-by-line execution
 "${VERBOSE:-false}" && set -x
-"${EXIT_ON_FAILURE:-false}" && set -e
+"${EXIT_ON_FAILURE:-true}" && set -e
 
 ########################################################################################################################
 #
@@ -1538,6 +1538,11 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
   echo "=====> Done creating environment '${ENV}'"
 )
+subshell_exit_code=$?
+if [[ $subshell_exit_code -ne 0 ]]; then
+    echo "Environment '${ENV}' creation failed with exit code ${subshell_exit_code}"
+    exit $subshell_exit_code
+fi
 done
 
 cp -p push-cluster-state.sh "${TARGET_DIR}"
