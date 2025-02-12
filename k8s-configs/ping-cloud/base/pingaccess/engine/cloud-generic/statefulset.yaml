@@ -197,6 +197,10 @@ spec:
           subPath: ds_env_vars
         - name: license-dir
           mountPath: /opt/license
+        - name: p1as-sso-secrets
+          mountPath: /opt/sso/p1as_secrets
+        - name: p1as-sso-configs
+          mountPath: /opt/sso/p1as_configs
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/99-pa-engine-liveness.sh ]
@@ -232,6 +236,10 @@ spec:
           value: "/opt/shared-dir/newrelic.yml"
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
           value: "true"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
@@ -307,3 +315,13 @@ spec:
         configMap:
           name: pa-exporter-config
           defaultMode: 0644
+      - name: p1as-sso-secrets
+        secret:
+          secretName: pingaccess-admin-p14c
+          optional: true
+          defaultMode: 0400
+      - name: p1as-sso-configs
+        configMap:
+          name: pingaccess-admin-p14c
+          optional: true
+          defaultMode: 0400

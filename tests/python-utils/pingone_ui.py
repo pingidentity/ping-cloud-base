@@ -231,32 +231,16 @@ class PingOneUser:
         )
 
 
-class ConsoleUILoginTestBase(unittest.TestCase):
+class PingOneUIDriver:
     """
-    Base class for PingOne console UI login tests. Contains a basic suite of tests to verify that a user can log in to
-    the PingOne console and access the app console with SSO.
+    Class for interacting with the PingOne UI
+    """
 
-    Add test cases specific to each app in the child classes.
-    """
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def __init__(self):
         chromedriver_autoinstaller.install()
-        # Ignore warnings for insecure http requests
-        warnings.filterwarnings(
-            "ignore", category=urllib3.exceptions.InsecureRequestWarning
-        )
-        cls.config = None
+        self.browser = None
 
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        # Ignore warnings for open sockets when running requests module with python unittest module
-        # Ref: https://github.com/psf/requests/issues/3912
-        warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)
-        cls.config.delete_users()
-
-    def setUp(self):
+    def setup_browser(self):
         options = webdriver.ChromeOptions()
         # Ignore certificate error warning page from chrome
         options.add_argument("--ignore-ssl-errors=yes")
@@ -266,16 +250,22 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         options.add_argument("--disable-dev-shm-usage")  # run in Docker
         self.browser = webdriver.Chrome(options=options)
         self.browser.implicitly_wait(60)
-        self.addCleanup(self.browser.quit)
 
-    def pingone_login(self, username: str, password: str):
-        self.browser.get(ENV_UI_URL)
+    def teardown_browser(self):
+        if self.browser:
+            self.browser.quit()
+
+    def login(self, url: str, username: str, password: str):
+        self.self_service_login(url=url, username=username, password=password)
+        self.close_popup()
+
+    def self_service_login(self, url: str, username: str, password: str):
+        self.browser.get(url)
         self.browser.find_element(By.ID, "username").send_keys(username)
         self.browser.find_element(By.ID, "password").send_keys(password)
         self.browser.find_element(
             By.CSS_SELECTOR, 'button[data-id="submit-button"]'
         ).click()
-        self.close_popup()
 
     def close_popup(self):
         try:
@@ -291,57 +281,92 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         ):
             pass
 
+    def self_service_get_token(self):
+        token_tag = self.browser.find_element(By.ID, "id-token")
+        return token_tag.get_attribute('innerText')
+
     @tenacity.retry(
         reraise=True,
         wait=tenacity.wait_fixed(5),
         before_sleep=tenacity.before_sleep_log(logger, logging.INFO),
         stop=tenacity.stop_after_attempt(60),
     )
-    def wait_until_url_is_reachable(self, admin_console_url: str):
+    def wait_until_url_is_reachable(self, url: str):
         try:
             response = requests.get(
-                admin_console_url, allow_redirects=True, verify=False
+                url, allow_redirects=True, verify=False
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError:
             raise
 
+
+class ConsoleUILoginTestBase(unittest.TestCase):
+    """
+    Base class for PingOne console UI login tests. Contains a basic suite of tests to verify that a user can log in to
+    the PingOne console and access the app console with SSO.
+
+    Add test cases specific to each app in the child classes.
+    """
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # chromedriver_autoinstaller.install()
+        cls.p1_ui = PingOneUIDriver()
+        # Ignore warnings for insecure http requests
+        warnings.filterwarnings(
+            "ignore", category=urllib3.exceptions.InsecureRequestWarning
+        )
+        cls.config = None
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        # Ignore warnings for open sockets when running requests module with python unittest module
+        # Ref: https://github.com/psf/requests/issues/3912
+        warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)
+        cls.config.delete_users()
+
+    def setUp(self):
+        self.p1_ui.setup_browser()
+        self.addCleanup(self.p1_ui.teardown_browser)
+
     def test_user_can_log_in_to_pingone(self):
-        self.pingone_login(username=self.config.local_user.username, password=self.config.local_user.password)
+        self.p1_ui.login(url=ENV_UI_URL, username=self.config.local_user.username, password=self.config.local_user.password)
         # The content iframe on the home page displays the list of environments, have to switch or selenium can't see it
 
         try:
-            iframe = self.browser.find_element(By.ID, "content-iframe")
-            self.browser.switch_to.frame(iframe)
-            self.close_popup()
+            iframe = self.p1_ui.browser.find_element(By.ID, "content-iframe")
+            self.p1_ui.browser.switch_to.frame(iframe)
+            self.p1_ui.close_popup()
             self.assertTrue(
-                "Environments" in self.browser.page_source,
-                f"Expected 'Environments' to be in page source: {self.browser.page_source}",
+                "Environments" in self.p1_ui.browser.page_source,
+                f"Expected 'Environments' to be in page source: {self.p1_ui.browser.page_source}",
             )
         except selenium.common.exceptions.NoSuchElementException:
             self.fail(
                 f"PingOne console 'Environments' page was not displayed when attempting to access {ENV_UI_URL}. "
-                f"Browser contents: {self.browser.page_source}"
+                f"Browser contents: {self.p1_ui.browser.page_source}"
             )
 
     def test_user_can_access_console(self):
         # Wait for admin console to be reachable if it has been restarted by another test
-        self.wait_until_url_is_reachable(self.config.console_url)
+        self.p1_ui.wait_until_url_is_reachable(self.config.console_url)
         # Attempt to access the console with SSO
-        self.pingone_login(username=self.config.local_user.username, password=self.config.local_user.password)
-        self.browser.get(self.config.console_url)
+        self.p1_ui.login(url=ENV_UI_URL, username=self.config.local_user.username, password=self.config.local_user.password)
+        self.p1_ui.browser.get(self.config.console_url)
         try:
             self.assertTrue(
                 any_browser_element_displayed(
-                    self.browser, self.config.access_granted_xpaths
+                    self.p1_ui.browser, self.config.access_granted_xpaths
                 ),
                 f"{self.config.app_name} console was not displayed when attempting to access "
-                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
+                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.p1_ui.browser.page_source}",
             )
         except NoSuchElementException:
             self.fail(
                 f"{self.config.app_name} console was not displayed when attempting to access "
-                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
+                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.p1_ui.browser.page_source}",
             )
 
     @unittest.skipIf(
@@ -350,25 +375,25 @@ class ConsoleUILoginTestBase(unittest.TestCase):
     )
     def test_external_user_can_access_console(self):
         # Wait for admin console to be reachable if it has been restarted by another test
-        self.wait_until_url_is_reachable(self.config.console_url)
+        self.p1_ui.wait_until_url_is_reachable(self.config.console_url)
         try:
             login_from_external_idp(
-                browser=self.browser,
+                browser=self.p1_ui.browser,
                 console_url=self.config.console_url,
                 username=self.config.external_user.username,
                 password=self.config.external_user.password,
             )
             self.assertTrue(
                 any_browser_element_displayed(
-                    self.browser, self.config.access_granted_xpaths
+                    self.p1_ui.browser, self.config.access_granted_xpaths
                 ),
                 f"{self.config.app_name} console was not displayed when attempting to access "
-                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
+                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.p1_ui.browser.page_source}",
             )
         except NoSuchElementException:
             self.fail(
                 f"{self.config.app_name} console was not displayed when attempting to access "
-                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
+                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.p1_ui.browser.page_source}",
             )
 
     @unittest.skipIf(
@@ -377,31 +402,31 @@ class ConsoleUILoginTestBase(unittest.TestCase):
     )
     def test_external_user_without_role_cannot_access_console(self):
         # Wait for admin console to be reachable if it has been restarted by another test
-        self.wait_until_url_is_reachable(self.config.console_url)
+        self.p1_ui.wait_until_url_is_reachable(self.config.console_url)
         try:
             login_from_external_idp(
-                browser=self.browser,
+                browser=self.p1_ui.browser,
                 console_url=self.config.console_url,
                 username=self.config.no_role_external_user.username,
                 password=self.config.no_role_external_user.password,
             )
             self.assertTrue(
                 any_browser_element_displayed(
-                    self.browser, self.config.access_denied_xpaths
+                    self.p1_ui.browser, self.config.access_denied_xpaths
                 ),
                 f"Expected '{self.config.access_denied_xpaths}' to be in browser contents: "
-                f"{self.browser.page_source}",
+                f"{self.p1_ui.browser.page_source}",
             )
         except NoSuchElementException:
             self.fail(
                 f"{self.config.app_name} console was not displayed when attempting to access "
-                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.browser.page_source}",
+                f"{self.config.console_url}. SSO may have failed. Browser contents: {self.p1_ui.browser.page_source}",
             )
 
     def test_user_without_role_cannot_access_console(self):
-        self.wait_until_url_is_reachable(self.config.console_url)
+        self.p1_ui.wait_until_url_is_reachable(self.config.console_url)
         login_as_pingone_user(
-            browser=self.browser,
+            browser=self.p1_ui.browser,
             console_url=self.config.console_url,
             username=self.config.no_role_user.username,
             password=self.config.no_role_user.password,
@@ -409,16 +434,16 @@ class ConsoleUILoginTestBase(unittest.TestCase):
 
         self.assertTrue(
             any_browser_element_displayed(
-                browser=self.browser, xpaths=self.config.access_denied_xpaths
+                browser=self.p1_ui.browser, xpaths=self.config.access_denied_xpaths
             ),
-            f"Expected '{self.config.access_denied_xpaths}' to be in browser contents: {self.browser.page_source}",
+            f"Expected '{self.config.access_denied_xpaths}' to be in browser contents: {self.p1_ui.browser.page_source}",
         )
 
     def test_user_cannot_access_console_without_correct_population(self):
-        self.wait_until_url_is_reachable(self.config.console_url)
+        self.p1_ui.wait_until_url_is_reachable(self.config.console_url)
 
         login_as_pingone_user(
-            browser=self.browser,
+            browser=self.p1_ui.browser,
             console_url=self.config.console_url,
             username=self.config.default_pop_user.username,
             password=self.config.default_pop_user.password,
@@ -426,7 +451,7 @@ class ConsoleUILoginTestBase(unittest.TestCase):
 
         self.assertTrue(
             any_browser_element_displayed(
-                browser=self.browser, xpaths=self.config.access_denied_xpaths
+                browser=self.p1_ui.browser, xpaths=self.config.access_denied_xpaths
             ),
-            f"Expected '{self.config.access_denied_xpaths}' to be in browser contents: {self.browser.page_source}",
+            f"Expected '{self.config.access_denied_xpaths}' to be in browser contents: {self.p1_ui.browser.page_source}",
         )

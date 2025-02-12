@@ -223,6 +223,10 @@ spec:
           value: "/opt/shared-dir/newrelic.yml"
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
           value: "true"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         envFrom:
         - configMapRef:
             name: pingaccess-was-environment-variables
