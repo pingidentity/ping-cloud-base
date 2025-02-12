@@ -286,6 +286,10 @@ spec:
           subPath: instance
         - name: license-dir
           mountPath: /opt/license
+        - name: p1as-sso-secrets
+          mountPath: /opt/sso/p1as_secrets
+        - name: p1as-sso-configs
+          mountPath: /opt/sso/p1as_configs
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/85-pa-admin-readiness.sh ]
@@ -322,6 +326,10 @@ spec:
           value: "/opt/shared-dir/newrelic.yml"
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
           value: "true"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         envFrom:
         - configMapRef:
             name: pingaccess-admin-environment-variables
@@ -366,6 +374,16 @@ spec:
       - name: pingaccess-passwords
         secret:
           secretName: pingaccess-passwords
+          optional: true
+          defaultMode: 0400
+      - name: p1as-sso-secrets
+        secret:
+          secretName: pingaccess-admin-p14c
+          optional: true
+          defaultMode: 0400
+      - name: p1as-sso-configs
+        configMap:
+          name: pingaccess-admin-p14c
           optional: true
           defaultMode: 0400
   volumeClaimTemplates:
