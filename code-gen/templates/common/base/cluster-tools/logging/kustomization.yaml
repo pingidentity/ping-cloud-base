@@ -45,7 +45,6 @@ patchesStrategicMerge:
     logs.region: ${REGION}
     tenant_domain: ${TENANT_DOMAIN}
     primary_tenant_domain: ${PRIMARY_TENANT_DOMAIN}
-    newrelic_cluster_name: ${NEW_RELIC_ENVIRONMENT_NAME}
 
 ### enrichment-bootstrap service account ###
 - |-

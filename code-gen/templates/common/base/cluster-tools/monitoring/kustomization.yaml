@@ -25,220 +25,220 @@ patchesStrategicMerge:
     
 
 # NewRelic resources
-- |-
-  kind: ConfigMap
-  metadata:
-    name: nri-bundle-newrelic-prometheus-agent
-    namespace: newrelic
-  apiVersion: v1
-  data:
-    config.yaml: |-
-      # Configuration for newrelic-prometheus-configurator
-      newrelic_remote_write:
-        extra_write_relabel_configs:
-        - action: drop
-          regex: kube_.+|container_.+|machine_.+|cadvisor_.+
-          source_labels:
-          - __name__
-        - action: replace
-          regex: timeseries_write_(.*)
-          replacement: counter
-          separator: ;
-          source_labels:
-          - __name__
-          target_label: newrelic_metric_type
-        - action: replace
-          regex: sql_byte(.*)
-          replacement: counter
-          separator: ;
-          source_labels:
-          - __name__
-          target_label: newrelic_metric_type
-      static_targets:
-        jobs:
-        - extra_metric_relabel_config:
-          - action: keep
-            regex: prometheus_agent_active_series|prometheus_target_interval_length_seconds|prometheus_target_scrape_pool_targets|prometheus_remote_storage_samples_pending|prometheus_remote_storage_samples_in_total|prometheus_remote_storage_samples_retried_total|prometheus_agent_corruptions_total|prometheus_remote_storage_shards|prometheus_sd_kubernetes_events_total|prometheus_agent_checkpoint_creations_failed_total|prometheus_agent_checkpoint_deletions_failed_total|prometheus_remote_storage_samples_dropped_total|prometheus_remote_storage_samples_failed_total|prometheus_sd_kubernetes_http_request_total|prometheus_agent_truncate_duration_seconds_sum|prometheus_build_info|process_resident_memory_bytes|process_virtual_memory_bytes|process_cpu_seconds_total|prometheus_remote_storage_bytes_total
-            source_labels:
-            - __name__
-          job_name: self-metrics
-          skip_sharding: true
-          targets:
-          - localhost:9090
-      common:
-        external_labels:
-          cluster_name: ${NEW_RELIC_ENVIRONMENT_NAME}
-        scrape_interval: 30s
-      kubernetes:
-        jobs:
-        - job_name_prefix: default
-          target_discovery:
-            endpoints: true
-            filter:
-              annotations:
-                prometheus.io/scrape: true
-            pod: true
-        - integrations_filter:
-            enabled: false
-          job_name_prefix: newrelic
-          tls_config:
-            insecure_skip_verify: true
-          target_discovery:
-            endpoints: true
-            filter:
-              annotations:
-                newrelic.io/scrape: true
-            pod: true
-        integrations_filter:
-          app_values:
-          - redis
-          - traefik
-          - calico
-          - nginx
-          - coredns
-          - kube-dns
-          - etcd
-          - cockroachdb
-          - velero
-          - harbor
-          - argocd
-          enabled: true
-          source_labels:
-          - app.kubernetes.io/name
-          - app.newrelic.io/name
-          - k8s-app
+# - |-
+#   kind: ConfigMap
+#   metadata:
+#     name: nri-bundle-newrelic-prometheus-agent
+#     namespace: newrelic
+#   apiVersion: v1
+#   data:
+#     config.yaml: |-
+#       # Configuration for newrelic-prometheus-configurator
+#       newrelic_remote_write:
+#         extra_write_relabel_configs:
+#         - action: drop
+#           regex: kube_.+|container_.+|machine_.+|cadvisor_.+
+#           source_labels:
+#           - __name__
+#         - action: replace
+#           regex: timeseries_write_(.*)
+#           replacement: counter
+#           separator: ;
+#           source_labels:
+#           - __name__
+#           target_label: newrelic_metric_type
+#         - action: replace
+#           regex: sql_byte(.*)
+#           replacement: counter
+#           separator: ;
+#           source_labels:
+#           - __name__
+#           target_label: newrelic_metric_type
+#       static_targets:
+#         jobs:
+#         - extra_metric_relabel_config:
+#           - action: keep
+#             regex: prometheus_agent_active_series|prometheus_target_interval_length_seconds|prometheus_target_scrape_pool_targets|prometheus_remote_storage_samples_pending|prometheus_remote_storage_samples_in_total|prometheus_remote_storage_samples_retried_total|prometheus_agent_corruptions_total|prometheus_remote_storage_shards|prometheus_sd_kubernetes_events_total|prometheus_agent_checkpoint_creations_failed_total|prometheus_agent_checkpoint_deletions_failed_total|prometheus_remote_storage_samples_dropped_total|prometheus_remote_storage_samples_failed_total|prometheus_sd_kubernetes_http_request_total|prometheus_agent_truncate_duration_seconds_sum|prometheus_build_info|process_resident_memory_bytes|process_virtual_memory_bytes|process_cpu_seconds_total|prometheus_remote_storage_bytes_total
+#             source_labels:
+#             - __name__
+#           job_name: self-metrics
+#           skip_sharding: true
+#           targets:
+#           - localhost:9090
+#       common:
+#         external_labels:
+#           cluster_name: ${NEW_RELIC_ENVIRONMENT_NAME}
+#         scrape_interval: 30s
+#       kubernetes:
+#         jobs:
+#         - job_name_prefix: default
+#           target_discovery:
+#             endpoints: true
+#             filter:
+#               annotations:
+#                 prometheus.io/scrape: true
+#             pod: true
+#         - integrations_filter:
+#             enabled: false
+#           job_name_prefix: newrelic
+#           tls_config:
+#             insecure_skip_verify: true
+#           target_discovery:
+#             endpoints: true
+#             filter:
+#               annotations:
+#                 newrelic.io/scrape: true
+#             pod: true
+#         integrations_filter:
+#           app_values:
+#           - redis
+#           - traefik
+#           - calico
+#           - nginx
+#           - coredns
+#           - kube-dns
+#           - etcd
+#           - cockroachdb
+#           - velero
+#           - harbor
+#           - argocd
+#           enabled: true
+#           source_labels:
+#           - app.kubernetes.io/name
+#           - app.newrelic.io/name
+#           - k8s-app
 
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: nri-bundle-nri-kube-events-config
-    namespace: newrelic
-  data:
-    config.yaml: |-
-      sinks:
-      - name: newRelicInfra
-        config:
-          agentEndpoint: http://localhost:8001/v1/data
-          clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
-          agentHTTPTimeout: 30s
-      captureDescribe: true
-      describeRefresh: 24h
-      captureEvents: true
+# - |-
+#   apiVersion: v1
+#   kind: ConfigMap
+#   metadata:
+#     name: nri-bundle-nri-kube-events-config
+#     namespace: newrelic
+#   data:
+#     config.yaml: |-
+#       sinks:
+#       - name: newRelicInfra
+#         config:
+#           agentEndpoint: http://localhost:8001/v1/data
+#           clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
+#           agentHTTPTimeout: 30s
+#       captureDescribe: true
+#       describeRefresh: 24h
+#       captureEvents: true
 
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    namespace: newrelic
-    name: nri-bundle-nrk8s-agent-controlplane
-  data:
-    newrelic-infra.yml: |-
-      # This is the configuration file for the infrastructure agent. See:
-      # https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings/
-      custom_attributes:
-        clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
-      http_server_enabled: true
-      http_server_port: 8001
-      is_forward_only: true
+# - |-
+#   apiVersion: v1
+#   kind: ConfigMap
+#   metadata:
+#     namespace: newrelic
+#     name: nri-bundle-nrk8s-agent-controlplane
+#   data:
+#     newrelic-infra.yml: |-
+#       # This is the configuration file for the infrastructure agent. See:
+#       # https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings/
+#       custom_attributes:
+#         clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
+#       http_server_enabled: true
+#       http_server_port: 8001
+#       is_forward_only: true
 
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    namespace: newrelic
-    name: nri-bundle-nrk8s-agent-ksm
-  data:
-    newrelic-infra.yml: |-
-      # This is the configuration file for the infrastructure agent. See:
-      # https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings/
-      custom_attributes:
-        clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
-      http_server_enabled: true
-      http_server_port: 8002
-      is_forward_only: true
+# - |-
+#   apiVersion: v1
+#   kind: ConfigMap
+#   metadata:
+#     namespace: newrelic
+#     name: nri-bundle-nrk8s-agent-ksm
+#   data:
+#     newrelic-infra.yml: |-
+#       # This is the configuration file for the infrastructure agent. See:
+#       # https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings/
+#       custom_attributes:
+#         clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
+#       http_server_enabled: true
+#       http_server_port: 8002
+#       is_forward_only: true
 
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    namespace: newrelic
-    name: nri-bundle-nrk8s-agent-kubelet
-  data:
-    newrelic-infra.yml: |-
-      # This is the configuration file for the infrastructure agent. See:
-      # https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings/
-      custom_attributes:
-        clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
-      features:
-        docker_enabled: false
-      http_server_enabled: true
-      enable_process_metrics: true
-      http_server_port: 8003
+# - |-
+#   apiVersion: v1
+#   kind: ConfigMap
+#   metadata:
+#     namespace: newrelic
+#     name: nri-bundle-nrk8s-agent-kubelet
+#   data:
+#     newrelic-infra.yml: |-
+#       # This is the configuration file for the infrastructure agent. See:
+#       # https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings/
+#       custom_attributes:
+#         clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
+#       features:
+#         docker_enabled: false
+#       http_server_enabled: true
+#       enable_process_metrics: true
+#       http_server_port: 8003
 
-- |-
-  apiVersion: apps/v1
-  kind: DaemonSet
-  metadata:
-    namespace: newrelic
-    name: nri-bundle-nrk8s-controlplane
-  spec:    
-    template:
-      spec:
-        containers:
-          - name: controlplane
-            env:
-            - name: "NRI_KUBERNETES_CLUSTERNAME"
-              value: ${NEW_RELIC_ENVIRONMENT_NAME}
+# - |-
+#   apiVersion: apps/v1
+#   kind: DaemonSet
+#   metadata:
+#     namespace: newrelic
+#     name: nri-bundle-nrk8s-controlplane
+#   spec:    
+#     template:
+#       spec:
+#         containers:
+#           - name: controlplane
+#             env:
+#             - name: "NRI_KUBERNETES_CLUSTERNAME"
+#               value: ${NEW_RELIC_ENVIRONMENT_NAME}
 
-- |-
-  apiVersion: apps/v1
-  kind: DaemonSet
-  metadata:
-    namespace: newrelic
-    name: nri-bundle-nrk8s-kubelet
-  spec:
-    template:
-      spec:
-        containers:
-          - name: kubelet
-            env:
-            - name: "NRI_KUBERNETES_CLUSTERNAME"
-              value: ${NEW_RELIC_ENVIRONMENT_NAME}
-          - name: agent
-            env:
-            - name: "CLUSTER_NAME"
-              value: ${NEW_RELIC_ENVIRONMENT_NAME}
+# - |-
+#   apiVersion: apps/v1
+#   kind: DaemonSet
+#   metadata:
+#     namespace: newrelic
+#     name: nri-bundle-nrk8s-kubelet
+#   spec:
+#     template:
+#       spec:
+#         containers:
+#           - name: kubelet
+#             env:
+#             - name: "NRI_KUBERNETES_CLUSTERNAME"
+#               value: ${NEW_RELIC_ENVIRONMENT_NAME}
+#           - name: agent
+#             env:
+#             - name: "CLUSTER_NAME"
+#               value: ${NEW_RELIC_ENVIRONMENT_NAME}
 
-- |-
-  apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    namespace: newrelic
-    name: nri-bundle-nrk8s-ksm
-  spec:
-    template:
-      spec:
-        containers:
-          - name: ksm
-            env:
-            - name: "NRI_KUBERNETES_CLUSTERNAME"
-              value: ${NEW_RELIC_ENVIRONMENT_NAME}
+# - |-
+#   apiVersion: apps/v1
+#   kind: Deployment
+#   metadata:
+#     namespace: newrelic
+#     name: nri-bundle-nrk8s-ksm
+#   spec:
+#     template:
+#       spec:
+#         containers:
+#           - name: ksm
+#             env:
+#             - name: "NRI_KUBERNETES_CLUSTERNAME"
+#               value: ${NEW_RELIC_ENVIRONMENT_NAME}
 
-- |-
-  apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    namespace: newrelic
-    name: nri-bundle-nri-metadata-injection
-  spec:
-    template:
-      spec:
-        containers:
-          - name: nri-metadata-injection
-            env:
-            - name: clusterName
-              value: ${NEW_RELIC_ENVIRONMENT_NAME}
+# - |-
+#   apiVersion: apps/v1
+#   kind: Deployment
+#   metadata:
+#     namespace: newrelic
+#     name: nri-bundle-nri-metadata-injection
+#   spec:
+#     template:
+#       spec:
+#         containers:
+#           - name: nri-metadata-injection
+#             env:
+#             - name: clusterName
+#               value: ${NEW_RELIC_ENVIRONMENT_NAME}
 
 # Setting up Prometheus-related environment variables for volume-autoscaler
 - |-
@@ -259,16 +259,16 @@ patchesStrategicMerge:
 patchesJson6902:
 
 # Newrelic resources
-- target:
-    group: batch
-    version: v1
-    kind: Job
-    name: newrelic-license-secret-exporter
-    namespace: newrelic
-  patch: |-
-    - op: replace
-      path: /spec/template/metadata/annotations/SECRET_NAMESPACE
-      value: ${PING_CLOUD_NAMESPACE}
+# - target:
+#     group: batch
+#     version: v1
+#     kind: Job
+#     name: newrelic-license-secret-exporter
+#     namespace: newrelic
+#   patch: |-
+#     - op: replace
+#       path: /spec/template/metadata/annotations/SECRET_NAMESPACE
+#       value: ${PING_CLOUD_NAMESPACE}
 
 # Prometheus cross-region communication
 - target:
