@@ -391,7 +391,6 @@ ${USER_BASE_DN_4}
 ${USER_BASE_DN_5}
 ${ADMIN_CONSOLE_BRANDING}
 ${ENVIRONMENT_PREFIX}
-${NEW_RELIC_ENVIRONMENT_NAME}
 ${PF_PD_BIND_PORT}
 ${PF_PD_BIND_PROTOCOL}
 ${PF_PD_BIND_USESSL}
@@ -535,8 +534,6 @@ add_derived_variables() {
   # single P14C tenant. All of these apps will be created within the "Administrators" environment in the tenant.
   export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${REGION_ENV}-\${REGION_NICK_NAME}"
 
-  # The name of the environment as it will appear on the NewRelic console.
-  export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${REGION_ENV}_\${REGION_NICK_NAME}_k8s-cluster"
 }
 
 ########################################################################################################################

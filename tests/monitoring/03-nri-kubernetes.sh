@@ -18,7 +18,7 @@ NAMESPACE="newrelic"
 log "Using CLUSTER_NAME: ${CLUSTER_NAME}"
 
 testKubeletPodAndLog() {
-  POD_NAME=$(kubectl get pods -n "${NAMESPACE}" -l "app.kubernetes.io/instance=nri-bundle,app.kubernetes.io/component=kubelet" \
+  POD_NAME=$(kubectl get pods -n "${NAMESPACE}" -l "app.kubernetes.io/instance=release-name,app.kubernetes.io/component=kubelet" \
     -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}' | awk '{print $1}')
   assertNotNull "No running Kubelet pods found in namespace '${NAMESPACE}'." "${POD_NAME}"
   log "Found running pod: ${POD_NAME} in namespace '${NAMESPACE}'."

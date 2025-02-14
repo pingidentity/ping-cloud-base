@@ -14,3 +14,8 @@ cloudwatch:
     requests:
       cpu: 200m
       memory: 200Mi
+
+
+#Newrelic related values
+global:
+  cluster: ${TENANT_NAME}_${ENV}_${REGION}_k8s-cluster

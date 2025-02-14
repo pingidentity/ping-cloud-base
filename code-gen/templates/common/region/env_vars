@@ -22,9 +22,6 @@ STAGE=${STAGE}
 # This variable name is also used in forming the Signal Science Agent name as displayed in SigSci Dashboard.
 ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
 
-# The name of the environment as it will appear on the NewRelic console.
-NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
-
 # Customer-specific artifacts URL for region
 ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
 

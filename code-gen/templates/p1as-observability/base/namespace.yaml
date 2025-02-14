@@ -2,3 +2,8 @@ kind: Namespace
 apiVersion: v1
 metadata:
   name: amazon-cloudwatch
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: newrelic
