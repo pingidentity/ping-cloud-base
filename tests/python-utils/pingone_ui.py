@@ -23,7 +23,7 @@ K8S = k8s_utils.K8sUtils()
 ENV_METADATA_CM = K8S.get_configmap_values(namespace="ping-cloud", configmap_name="p14c-environment-metadata")
 ENV_METADATA = json.loads(ENV_METADATA_CM.get("information.json"))
 ENV_ID = ENV_METADATA.get("pingOneInformation").get("environmentId")
-ENV_UI_URL = f"https://console-staging.pingone.com/?env={ENV_ID}#home?nav=home"
+ENV_UI_URL = f"https://console.ort-one-pingone.com/?env={ENV_ID}#home?nav=home"
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)

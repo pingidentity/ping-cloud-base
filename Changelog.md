@@ -31,6 +31,7 @@
 - Add p1as-self-service microservice
 - Remove Thanos resources and use Prometheus standalone
 - Update global values.yaml for newRelicLicenseKey variable substitution
+- Migrate PingOne ORT URLs to ort-one-pingone.com
 
 _Changes:_
 
@@ -72,6 +73,7 @@ _Changes:_
 - [X] PDO-8788 Thanos: Disable in 2.0 Release
 - [X] PDO-8944 Exclude ping-cloud-dashboards repo from git branch reference replacement
 - [X] PDO-9213 Fix NewRelic license key value substitution in values.yaml
+- [X] PDO-9310 Migrate PingOne ORT URLs
 
 ### 1.19.2.0
 
