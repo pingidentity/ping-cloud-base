@@ -15,6 +15,7 @@ _Changes:_
 - [X] PDO-8783 Set AsyncRoot level to "INFO" in PF log4j2.xml file
 - [X] PDO-8825 Prometheus: Drop unused metrics
 - [X] PDO-8843 FluentBit: Fix multiline parsing config for certain logs
+- [X] PDO-9310 Migrate PingOne ORT URLs
 
 ### 1.19.1.0
 
