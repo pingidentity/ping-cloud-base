@@ -20,6 +20,7 @@
 - Add volume mounts for PA admin and engines for pingaccess-admin-p14c secret
 - Support new folder structure /deploy for PingAccess upgrades
 - Migrate PingOne ORT URLs to ort-one-pingone.com
+- EKS Managed Add-Ons: EBS CSI
 
 _Changes:_
 
@@ -37,6 +38,7 @@ _Changes:_
 - [X] PDO-8109 Reconcile Grafana differences with p1as-observability
 - [X] PDO-8205 Enable consolidation for default nodepool and add multiple instance type
 - [X] PDO-8372 Upgrade Kustomize to 5.5.0
+- [X] PDO-8383 EKS Managed Add-Ons: EBS CSI
 - [X] PDO-8782 Figure out different setup for newrelic-tags-exporter for microservices
 - [X] PDO-8958 Global DNS: Implement Changes in PCB
 - [X] PDO-8981 Add self-service URL to env_vars

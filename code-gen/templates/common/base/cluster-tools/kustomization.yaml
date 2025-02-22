@@ -5,7 +5,6 @@ resources:
 - git-ops
 - cert-manager
 - cluster-autoscaler
-- ebs-driver
 - service-discovery
 - ingress
 - logging
