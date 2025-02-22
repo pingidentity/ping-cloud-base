@@ -11,6 +11,5 @@ resources:
 - metrics
 - monitoring
 - security
-- ebs-driver
 - pod-reaper
 - kube-downscaler
