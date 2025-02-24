@@ -40,8 +40,8 @@ spec:
       cluster.max_shards_per_node: "10000"
       prometheus.indices: "false"
       reindex.remote.allowlist: "localhost:9200"
-      plugins.alerting.filter_by_backend_roles: "true"
-      opensearch.notifications.general.filter_by_backend_roles: "true"
+      plugins.alerting.filter_by_backend_roles: "false"
+      opensearch.notifications.general.filter_by_backend_roles: "false"
   dashboards:
     enable: true
     version: 2.11.1

@@ -21,6 +21,7 @@
 - Support new folder structure /deploy for PingAccess upgrades
 - Migrate PingOne ORT URLs to ort-one-pingone.com
 - EKS Managed Add-Ons: EBS CSI
+- Adding support for kube-proxy logs and alerting
 
 _Changes:_
 
@@ -39,6 +40,7 @@ _Changes:_
 - [X] PDO-8205 Enable consolidation for default nodepool and add multiple instance type
 - [X] PDO-8372 Upgrade Kustomize to 5.5.0
 - [X] PDO-8383 EKS Managed Add-Ons: EBS CSI
+- [X] PDO-8727 Add a monitor and alert for kube-proxy or larger network issues within a cluster
 - [X] PDO-8782 Figure out different setup for newrelic-tags-exporter for microservices
 - [X] PDO-8958 Global DNS: Implement Changes in PCB
 - [X] PDO-8981 Add self-service URL to env_vars
