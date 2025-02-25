@@ -9,19 +9,6 @@ components:
   - pgo
 
 patchesStrategicMerge:
-
-### Cloud-watch logging and monitoring ###
-
-# - |-
-#   # Add IRSA role annotation to CloudWatch Agent service account
-#   apiVersion: v1
-#   kind: ServiceAccount
-#   metadata:
-#     name: cloudwatch-agent
-#     namespace: amazon-cloudwatch
-#     annotations:
-#       purpose: service-account-for-cw-agent
-#       ${IRSA_CWAGENT_ANNOTATION_KEY_VALUE}
     
 
 # NewRelic resources
