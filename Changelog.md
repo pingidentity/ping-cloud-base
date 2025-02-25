@@ -22,12 +22,14 @@
 - Migrate PingOne ORT URLs to ort-one-pingone.com
 - EKS Managed Add-Ons: EBS CSI
 - Adding support for kube-proxy logs and alerting
+- Removing existing CW refs from Monorepo
 
 _Changes:_
 
 - [X] PDO-4383 Configure PA Admin API to use OAuth P1 Tokens
 - [X] PDO-4881 Use code sharing methods for Logger.lib.sh
 - [X] PDO-5943 Add p1as-observability to PCB: New Relic
+- [X] PDO-5949 PCB monorepo cleanup Cloudwatch
 - [X] PDO-5995 Add p1as-observability to PCB: Cloudwatch Agent
 - [X] PDO-6116 Kustomize: Fix kustomizations to not be completely empty in order to support v5.1+
 - [X] PDO-7396 Integrate init-container to use perpetual license

@@ -213,6 +213,3 @@ patchesStrategicMerge:
   #- ../base/cluster-tools/monitoring/remove-pgo-dashboard-from-secondary-patch.yaml
 
   #- ../base/ping-cloud/pingfederate/provisioning/remove-from-secondary-patch.yaml
-
-  ### CloudWatch is disabled by default but should be added for GA envs
-  #- ../base/cluster-tools/monitoring/disable-cloudwatch.yaml
