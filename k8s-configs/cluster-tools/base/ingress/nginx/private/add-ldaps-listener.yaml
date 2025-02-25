@@ -5,6 +5,9 @@ metadata:
   name: nginx-configuration
 data:
   stream-snippet: |
+    ## Increase default server names hash bucket size
+    server_names_hash_bucket_size 128;
+
     ## Two created backends:
     ## pingdirectory-admin: hostname used to maintain functionality for envs that have x509 authentication enabled for PingDirectory
     ## default: all other traffic to be terminated at nginx.
