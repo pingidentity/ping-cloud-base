@@ -23,7 +23,7 @@ data:
     }
 
     server {
-      listen 1636 ssl;
+      listen 1636 ssl default_server;
       set $upstream "pingdirectory.ping-cloud.svc.cluster.local:1636";
       proxy_pass $upstream;
       proxy_ssl on;
