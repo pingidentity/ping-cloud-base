@@ -10,3 +10,5 @@ labels:
     customer: ${TENANT_NAME}
     stage: ${STAGE}
 enterprise: true
+updater:
+  enabled: true
