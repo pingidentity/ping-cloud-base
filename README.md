@@ -2,8 +2,8 @@
 
 The patch described on this page is only applicable to the Beluga 1.18.0, 1.18.1 and 1.18.2 release. It includes changes for the following resources:
 
-* OpenSearch LSM policy: Update retention period from 270 days to 60 days.
-  - We observed a shard limit issue with the 180-day retention period. As a team, BeOps, Engineering, and Product (Brit) decided to reduce this period to 60 days.
+* ELK ILM policy: Update retention period to 30 days.
+  - Starting from Feb 1st our official policy dictates retention of 30d in our elastic cluster.
 
 * Logstash CloudWatch pipeline: Send to S3.
 
