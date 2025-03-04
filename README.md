@@ -2,10 +2,10 @@
 
 The patch described on this page is only applicable to the Beluga 1.19.0 release. It includes changes for the following resources:
 
-* OpenSearch ISM policy: Update retention period from 270 days to 180 days.
+* OpenSearch ISM policy: Update retention period to 30 days.
 
 * Logstash Customer pipeline: include time field
 
-Ref: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/883687448/Observability+Patch+for+Beluga+Release+Versions+1.19.0
+Ref: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/1180368934/Observability+Patch+-+Reducing+ELK+OS+Retention+Period+to+30d
 
 
