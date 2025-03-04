@@ -2,7 +2,7 @@
 
 The patch described on this page is only applicable to the Beluga 1.19.0 release. It includes changes for the following resources:
 
-* OpenSearch ISM policy: Update retention period from 270 days to 180 days.
+* OpenSearch ISM policy: Update retention period to 30 days.
 
 * Logstash CloudWatch pipeline: Drop all events.
 
