@@ -7,7 +7,6 @@
 - Use code sharing methods for Logger.lib.sh
 - Reconcile Grafana differences with p1as-observability
 - Kustomize: Fix kustomizations to not be completely empty in order to support v5.1+
-- Enable consolidation for default nodepool and add multiple instance type
 - Upgrade Kustomize to 5.5.0
 - Integrate init-container to use perpetual license
 - Enable default ingress object to accept LDAPS traffic through Nginx Private
@@ -39,7 +38,6 @@ _Changes:_
 - [X] PDO-7616 Update PingDirectory resource limits
 - [X] PDO-7763 Cost Savings: NGINX  (public and private): Reduce CPU and mem requests
 - [X] PDO-8109 Reconcile Grafana differences with p1as-observability
-- [X] PDO-8205 Enable consolidation for default nodepool and add multiple instance type
 - [X] PDO-8372 Upgrade Kustomize to 5.5.0
 - [X] PDO-8383 EKS Managed Add-Ons: EBS CSI
 - [X] PDO-8727 Add a monitor and alert for kube-proxy or larger network issues within a cluster
