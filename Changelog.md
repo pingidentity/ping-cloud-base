@@ -22,6 +22,7 @@
 - EKS Managed Add-Ons: EBS CSI
 - Adding support for kube-proxy logs and alerting
 - Removing existing CW refs from Monorepo
+- Removing existing NewRelic refs from Monorepo
 
 _Changes:_
 
@@ -30,6 +31,7 @@ _Changes:_
 - [X] PDO-5943 Add p1as-observability to PCB: New Relic
 - [X] PDO-5949 PCB monorepo cleanup Cloudwatch
 - [X] PDO-5995 Add p1as-observability to PCB: Cloudwatch Agent
+- [X] PDO-5996 PCB monorepo cleanup NewRelic
 - [X] PDO-6116 Kustomize: Fix kustomizations to not be completely empty in order to support v5.1+
 - [X] PDO-7396 Integrate init-container to use perpetual license
 - [X] PDO-7425 Properly handle failures for cluster-state and profile-repo scripts
