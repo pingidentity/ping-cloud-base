@@ -26,6 +26,11 @@
 #         for the new version. This has the same effect as running the platform code build job.
 #     APPS_TO_UPGRADE -> An optional space-separated list of apps to upgrade. Defaults to everything, if unset
 #         If provided, it must match the app directories at the root of the cluster state repo, i.e. 'k8s-configs p1as-beluga-tools'
+#     VALUE_ENTRY_OVERWRITE -> An optional list of strings, which if set will instruct the upgrade script to overwrite the corresponding value(s) in the
+#         cluster state repo with the new value(s) from the new version. This is useful when the new version introduces desired changes, or when you'd
+#         like to remove a value from CSRs.
+#         Ex: VALUE_ENTRY_OVERWRITE=('global.my.value' 'pingdirectory.foobar')
+
 #
 # The script is non-destructive by design and doesn't push any new state to the server. Instead, it will set up a
 # parallel branch for every CDE branch corresponding to the environments specified through the SUPPORTED_ENVIRONMENT_TYPES environment
@@ -75,6 +80,10 @@ if test -z "${APPS_TO_UPGRADE}"; then
   APPS_TO_UPGRADE="${ALL_APPS}"
 fi
 
+if test -z "${VALUE_ENTRY_OVERWRITE}"; then
+  echo '=====> VALUE_ENTRY_OVERWRITE not set, continuing with retaining all values from previous version. '
+fi
+
 PING_CLOUD_BASE_REPO_URL="${PING_CLOUD_BASE_REPO_URL:-$(git grep ^K8S_GIT_URL= | head -1 | cut -d= -f2)}"
 PING_CLOUD_BASE_REPO_URL="${PING_CLOUD_BASE_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}"
 
@@ -118,7 +127,7 @@ UPGRADE_SCRIPT_PATH="${P1AS_UPGRADES_REPO}/${UPGRADE_DIR_NAME}/${UPGRADE_SCRIPT_
 
 if test -f "${UPGRADE_SCRIPT_PATH}"; then
   # Execute the upgrade script
-  PING_CLOUD_BASE_REPO_URL="${PING_CLOUD_BASE_REPO_URL}" APPS_TO_UPGRADE="${APPS_TO_UPGRADE}" "${UPGRADE_SCRIPT_PATH}"
+  PING_CLOUD_BASE_REPO_URL="${PING_CLOUD_BASE_REPO_URL}" APPS_TO_UPGRADE="${APPS_TO_UPGRADE}" VALUE_ENTRY_OVERWRITE="${VALUE_ENTRY_OVERWRITE}" "${UPGRADE_SCRIPT_PATH}"
   exit $?
 else
   echo "=====> Unable to download Upgrade script version: ${UPGRADE_SCRIPT_VERSION}"
