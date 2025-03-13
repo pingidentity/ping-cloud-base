@@ -134,7 +134,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: perpetual-license
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.2-release-branch-latest
         imagePullPolicy: Always
         command: [ "sh", "-c", "python3 /opt/in/perpetual_license.py" ]
         env:
@@ -158,7 +158,7 @@ spec:
           mountPath: /opt/license
       containers:
       - name: pingaccess
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.2-release-branch-latest
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -252,7 +252,7 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v2.1-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v2.2-release-branch-latest
         imagePullPolicy: Always
         env:
           - name: SERVICE_SHORTNAME

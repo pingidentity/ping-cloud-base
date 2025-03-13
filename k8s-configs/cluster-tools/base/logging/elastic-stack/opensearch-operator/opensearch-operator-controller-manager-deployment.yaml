@@ -24,7 +24,7 @@ spec:
             runAsGroup: 9999
             runAsNonRoot: true
             runAsUser: 9031
-          image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap/dev:v2.1-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap/dev:v2.2-release-branch-latest
           imagePullPolicy: Always
           env:
             - name: NAMESPACE
@@ -48,7 +48,7 @@ spec:
               cpu: "500m"
         # Set up PingOne SSO
         - name: p1as-oauth
-          image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.1-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.2-release-branch-latest
           imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false

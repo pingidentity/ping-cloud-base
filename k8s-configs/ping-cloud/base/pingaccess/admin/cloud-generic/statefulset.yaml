@@ -121,7 +121,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: perpetual-license
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.2-release-branch-latest
         imagePullPolicy: Always
         command: [ "sh", "-c", "python3 /opt/in/perpetual_license.py" ]
         env:
@@ -144,7 +144,7 @@ spec:
         - name: license-dir
           mountPath: /opt/license
       - name: pingaccess-upgrade
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.2-release-branch-latest
         imagePullPolicy: Always
         command: ["/bin/sh"]
         args:
@@ -233,7 +233,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.1-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.2-release-branch-latest
         imagePullPolicy: Always
         env:
           - name: NAMESPACE
@@ -248,7 +248,7 @@ spec:
         # Add an infinite sleep after sso configuration so that pingaccess container continues to run
         args: [ "python3 -u /app/oauth_client_services_controller.py --app pingaccess && while true; do sleep 30; done" ]
       - name: pingaccess-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.2-release-branch-latest
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999

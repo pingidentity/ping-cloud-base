@@ -214,4 +214,4 @@ global:
 
   # pingcloud-p14c-bootstrap application settings
   p14cIntegration:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.1-release-branch-latest
+    image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.2-release-branch-latest

@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.2.0
+
+- No Changes
+
+_Changes:_
+
+- None
+
 ### 2.1.0
 
 - Update PingDirectory resource limits
