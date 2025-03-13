@@ -16,10 +16,12 @@ stages:
 - integration-test
 - chaos
 - cleanup
+- merge-branch
 - security # move this to the end and we'll use the "needs" keyword to allow it to run earlier and out of order
 
 ## Global environment variables ##
 variables:
+  AUTO_MERGE: $AUTO_MERGE
   DELETE_ENV_AFTER_PIPELINE: 'true'
   CLUSTER_POSTFIXES: '_9 _10 _11 _12'
   K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v2.1-release-branch
@@ -307,3 +309,19 @@ cleanup-on-compile-failure:
       else
         echo "Compile passed, deployment not torn down to allow for troubleshooting";
       fi
+
+merge-branch:   # Merge current release branch to next upstream release branch
+  stage: merge-branch
+  tags:
+    - default-gitlab-runner-ping-cloud
+  needs:
+    - cleanup-on-success
+  script:
+    - AUTO_MERGE=true source ci-scripts/release/merge-branch.sh
+    - merge_release_branch
+  variables:
+    CREATE_MR: "yes"
+  only:
+    variables:
+      - $AUTO_MERGE == "true"
+      - $CI_COMMIT_BRANCH =~ /^v*.*-release-branch$/
