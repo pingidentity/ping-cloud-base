@@ -416,7 +416,7 @@ patches:
         spec:
           initContainers:
           - name: argocd-bootstrap
-            image: public.ecr.aws/r2h3l6e4/pingcloud-services/argocd-bootstrap/dev:v2.1-release-branch-latest
+            image: public.ecr.aws/r2h3l6e4/pingcloud-services/argocd-bootstrap/dev:v2.2-release-branch-latest
             imagePullPolicy: Always
             envFrom:
               - configMapRef:
@@ -432,7 +432,7 @@ patches:
         spec:
           initContainers:
           - name: argocd-p1as-oauth
-            image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.1-release-branch-latest
+            image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.2-release-branch-latest
             imagePullPolicy: Always
             securityContext:
               allowPrivilegeEscalation: false
