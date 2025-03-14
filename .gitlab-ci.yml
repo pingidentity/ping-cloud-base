@@ -314,10 +314,11 @@ merge-branch:   # Merge current release branch to next upstream release branch
   stage: merge-branch
   tags:
     - default-gitlab-runner-ping-cloud
+  image: ${K8S_DEPLOY_TOOLS}
   needs:
     - cleanup-on-success
   script:
-    - AUTO_MERGE=true source ci-scripts/release/merge-branch.sh
+    - source ${SHARED_CI_SCRIPTS_DIR}/release/merge-branch.sh
     - merge_release_branch
   variables:
     CREATE_MR: "yes"
