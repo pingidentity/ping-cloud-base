@@ -185,6 +185,8 @@ global:
   userBaseDn_5: "${USER_BASE_DN_5}"
   # The prefix of a SSM Param / Secret path that contains TLS config
   customerTlsSsmPathPrefix: "${CUSTOMER_TLS_SSM_PATH_PREFIX}"
+  # The prefix of a SSM Param / Secret path that contains self-service configurations
+  selfServiceSsmPathPrefix : "${SELF_SERVICE_SSM_PATH_PREFIX}"
 
   ########################################################
   # Public Hostnames
