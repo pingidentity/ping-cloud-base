@@ -322,7 +322,5 @@ merge-branch:   # Merge current release branch to next upstream release branch
     - merge_release_branch
   variables:
     CREATE_MR: "yes"
-  only:
-    variables:
-      - $AUTO_MERGE == "true"
-      - $CI_COMMIT_BRANCH =~ /^v*.*-release-branch$/
+  rules:
+    - if: '$AUTO_MERGE == "true" && $CI_COMMIT_BRANCH =~ /^v*.*-release-branch$/'
