@@ -84,7 +84,7 @@ spec:
         - --upstream=http://127.0.0.1:8080/
         - --logtostderr=true
         - --v=10
-        image: "gcr.io/kubebuilder/kube-rbac-proxy:v0.12.0"
+        image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/kubebuilder/kube-rbac-proxy:v0.12.0"
         name: kube-rbac-proxy
         resources:
           limits:

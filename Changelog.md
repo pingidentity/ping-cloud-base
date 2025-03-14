@@ -31,6 +31,7 @@ _Changes:_
 - Adding support for kube-proxy logs and alerting
 - Removing existing CW refs from Monorepo
 - Removing existing NewRelic refs from Monorepo
+- Update to use kube-rbac-proxy from ECR
 
 _Changes:_
 
@@ -54,6 +55,7 @@ _Changes:_
 - [X] PDO-8782 Figure out different setup for newrelic-tags-exporter for microservices
 - [X] PDO-8958 Global DNS: Implement Changes in PCB
 - [X] PDO-8981 Add self-service URL to env_vars
+- [X] PDO-9073 OpenSearch: Deploys in Yellow state due to bootstrap job having run prematurely
 - [X] PDO-9122 Revise the ISM and remove WARM node pools and its components
 - [X] PDO-9299 Support new folder structure /deploy for PingAccess upgrades; Support hook overrides for upgrade init-container
 - [X] PDO-9310 Migrate PingOne ORT URLs
