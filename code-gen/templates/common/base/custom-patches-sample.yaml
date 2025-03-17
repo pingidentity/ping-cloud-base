@@ -302,95 +302,95 @@ spec:
 ################################################
 
 ### Update pingfederate-admin disk size, memory/cpu requests/limits ###
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: pingfederate-admin
-  namespace: ping-cloud
-spec:
-  volumeClaimTemplates:
-  - metadata:
-      name: out-dir
-      labels:
-        app: ping-cloud
-      annotations:
-        # This annotation is required to prevent volume-autoscaler to resize this volume
-        volume.autoscaler.kubernetes.io/ignore: "true"
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      storageClassName: pingfederate-gp3
-      resources:
-        requests:
-          storage: 20Gi
-  template:
-    spec:
-      containers:
-      - name: pingfederate-admin
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "1"
-          limits:
-            memory: "1Gi"
-            cpu: "1"
+# apiVersion: apps/v1
+# kind: StatefulSet
+# metadata:
+#   name: pingfederate-admin
+#   namespace: ping-cloud
+# spec:
+#   volumeClaimTemplates:
+#   - metadata:
+#       name: out-dir
+#       labels:
+#         app: ping-cloud
+#       annotations:
+#         # This annotation is required to prevent volume-autoscaler to resize this volume
+#         volume.autoscaler.kubernetes.io/ignore: "true"
+#     spec:
+#       accessModes:
+#       - ReadWriteOnce
+#       storageClassName: pingfederate-gp3
+#       resources:
+#         requests:
+#           storage: 20Gi
+#   template:
+#     spec:
+#       containers:
+#       - name: pingfederate-admin
+#         resources:
+#           requests:
+#             memory: "1Gi"
+#             cpu: "1"
+#           limits:
+#             memory: "1Gi"
+#             cpu: "1"
 
----
+# ---
 
-### Update pingfederate engine memory/cpu requests/limits  ###
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: pingfederate
-  namespace: ping-cloud
-spec:
-  template:
-    spec:
-      containers:
-      - name: pingfederate
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "1"
-          limits:
-            memory: "1Gi"
-            cpu: "1"
+# ### Update pingfederate engine memory/cpu requests/limits  ###
+# apiVersion: apps/v1
+# kind: StatefulSet
+# metadata:
+#   name: pingfederate
+#   namespace: ping-cloud
+# spec:
+#   template:
+#     spec:
+#       containers:
+#       - name: pingfederate
+#         resources:
+#           requests:
+#             memory: "1Gi"
+#             cpu: "1"
+#           limits:
+#             memory: "1Gi"
+#             cpu: "1"
 
----
+# ---
 
-### Update pingfederate engine HPA min/max replicas and target CPU utilization ###
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: pingfederate
-  namespace: ping-cloud
-spec:
-  minReplicas: 1
-  maxReplicas: 2
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: StatefulSet
-    name: pingfederate
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
+# ### Update pingfederate engine HPA min/max replicas and target CPU utilization ###
+# apiVersion: autoscaling/v2
+# kind: HorizontalPodAutoscaler
+# metadata:
+#   name: pingfederate
+#   namespace: ping-cloud
+# spec:
+#   minReplicas: 1
+#   maxReplicas: 2
+#   scaleTargetRef:
+#     apiVersion: apps/v1
+#     kind: StatefulSet
+#     name: pingfederate
+#   metrics:
+#   - type: Resource
+#     resource:
+#       name: cpu
+#       target:
+#         type: Utilization
+#         averageUtilization: 70
 
----
+# ---
 
-### Update pingfederate backup cronjob to adjust schedule
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: pingfederate-periodic-backup
-  namespace: ping-cloud
-spec:
-  schedule: "0 * * * *"
+# ### Update pingfederate backup cronjob to adjust schedule
+# apiVersion: batch/v1
+# kind: CronJob
+# metadata:
+#   name: pingfederate-periodic-backup
+#   namespace: ping-cloud
+# spec:
+#   schedule: "0 * * * *"
 
----
+# ---
 
 ################################################
 #                PingAccess

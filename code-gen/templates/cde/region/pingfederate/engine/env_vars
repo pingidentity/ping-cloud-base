@@ -10,6 +10,6 @@ SKIP_LIVENESS=false
 # number of threads used to configure PingFederate thread pools within run.properties.
 # By default this was designed to be empty and the P1AS automation will
 # dynamically set based on the CPU of the pod. Only override these 2 variables if you truly want to set yourself.
-# 'PF_JETTY_THREADS_MIN' and 'PF_JETTY_THREADS_MAX' is determined for admin.
+# 'PF_JETTY_THREADS_MIN' and 'PF_JETTY_THREADS_MAX' is determined for runtime engines.
 PF_JETTY_THREADS_MIN=
 PF_JETTY_THREADS_MAX=

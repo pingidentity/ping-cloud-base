@@ -10,7 +10,6 @@
 
 export IMAGE_MAP="pingcloud-apps/pingaccess
    pingcloud-apps/pingaccess-was
-   pingcloud-apps/pingfederate
    pingcloud-apps/pingdelegator
    pingcloud-apps/pingcentral
    pingcloud-apps/pingdatasync
@@ -34,4 +33,5 @@ export CHART_MAP="p1as-beluga-tools
    p1as-pingdirectory
    p1as-self-service
    p1as-cloudwatch
-   p1as-newrelic"
+   p1as-newrelic
+   p1as-pingfederate"

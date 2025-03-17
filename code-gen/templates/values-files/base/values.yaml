@@ -35,6 +35,10 @@ global:
       acmeCertKeystorePassword: MkZlZGVyYXRlTTByZQ==
       # Secret synced between DelegatedAdmin and PingDirectory
       daOauthTokenValidatorSecret: MkZlZGVyYXRlTTByZQ==
+      # Default Admin User Password for PingCentral
+      pcAdminUserPassword: MkZlZGVyYXRlTTByZQ==
+      # Default Admin User Password for PingAccess
+      paAdminUserPassword: MkZlZGVyYXRlTTByZQ==
       
       ###### PingDirectory Secrets #####
 
@@ -64,7 +68,15 @@ global:
       # More info here: https://confluence.pingidentity.com/display/proserv/Enabling+X.509+Authentication+with+PingDirectory
       # pdTruststoreCertOne: certOneData
       # pdTruststoreCertTwo: certTwoData
-      
+
+      ###### PingFederate Secrets #####
+
+      # This secret sets pf.cluster.auth.pwd within profile-repo/pingfederate/instance/bin/run.properties.subst
+      # Set empty as the default, as not all customers may need.
+      pfClusterAuthPassword: ""
+
+      # Optional license key for PingFederate
+      # pingFederateLicense:    
   ########################################################
   # Multi-region parameters
   ########################################################
@@ -188,12 +200,26 @@ global:
   # The prefix of a SSM Param / Secret path that contains self-service configurations
   selfServiceSsmPathPrefix : "${SELF_SERVICE_SSM_PATH_PREFIX}"
 
+  # PingFederate Communication
+  pfPdBindPort: 1389
+  pfPdBindProtocol: "ldap"
+  pfPdBindUseSsl: false
+
   ########################################################
   # Public Hostnames
   ########################################################
+  pfAdminApiPublicHostname: "pingfederate-admin-api.${PRIMARY_DNS_ZONE}"
+  paAdminApiPublicHostname: "pingaccess-admin-api.${PRIMARY_DNS_ZONE}"
+  pfAdminPublicHostname: "pingfederate-admin.${PRIMARY_DNS_ZONE}"
+  pcAdminPrivateSiteHostname: "pingcentral.${PRIMARY_DNS_ZONE}"
+
+  pfClusterPublicHostname: "pingfederate-cluster.${PRIMARY_DNS_ZONE}"
   pdClusterPublicHostname: "pingdirectory-cluster.${PRIMARY_DNS_ZONE}"
   selfServicePublicHostname: "self-service-api.${PRIMARY_DNS_ZONE}"
 
+  pdHttpPublicHostname: "pingdirectory.${DNS_ZONE}"
+  pdDelegatorPublicHostname: "pingdelegator.${DNS_ZONE}"
+  pfEnginePublicHostname: "pingfederate.${DNS_ZONE}"
 
   #### FEATURE FLAGS ##################################################################################################
   # Most are disabled by default
@@ -202,10 +228,7 @@ global:
   # !!! Provisioning for PingFederate is not yet available for multi-region customers !!!
   # Runbook: https://confluence.pingidentity.com/display/PingCloud/How+to+Enable+and+Configure+PingFederate+Provisioning
   pfProvisioningEnabled: ${PF_PROVISIONING_ENABLED}
-
-  radiusProxyEnabled: ${RADIUS_PROXY_ENABLED}
-
-  external_ingress_enabled: ${EXTERNAL_INGRESS_ENABLED}
+  delegatedAdminEnabled: true
 
   # Runbook: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/427688292/How+to+Enable+and+Disable+Healthchecks+-+1.19.0
   healthchecksEnabled: ${HEALTHCHECKS_ENABLED}
@@ -218,3 +241,11 @@ global:
   # pingcloud-p14c-bootstrap application settings
   p14cIntegration:
     image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.1-release-branch-latest
+  # prometheus-json-exporter application settings
+  prometheusJsonExporter:
+    image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v2.1-release-branch-latest
+  grpRadiusProxy:
+    image: public.ecr.aws/r2h3l6e4/pingcloud-services/grp-radiusproxy/dev:v2.1-release-branch-latest
+
+
+

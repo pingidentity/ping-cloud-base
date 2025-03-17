@@ -9,11 +9,11 @@ kind: ServiceAccount
 metadata:
   name: pingaccess-serviceaccount
 
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: pingfederate-serviceaccount
+# ---
+# apiVersion: v1
+# kind: ServiceAccount
+# metadata:
+#   name: pingfederate-serviceaccount
 
 ---
 
@@ -126,16 +126,16 @@ subjects:
   - kind: ServiceAccount
     name: pingaccess-serviceaccount
 
----
+# ---
 
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: pingfederate-role-binding
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: ping-role
-subjects:
-  - kind: ServiceAccount
-    name: pingfederate-serviceaccount
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: RoleBinding
+# metadata:
+#   name: pingfederate-role-binding
+# roleRef:
+#   apiGroup: rbac.authorization.k8s.io
+#   kind: Role
+#   name: ping-role
+# subjects:
+#   - kind: ServiceAccount
+#     name: pingfederate-serviceaccount

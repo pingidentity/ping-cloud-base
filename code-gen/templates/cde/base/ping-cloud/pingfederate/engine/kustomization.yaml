@@ -65,11 +65,11 @@ patchesJson6902:
                  number: 9031
 
 # pingfederate radius
-- target:
-    version: v1
-    kind: Service
-    name: udp-loadbalancer
-  patch: |-
-    - op: replace
-      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
-      value: pingfederate-radius.${DNS_ZONE}
+# - target:
+#     version: v1
+#     kind: Service
+#     name: udp-loadbalancer
+#   patch: |-
+#     - op: replace
+#       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+#       value: pingfederate-radius.${DNS_ZONE}
