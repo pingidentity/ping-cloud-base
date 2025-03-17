@@ -1,0 +1,6 @@
+  # settings that is only for PingFederate Engine
+  engine:
+    statefulSet:
+      hpa:
+        minReplicas: 3
+        maxReplicas: 8

@@ -1142,7 +1142,7 @@ BOOTSTRAP_DIR="${TARGET_DIR}/${BOOTSTRAP_SHORT_DIR}"
 CLUSTER_STATE_REPO_DIR="${TARGET_DIR}/cluster-state"
 PROFILE_REPO_DIR="${TARGET_DIR}/profile-repo"
 PROFILES_DIR="${PROFILE_REPO_DIR}/profiles"
-PROFILE_REPO_MIRRORS=("p1as-pingdirectory")
+PROFILE_REPO_MIRRORS=("p1as-pingdirectory p1as-pingfederate")
 
 
 CUSTOMER_HUB='customer-hub'
