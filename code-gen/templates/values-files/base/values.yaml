@@ -217,9 +217,9 @@ global:
   pdClusterPublicHostname: "pingdirectory-cluster.${PRIMARY_DNS_ZONE}"
   selfServicePublicHostname: "self-service-api.${PRIMARY_DNS_ZONE}"
 
-  pdHttpPublicHostname: "pingdirectory.${DNS_ZONE}"
-  pdDelegatorPublicHostname: "pingdelegator.${DNS_ZONE}"
-  pfEnginePublicHostname: "pingfederate.${DNS_ZONE}"
+  pdHttpPublicHostname: "pingdirectory.${VALUES_FILES_DNS_ZONE}"
+  pdDelegatorPublicHostname: "pingdelegator.${VALUES_FILES_DNS_ZONE}"
+  pfEnginePublicHostname: "pingfederate.${VALUES_FILES_DNS_ZONE}"
 
   #### FEATURE FLAGS ##################################################################################################
   # Most are disabled by default
