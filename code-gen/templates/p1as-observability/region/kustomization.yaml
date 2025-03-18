@@ -12,18 +12,18 @@ helmCharts:
       - ../../values-files/base/values.yaml   # base values.yaml
       - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
       - values.yaml   # app specific values.yaml
-    version: v2.1-release-branch-latest
+    version: v2.1.0-RC1
     namespace: amazon-cloudwatch
-    repo: oci://${ECR_REGISTRY_NAME}/dev
+    repo: oci://${ECR_REGISTRY_NAME}
 
   - name: p1as-newrelic
     additionalValuesFiles:
       - ../../values-files/base/values.yaml   # base values.yaml
       - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
       - values.yaml   # app specific values.yaml
-    version: v2.1-release-branch-latest
+    version: v2.1.0-RC1
     namespace: newrelic
-    repo: oci://${ECR_REGISTRY_NAME}/dev
+    repo: oci://${ECR_REGISTRY_NAME}
 
 ### This field is used to trigger a resync of the helm chart ###
 configMapGenerator:
