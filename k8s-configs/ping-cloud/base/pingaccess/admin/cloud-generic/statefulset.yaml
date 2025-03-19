@@ -246,7 +246,10 @@ spec:
         command: [ "/bin/sh","-c" ]
         # sso configuration has to be a sidecar instead of init container because it needs pingaccess api to be running
         # Add an infinite sleep after sso configuration so that pingaccess container continues to run
-        args: [ "python3 -u /app/oauth_client_services_controller.py --app pingaccess && while true; do sleep 30; done" ]
+        args: [ "python3 -u /app/oauth_client_services_controller.py --app pingaccess && python3 -u /app/pa_sso_customer_issuer_updater.py" ]
+        volumeMounts:
+          - name: customer-issuer
+            mountPath: /opt/sso/customer_issuer
       - name: pingaccess-admin
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
         imagePullPolicy: Always
@@ -390,6 +393,11 @@ spec:
       - name: p1as-sso-configs
         configMap:
           name: pingaccess-admin-p14c
+          optional: true
+          defaultMode: 0400
+      - name: customer-issuer
+        configMap:
+          name: customer-issuer
           optional: true
           defaultMode: 0400
   volumeClaimTemplates:

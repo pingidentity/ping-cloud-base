@@ -26,40 +26,42 @@ class TestPAAdminAPILogin(unittest.TestCase):
         )
         # Ignore ResourceWarning for unclosed SSL sockets
         warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed <ssl.SSLSocket")
-
-    def setUp(self):
-        self.tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
-        self.environment = os.getenv("ENV", "dev")
-        self.user_attribute_name = "p1asPingAccessRoles"
-        self.role_names = [
-            f"{self.environment}-pa-admin",
-            f"{self.environment}-pa-platform",
-            f"{self.environment}-pa-audit",
+        cls.tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
+        cls.environment = os.getenv("ENV", "dev")
+        cls.user_attribute_name = "p1asPingAccessRoles"
+        cls.role_names = [
+            f"{cls.environment}-pa-admin",
+            f"{cls.environment}-pa-platform",
+            f"{cls.environment}-pa-audit",
         ]
-        self.app_name = f"client-{self.tenant_name}-pingaccess-admin-sso"
-        self.auth_policy_name = f"client-{self.tenant_name}"
-        self.k8s = k8s_utils.K8sUtils()
-        self.namespace = os.getenv("PING_CLOUD_NAMESPACE", "ping-cloud")
-        self.operator_resource_name = f"client-{self.tenant_name}-pa-operator"
-        self.operator_scope_name = "p1asPAOperatorRoles"
-        self.pa_admin_env_vars = self.k8s.get_configmap_values(
-            namespace=self.namespace,
+        cls.app_name = f"client-{cls.tenant_name}-pingaccess-admin-sso"
+        cls.auth_policy_name = f"client-{cls.tenant_name}"
+        cls.k8s = k8s_utils.K8sUtils()
+        cls.namespace = os.getenv("PING_CLOUD_NAMESPACE", "ping-cloud")
+        cls.operator_resource_name = f"client-{cls.tenant_name}-pa-operator"
+        cls.operator_scope_name = "p1asPAOperatorRoles"
+        cls.pa_admin_env_vars = cls.k8s.get_configmap_values(
+            namespace=cls.namespace,
             configmap_name="pingaccess-admin-environment-variables",
         )
-        pa_passwords_secret = self.k8s.get_namespaced_secret(
-            namespace=self.namespace, name="pingaccess-passwords"
+        pa_passwords_secret = cls.k8s.get_namespaced_secret(
+            namespace=cls.namespace, name="pingaccess-passwords"
         ).data
-        self.pa_passwords = {k: b64.decode(v) for k, v in pa_passwords_secret.items()}
-        pa_p14c_secret = self.k8s.get_namespaced_secret(
-            namespace=self.namespace, name="pingaccess-admin-p14c"
+        cls.pa_passwords = {k: b64.decode(v) for k, v in pa_passwords_secret.items()}
+        pa_p14c_secret = cls.k8s.get_namespaced_secret(
+            namespace=cls.namespace, name="pingaccess-admin-p14c"
         ).data
-        self.pa_p14c_secret = {k: b64.decode(v) for k, v in pa_p14c_secret.items()}
-        self.pa_p14c_configmap = self.k8s.get_configmap_values(
-            namespace=self.namespace, configmap_name="pingaccess-admin-p14c"
+        cls.pa_p14c_secret = {k: b64.decode(v) for k, v in pa_p14c_secret.items()}
+        cls.pa_p14c_configmap = cls.k8s.get_configmap_values(
+            namespace=cls.namespace, configmap_name="pingaccess-admin-p14c"
         )
-        self.pa_admin_api_url = f"https://{self.pa_admin_env_vars['PA_ADMIN_PUBLIC_HOSTNAME']}/pa-admin-api/v3"
-        self.scopes = "p1asPAOperatorRoles"
-        self.environment = os.getenv("ENV", "dev")
+        customer_p1_app_secret = cls.k8s.get_namespaced_secret(
+            namespace="argocd", name="customer-p1-app"
+        )
+        cls.customer_p1_app_secret = {k: b64.decode(v) for k, v in customer_p1_app_secret.data.items()}
+        cls.pa_admin_api_url = f"https://{cls.pa_admin_env_vars['PA_ADMIN_PUBLIC_HOSTNAME']}/pa-admin-api/v3"
+        cls.scopes = "p1asPAOperatorRoles"
+        cls.environment = os.getenv("ENV", "dev")
 
     def test_oauth_token_login(self):
         token = oauth.get_token(
@@ -74,6 +76,23 @@ class TestPAAdminAPILogin(unittest.TestCase):
             verify=False,
         )
         self.assertEqual(200, res.status_code)
+
+    def test_customer_oauth_token_login(self):
+        print(self.customer_p1_app_secret)
+        token = oauth.get_token(
+            app_id=self.customer_p1_app_secret["CLIENT_ID"],
+            app_secret=self.customer_p1_app_secret["CLIENT_SECRET"],
+            app_token_url=f"{self.customer_p1_app_secret['ISSUER']}/token",
+            scopes=self.scopes,
+        )
+
+        res = requests.get(
+            url=f"{self.pa_admin_api_url}/auth/oidc",
+            headers={"Authorization": f"Bearer {token}", "X-XSRF-Header": "PingAccess"},
+            verify=False,
+        )
+
+        self.assertEqual(200, res.status_code, res.text)
 
     def test_user_access_token_login(self):
         ui_test_config = pingone_ui.PingOneUITestConfig(
