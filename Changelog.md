@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.0.1
+
+- Support new folder structure /deploy for PingAccess upgrades; Support hook overrides for upgrade init-container
+
+_Changes:_
+
+- [X] PDO-9299 Support new folder structure /deploy for PingAccess upgrades; Support hook overrides for upgrade init-container
+
 ### 2.0.0
 
 - Update version regexes from v*.*.*.* to v*.*.*

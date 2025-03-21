@@ -124,7 +124,15 @@ spec:
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.0-release-branch-latest
         imagePullPolicy: Always
         command: ["/bin/sh"]
-        args: ["-c", " /opt/in/hooks/22-upgrade-server.sh "]
+        args:
+          - "-c"
+          # The following commands will:
+          # 1. Navigate to /opt/staging/hooks directory.
+          # 2. Source and execute the PDI team apply_local_server_profile method. This will copy all items from /opt/in to /opt/staging directory.
+          # 3. Download server profile (02-get-remote-server-profile.sh).
+          # 4. Expand all .subst and .default extensions (05-expand-templates.sh).
+          # 5. Upgrade PingAccess server (22-upgrade-server.sh).
+          - "cd /opt/staging/hooks && source ./pingcommon.lib.sh && apply_local_server_profile && ./02-get-remote-server-profile.sh && ./05-expand-templates.sh && ./22-upgrade-server.sh"
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -171,8 +179,6 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
-        - name: STARTUP_COMMAND
-          value: "/opt/staging/hooks/22-upgrade-server.sh"
         - name: HTTPS_PORT
           value: "9090"
         - name: OLD_PA_ADMIN_USER_PASSWORD
