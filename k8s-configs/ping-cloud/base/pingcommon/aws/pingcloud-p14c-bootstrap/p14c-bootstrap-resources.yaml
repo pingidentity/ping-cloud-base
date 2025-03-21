@@ -40,3 +40,11 @@ ingress:
   ssm_path_prefix: CUSTOMER_TLS_SSM_PATH_PREFIX
   source: paramStore
   match_type: prefix
+customer-issuer:
+  kind: ConfigMap
+  name: customer-issuer
+  template:
+  values_container_key: issuer
+  ssm_type: string
+  ssm_path_prefix: SELF_SERVICE_SSM_PATH_PREFIX
+  source: paramStore
