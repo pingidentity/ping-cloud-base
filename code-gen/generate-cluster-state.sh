@@ -113,7 +113,7 @@
 #                                  | names)                                             |
 #                                  | Examplelist:"pingaccess pingfederate pingdelegator |
 #                                  | pingaccess-was              "                      |
-#                                  |                                                    |              
+#                                  |                                                    |
 # GLOBAL_TENANT_DOMAIN             | Region-independent URL used for DNS failover/      | Replaces the first segment of
 #                                  | routing.                                           | the TENANT_DOMAIN value with the
 #                                  |                                                    | string "global". For example, it will
@@ -187,6 +187,11 @@
 #                                  |                                                    |
 # CUSTOMER_SSM_PATH_PREFIX         | The prefix of an SSM path that contains PingOne    | /pcpt/customer
 #                                  | state data required for the P14C/P1AS integration. |
+#                                  |                                                    |
+# SELF_SERVICE_SSM_PATH_PREFIX     | The prefix of an SSM path that contains            | /pcpt/self-service
+#                                  | self-service state data required for               |
+#                                  | P1AS integration.                                  |
+#                                  |                                                    |
 #                                  |                                                    |
 # CUSTOMER_SSO_SSM_PATH_PREFIX     | The prefix of an SSM path that contains PingOne    | ${CUSTOMER_SSM_PATH_PREFIX}/sso
 #                                  | state data required for the P14C/P1AS integration. |
@@ -352,6 +357,7 @@ ${PLATFORM_EVENT_QUEUE_NAME}
 ${CUSTOMER_SSM_PATH_PREFIX}
 ${CUSTOMER_SSO_SSM_PATH_PREFIX}
 ${CUSTOMER_TLS_SSM_PATH_PREFIX}
+${SELF_SERVICE_SSM_PATH_PREFIX}
 ${SERVICE_SSM_PATH_PREFIX}
 ${REGION}
 ${REGION_NICK_NAME}
@@ -698,6 +704,7 @@ echo "Initial ENVIRONMENTS: ${ENVIRONMENTS}"
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Initial PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 echo "Initial CUSTOMER_SSM_PATH_PREFIX: ${CUSTOMER_SSM_PATH_PREFIX}"
+echo "Initial SELF_SERVICE_SSM_PATH_PREFIX: ${SELF_SERVICE_SSM_PATH_PREFIX}"
 echo "Initial CUSTOMER_SSO_SSM_PATH_PREFIX: ${CUSTOMER_SSO_SSM_PATH_PREFIX}"
 echo "Initial CUSTOMER_TLS_SSM_PATH_PREFIX: ${CUSTOMER_TLS_SSM_PATH_PREFIX}"
 echo "Initial SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
@@ -814,6 +821,7 @@ export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 
 export PLATFORM_EVENT_QUEUE_NAME=${PLATFORM_EVENT_QUEUE_NAME:-v2_platform_event_queue.fifo}
 export CUSTOMER_SSM_PATH_PREFIX=${CUSTOMER_SSM_PATH_PREFIX:-/pcpt/customer}
+export SELF_SERVICE_SSM_PATH_PREFIX=${SELF_SERVICE_SSM_PATH_PREFIX:-/pcpt/self-service}
 export CUSTOMER_SSO_SSM_PATH_PREFIX=${CUSTOMER_SSO_SSM_PATH_PREFIX:-${CUSTOMER_SSM_PATH_PREFIX}/sso}
 export CUSTOMER_TLS_SSM_PATH_PREFIX=${CUSTOMER_TLS_SSM_PATH_PREFIX:-${CUSTOMER_SSM_PATH_PREFIX}/tls}
 export SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX:-/pcpt/service}
@@ -1025,6 +1033,7 @@ echo "Using SUPPORTED_ENVIRONMENT_TYPES: ${SUPPORTED_ENVIRONMENT_TYPES}"
 echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Using PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 echo "Using CUSTOMER_SSM_PATH_PREFIX: ${CUSTOMER_SSM_PATH_PREFIX}"
+echo "Using SELF_SERVICE_SSM_PATH_PREFIX: ${SELF_SERVICE_SSM_PATH_PREFIX}"
 echo "Using CUSTOMER_SSO_SSM_PATH_PREFIX: ${CUSTOMER_SSO_SSM_PATH_PREFIX}"
 echo "Using CUSTOMER_TLS_SSM_PATH_PREFIX: ${CUSTOMER_TLS_SSM_PATH_PREFIX}"
 echo "Using SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
