@@ -26,6 +26,7 @@
 - Update to use kube-rbac-proxy from ECR
 - Add customer-issuer to p14c-bootstrap configs
 - Add customer-issuer to PA Admin pingaccess-p1as-sso container
+- Enable OpenSearch data node(pod) draining during a rolling restart
 
 _Changes:_
 
