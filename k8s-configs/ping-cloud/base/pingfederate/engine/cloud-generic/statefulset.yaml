@@ -226,9 +226,9 @@ spec:
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/99-pf-engine-liveness.sh ]
-          initialDelaySeconds: 60
+          initialDelaySeconds: 0
           periodSeconds: 5
-          failureThreshold: 3
+          failureThreshold: 1
           timeoutSeconds: 5
         livenessProbe:
           exec:
