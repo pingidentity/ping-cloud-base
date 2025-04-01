@@ -3,7 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
   - ../base
-  # - pingfederate
   - pingaccess
   - pingdelegator
   - custom-resources
@@ -27,34 +26,6 @@ configMapGenerator:
   - ../base/env_vars
   - env_vars
   - pingdatasync/env_vars
-
-# Pingfederate
-# Create the config maps that hold the variable for triggering updates of PF servers
-# - name: pingfederate-admin-last-update-config
-#   namespace: ${PING_CLOUD_NAMESPACE}
-#   envs:
-#   - pingfederate/admin/env_vars
-
-# - name: pingfederate-last-update-config
-#   namespace: ${PING_CLOUD_NAMESPACE}
-#   envs:
-#   - pingfederate/engine/env_vars
-
-# Merge all env_vars into Pingfederate environment variables configmaps
-# - name: pingfederate-admin-environment-variables
-#   behavior: merge
-#   envs:
-#   - ../base/env_vars
-#   - env_vars
-#   - pingfederate/admin/env_vars
-
-# - name: pingfederate-environment-variables
-#   behavior: merge
-#   envs:
-#   - ../base/env_vars
-#   - env_vars
-#   - pingfederate/engine/env_vars
-
 
 # PingAccess
 # Create the config maps that hold the variable for triggering updates of PA servers
@@ -192,7 +163,6 @@ patchesStrategicMerge:
   - ../base/ping-cloud/pingaccess-was/admin/remove-from-secondary-patch.yaml
   - ../base/ping-cloud/pingaccess-was/engine/remove-from-secondary-patch.yaml
 
-  # - ../base/ping-cloud/pingfederate/admin/remove-from-secondary-patch.yaml
   - ../base/ping-cloud/pingaccess/admin/remove-from-secondary-patch.yaml
 
   - ../base/ping-cloud/pingdatasync/server/remove-from-secondary-patch.yaml
@@ -205,11 +175,9 @@ patchesStrategicMerge:
 
   - pingaccess/ff-external-ingress/remove-external-ingress.yaml
   - pingdelegator/ff-external-ingress/remove-external-ingress.yaml
-  # - pingfederate/ff-external-ingress/remove-external-ingress.yaml
   ### The patch is copied from pingcommon
   - ../base/ping-cloud/pingaccess-was/ff-external-ingress/remove-external-ingress.yaml
-
+  
   ### Remove PGO dashboards from secondary region, uncomment line below for PGO enabled multi-region environment
   #- ../base/cluster-tools/monitoring/remove-pgo-dashboard-from-secondary-patch.yaml
 
-  #- ../base/ping-cloud/pingfederate/provisioning/remove-from-secondary-patch.yaml

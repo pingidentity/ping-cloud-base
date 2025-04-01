@@ -397,13 +397,6 @@ ${USER_BASE_DN_4}
 ${USER_BASE_DN_5}
 ${ADMIN_CONSOLE_BRANDING}
 ${ENVIRONMENT_PREFIX}
-${PF_PD_BIND_PORT}
-${PF_PD_BIND_PROTOCOL}
-${PF_PD_BIND_USESSL}
-${PF_MIN_HEAP}
-${PF_MAX_HEAP}
-${PF_MIN_YGEN}
-${PF_MAX_YGEN}
 ${PA_WAS_MIN_HEAP}
 ${PA_WAS_MAX_HEAP}
 ${PA_WAS_MIN_YGEN}
@@ -434,7 +427,6 @@ ${ANSIBLE_BELUGA_IMAGE_TAG}
 ${PINGCENTRAL_IMAGE_TAG}
 ${PINGACCESS_IMAGE_TAG}
 ${PINGACCESS_WAS_IMAGE_TAG}
-${PINGFEDERATE_IMAGE_TAG}
 ${PINGDELEGATOR_IMAGE_TAG}
 ${OS_BOOTSTRAP_IMAGE_TAG}
 ${LOGSTASH_IMAGE_TAG}
@@ -1234,25 +1226,9 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   fi
   export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER}"
 
-  # Set PF variables based on ENV
-  if echo "${LETS_ENCRYPT_SERVER}" | grep -q 'staging'; then
-    export PF_PD_BIND_PORT=1389
-    export PF_PD_BIND_PROTOCOL=ldap
-    export PF_PD_BIND_USESSL=false
-  else
-    export PF_PD_BIND_PORT=1636
-    export PF_PD_BIND_PROTOCOL=ldaps
-    export PF_PD_BIND_USESSL=true
-  fi
-
   # Update the product specific variables based on environment.
   case "${ENV}" in
     dev | test)
-      # Set PF variables
-      export PF_MIN_HEAP=${PF_MIN_HEAP:-"1536m"}
-      export PF_MAX_HEAP=${PF_MAX_HEAP:-"1536m"}
-      export PF_MIN_YGEN=${PF_MIN_YGEN:-"768m"}
-      export PF_MAX_YGEN=${PF_MAX_YGEN:-"768m"}
 
       # Set PA variables
       export PA_WAS_MIN_HEAP=${PA_WAS_MIN_HEAP:-"1024m"}
@@ -1261,11 +1237,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       export PA_WAS_MAX_YGEN=${PA_WAS_MAX_YGEN:-"512m"}
       ;;
     stage | prod | customer-hub)
-      # Set PF variables
-      export PF_MIN_HEAP=${PF_MIN_HEAP:-"3072m"}
-      export PF_MAX_HEAP=${PF_MAX_HEAP:-"3072m"}
-      export PF_MIN_YGEN=${PF_MIN_YGEN:-"1536m"}
-      export PF_MAX_YGEN=${PF_MAX_YGEN:-"1536m"}
 
       # Set PA variables
       export PA_WAS_MIN_HEAP=${PA_WAS_MIN_HEAP:-"2048m"}

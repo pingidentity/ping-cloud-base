@@ -135,48 +135,7 @@ patchesStrategicMerge:
     PD_DELEGATOR_PUBLIC_HOSTNAME: pingdelegator.${TENANT_DOMAIN}
     PD_HTTP_PUBLIC_HOSTNAME: pingdirectory.${TENANT_DOMAIN}
     REGION: ${REGION}
-# - |-
-#   apiVersion: v1
-#   kind: ConfigMap
-#   metadata:
-#     name: pingfederate-admin-environment-variables
-#   data:
-#     PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}
-#     PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY}
-#     BACKUP_URL: ${BACKUP_URL}
-#     PA_WAS_ADMIN_PUBLIC_HOSTNAME: pingaccess-was-admin.${TENANT_DOMAIN}
-#     PA_WAS_ENGINE_PUBLIC_HOSTNAME: pingaccess-was.${TENANT_DOMAIN}
-#     PA_ADMIN_PUBLIC_HOSTNAME: pingaccess-admin.${TENANT_DOMAIN}
-#     PA_ADMIN_API_PUBLIC_HOSTNAME: pingaccess-admin-api.${TENANT_DOMAIN}
-#     PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
-#     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
-#     PF_ADMIN_API_PUBLIC_HOSTNAME: pingfederate-admin-api.${TENANT_DOMAIN}
-#     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
-#     PD_DELEGATOR_PUBLIC_HOSTNAME: pingdelegator.${TENANT_DOMAIN}
-#     PD_HTTP_PUBLIC_HOSTNAME: pingdirectory.${TENANT_DOMAIN}
-#     REGION: ${REGION}
-#     NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
-# - |-
-#   apiVersion: v1
-#   kind: ConfigMap
-#   metadata:
-#     name: pingfederate-environment-variables
-#   data:
-#     PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}
-#     PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY}
-#     BACKUP_URL: ${BACKUP_URL}
-#     PA_WAS_ADMIN_PUBLIC_HOSTNAME: pingaccess-was-admin.${TENANT_DOMAIN}
-#     PA_WAS_ENGINE_PUBLIC_HOSTNAME: pingaccess-was.${TENANT_DOMAIN}
-#     PA_ADMIN_PUBLIC_HOSTNAME: pingaccess-admin.${TENANT_DOMAIN}
-#     PA_ADMIN_API_PUBLIC_HOSTNAME: pingaccess-admin-api.${TENANT_DOMAIN}
-#     PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
-#     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
-#     PF_ADMIN_API_PUBLIC_HOSTNAME: pingfederate-admin-api.${TENANT_DOMAIN}
-#     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
-#     PD_DELEGATOR_PUBLIC_HOSTNAME: pingdelegator.${TENANT_DOMAIN}
-#     PD_HTTP_PUBLIC_HOSTNAME: pingdirectory.${TENANT_DOMAIN}
-#     REGION: ${REGION}
-#     NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+
 - |-
   apiVersion: v1
   kind: ConfigMap
@@ -227,31 +186,6 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingdelegator.${TENANT_DOMAIN}
 
-# - target:
-#     group: networking.k8s.io
-#     version: v1
-#     kind: Ingress
-#     name: pingfederate-ingress
-#   patch: |-
-#     - op: replace
-#       path: /spec/tls/0/hosts/0
-#       value: pingfederate.${TENANT_DOMAIN}
-#     - op: replace
-#       path: /spec/rules/0/host
-#       value: pingfederate.${TENANT_DOMAIN}
-
-# - target:
-#     group: networking.k8s.io
-#     version: v1
-#     kind: Ingress
-#     name: pingfederate-admin-ingress
-#   patch: |-
-#     - op: replace
-#       path: /spec/tls/0/hosts/0
-#       value: pingfederate-admin-api.${TENANT_DOMAIN}
-#     - op: replace
-#       path: /spec/rules/0/host
-#       value: pingfederate-admin-api.${TENANT_DOMAIN}
 
 - target:
     group: networking.k8s.io
@@ -307,13 +241,6 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingaccess-admin.${TENANT_DOMAIN}
 
-    # ### PingFederate Admin ###
-    # - op: replace
-    #   path: /spec/tls/0/hosts/1
-    #   value: pingfederate-admin.${TENANT_DOMAIN}
-    # - op: replace
-    #   path: /spec/rules/1/host
-    #   value: pingfederate-admin.${TENANT_DOMAIN}
 
     ### Grafana ###
     - op: replace
