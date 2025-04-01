@@ -120,22 +120,6 @@ USER_BASE_DN_5=${USER_BASE_DN_5}
 ECR_ENV=/dev
 
 ############################################################
-# PingFederate variables for environment
-############################################################
-PF_PD_BIND_PORT=${PF_PD_BIND_PORT}
-PF_PD_BIND_PROTOCOL=${PF_PD_BIND_PROTOCOL}
-PF_PD_BIND_USESSL=${PF_PD_BIND_USESSL}
-
-PF_MIN_HEAP=${PF_MIN_HEAP}
-PF_MAX_HEAP=${PF_MAX_HEAP}
-PF_MIN_YGEN=${PF_MIN_YGEN}
-PF_MAX_YGEN=${PF_MAX_YGEN}
-
-# This variable's value will make it onto the branding for the PF admin console and
-# will include the name of the environment and the region where it's deployed.
-PF_ADMIN_CONSOLE_ENVIRONMENT=${ADMIN_CONSOLE_BRANDING}
-
-############################################################
 # PingAccess variables for environment
 ############################################################
 PA_WAS_MIN_HEAP=${PA_WAS_MIN_HEAP}
@@ -161,7 +145,6 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 PINGACCESS_IMAGE_TAG=v2.1-release-branch-latest
 PINGACCESS_WAS_IMAGE_TAG=v2.1-release-branch-latest
-PINGFEDERATE_IMAGE_TAG=v2.1-release-branch-latest
 PINGDELEGATOR_IMAGE_TAG=v2.1-release-branch-latest
 PINGCENTRAL_IMAGE_TAG=v2.1-release-branch-latest
 PINGDATASYNC_IMAGE_TAG=v2.1-release-branch-latest

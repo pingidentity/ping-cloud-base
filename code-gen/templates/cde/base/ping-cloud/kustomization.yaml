@@ -8,11 +8,8 @@ resources:
 - pingaccess-was/config
 - pingaccess-was/ff-external-ingress
 - pingaccess/config
-# - pingfederate/config
 - pingdelegator/config
 - pingdatasync/config
-# Provisioning is not enabled by default, but the kustomize file is managed directly by generate-cluster/update-cluster
-# - pingfederate/provisioning
 
 # The following resource reference includes all ping applications by default. However, it may be tweaked to roll out
 # applications independent of one another to enforce proper dependency order. Refer to the docs in kustomization.yaml
@@ -52,15 +49,6 @@ patchesStrategicMerge:
       purpose: service-account-for-ping-access
       ${IRSA_PA_ANNOTATION_KEY_VALUE}
 
-### Ping federate service account ###
-# - |-
-#   apiVersion: v1
-#   kind: ServiceAccount
-#   metadata:
-#     name: pingfederate-serviceaccount
-#     annotations:
-#       purpose: service-account-for-ping-federate
-#       ${IRSA_PF_ANNOTATION_KEY_VALUE}
 
 ### P14C Bootstrap service account ###
 - |-
