@@ -1,24 +1,19 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-
 namespace: ${PING_CLOUD_NAMESPACE}
-
 commonLabels:
   app: ping-cloud
-
 resources:
   - ../base/custom-resources
   - custom-resources
-
 helmCharts:
   - name: p1as-pingfederate
     additionalValuesFiles:
-      - ../../values-files/base/values.yaml   # base values.yaml
-      - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
-      - values.yaml   # app specific values.yaml
-    version: v2.1-release-branch-latest
-    repo: oci://${ECR_REGISTRY_NAME}/dev
-
+      - ../../values-files/base/values.yaml # base values.yaml
+      - ../../values-files/${REGION_NICK_NAME}/values.yaml # regional values.yaml
+      - values.yaml # app specific values.yaml
+    version: v2.1.0-RC2
+    repo: oci://${ECR_REGISTRY_NAME}
 ### This field is used to trigger a resync of the p1as-pingfederate helm chart ###
 configMapGenerator:
   - name: pingfederate-last-update-reason
@@ -28,8 +23,7 @@ configMapGenerator:
   - name: pingfederate-custom-placeholder
   ### This is needed for the empty custom-patches.yaml file to work in base folder ###
   - name: pingfederate-custom-placeholder-base
-
 patchesStrategicMerge:
   ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
   - custom-patches.yaml
-  - ../base/custom-patches.yaml  
+  - ../base/custom-patches.yaml
