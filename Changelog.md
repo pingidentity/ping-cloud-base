@@ -2,11 +2,11 @@
 
 ### 2.2.0
 
-- No Changes
+- Enable fluentbit storage layer metrics by updating prometheus metrics API to v2
 
 _Changes:_
 
-- None
+- [X] PDO-9375 FluentBit: Add Grafana Dashboard
 
 ### 2.1.0
 

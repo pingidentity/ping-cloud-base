@@ -68,7 +68,7 @@ spec:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/scheme: "http"
-        prometheus.io/path: "/api/v1/metrics/prometheus"
+        prometheus.io/path: "/api/v2/metrics/prometheus"
         prometheus.io/port: "2020"
         newrelic.io/scrape: "true"
     spec:
