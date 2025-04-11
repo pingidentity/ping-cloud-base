@@ -211,8 +211,7 @@ global:
   pfAdminApiPublicHostname: "pingfederate-admin-api.${PRIMARY_DNS_ZONE}"
   paAdminApiPublicHostname: "pingaccess-admin-api.${PRIMARY_DNS_ZONE}"
   pfAdminPublicHostname: "pingfederate-admin.${PRIMARY_DNS_ZONE}"
-  pcAdminPrivateSiteHostname: "pingcentral.${PRIMARY_DNS_ZONE}"
-
+  pcAdminPrivateSiteHostname: "pingcentral.${PRIMARY_TENANT_DOMAIN}"
   pfClusterPublicHostname: "pingfederate-cluster.${PRIMARY_DNS_ZONE}"
   pdClusterPublicHostname: "pingdirectory-cluster.${PRIMARY_DNS_ZONE}"
   selfServicePublicHostname: "self-service-api.${PRIMARY_DNS_ZONE}"
