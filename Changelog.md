@@ -3,10 +3,12 @@
 ### 2.2.0
 
 - Enable fluentbit storage layer metrics by updating prometheus metrics API to v2
+- FluentBit: Adjust Buffer and Limit Configuration by removing Mem_Buf_Limit and storage.pause_on_chunks_overlimit parameters
 
 _Changes:_
 
 - [X] PDO-9375 FluentBit: Add Grafana Dashboard
+- [X] PDO-9376 FluentBit: Adjust Buffer and Limit Configuration
 
 ### 2.1.0
 
