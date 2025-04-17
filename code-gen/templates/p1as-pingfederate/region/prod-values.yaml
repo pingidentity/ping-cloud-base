@@ -1,5 +1,22 @@
-  # settings that is only for PingFederate Engine
+# PingFederate application settings that are shared with both PingFederate Admin and Engine
+pingfederate:
+
+  # Application settings that is only for PingFederate Admin
+  admin:
+    # PingFederate Heap
+    pfMinHeap: "3072m"
+    pfMaxHeap: "3072m"
+    pfMinYgen: "1536m"
+    pfMaxYgen: "1536m"
+
+  # Application settings that is only for PingFederate Engine
   engine:
+    # PingFederate Heap
+    pfMinHeap: "3072m"
+    pfMaxHeap: "3072m"
+    pfMinYgen: "1536m"
+    pfMaxYgen: "1536m"
+
     statefulSet:
       hpa:
         minReplicas: 3

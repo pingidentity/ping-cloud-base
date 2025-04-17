@@ -60,6 +60,7 @@ _Changes:_
 - [X] PDO-9299 Support new folder structure /deploy for PingAccess upgrades; Support hook overrides for upgrade init-container
 - [X] PDO-9310 Migrate PingOne ORT URLs
 - [X] PDO-9462 Fix PC private ingress endpoint in values.yml
+- [X] PDO-9553 Support heap and ygen sizes for PingFederate microservice
 
 ### 2.0.0
 
