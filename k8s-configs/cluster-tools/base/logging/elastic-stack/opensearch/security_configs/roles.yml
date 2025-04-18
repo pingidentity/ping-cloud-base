@@ -318,3 +318,27 @@ customer_role:
     - "customer"
     allowed_actions:
     - "kibana_all_write"
+
+query_save_export:
+  reserved: false
+  hidden: false
+  static: false
+  cluster_permissions: []
+  index_permissions:
+    - index_patterns:
+        - "*"
+      allowed_actions:
+        - "read"
+        - "indices:monitor/settings/get"
+    - index_patterns:
+        - ".kibana*"
+        - ".opensearch_dashboards*"
+      allowed_actions:
+        - "crud"
+        - "create_index"
+  tenant_permissions:
+    - tenant_patterns:
+        - "global_tenant"
+        - "customer"
+      allowed_actions:
+        - "kibana_all_write"
