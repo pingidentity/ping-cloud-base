@@ -20,3 +20,11 @@ tenacity==8.2.3
 git-remote-codecommit==1.16
 
 cryptography == 43.0.3
+
+# Client Request Library
+requests
+
+# Kubernetes Client Library.
+# Pinned to v31 due to AWS issue in latest version v32
+# See here: https://github.com/kubernetes-client/python/issues/2343
+kubernetes==31.0.0
