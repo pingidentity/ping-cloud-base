@@ -20,7 +20,7 @@ class TestSelfServiceAPILogin(p1_ui.ConsoleUILoginTestBase):
             roles={"p1asSelfServiceRoles": [f"{cls.environment}-tls-audit"]},
             access_granted_xpaths=["//h2[contains(text(), 'Authentication Successful!!')]"],
             access_denied_xpaths=[
-                "//pre[contains(text(), '{\"detail\":\"Access token is missing required scopes. Required scopes: all-tls-admin all-tls-audit dev-tls-admin dev-tls-audit. Provided scopes: .\"}')]"
+                "//pre[contains(text(), '{\"detail\":\"Access token is missing required scopes.\"}')]"
             ],
         )
 
