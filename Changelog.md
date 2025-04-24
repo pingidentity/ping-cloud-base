@@ -91,6 +91,7 @@ _Changes:_
 - Add p1as-self-service microservice
 - Remove Thanos resources and use Prometheus standalone
 - Update global values.yaml for newRelicLicenseKey variable substitution
+- Upgrade Cluster Autoscaler to v1.30.2
 
 _Changes:_
 
@@ -106,6 +107,7 @@ _Changes:_
 - [X] PDO-7248 NewRelic: Upgrade APM agent to latest version
 - [X] PDO-7428 Update seal-secret-values.py to seal with namespace only. Update secret structure
 - [X] PDO-7445 Remove toplogy-descriptor volume mount from products where not needed
+- [X] PDO-7455 Upgrade Cluster Autoscaler to v1.30.2
 - [X] PDO-7469 De-duplicate prod-values.yaml
 - [X] PDO-7482 Fluentbit - remove unnecessary configuration
 - [X] PDO-7527 Grafana: Update PGO dashboards to be compatible with the current PGO version
