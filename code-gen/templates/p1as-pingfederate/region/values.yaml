@@ -115,6 +115,9 @@ pingfederate:
         schedules:
           full: "0 0 * * *"
           differential: "30 */6 * * *"
+    # Control the StorageClass settings of PostgresCluster.
+    persistentVolume:
+      storage: 20Gi
 
   # Periodic CronJob settings for backing up PingFederate Admin
   periodicBackupCronJob:
