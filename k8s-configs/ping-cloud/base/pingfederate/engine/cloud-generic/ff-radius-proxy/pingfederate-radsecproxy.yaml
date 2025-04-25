@@ -60,9 +60,9 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 2083
-            initialDelaySeconds: 5
+            initialDelaySeconds: 0
             periodSeconds: 10
-            failureThreshold: 3
+            failureThreshold: 1
             successThreshold: 1
             timeoutSeconds: 3
           livenessProbe:
