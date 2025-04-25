@@ -3,12 +3,14 @@
 ### 2.0.1
 
 - Support new folder structure /deploy for PingAccess upgrades; Support hook overrides for upgrade init-container
+- Create Readiness Script for PingFederate Engine
 - Prevent PingFederate from starting up until it get its latest configuration
 - Upgrade PingAccess to v8.0.6
 
 _Changes:_
 
 - [X] PDO-9299 Support new folder structure /deploy for PingAccess upgrades; Support hook overrides for upgrade init-container
+- [X] PDO-9413 Create Readiness Script for PingFederate Engine
 - [X] PDO-9426 Prevent PingFederate from starting up until it get its latest configuration
 - [X] PDO-9563 Upgrade PingAccess to v8.0.6
 
