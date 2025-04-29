@@ -158,24 +158,24 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=v2.0.1-RC3
-PINGACCESS_WAS_IMAGE_TAG=v2.0.1-RC3
-PINGFEDERATE_IMAGE_TAG=v2.0.1-RC4
-PINGDELEGATOR_IMAGE_TAG=v2.0.1-RC1
-PINGCENTRAL_IMAGE_TAG=v2.0.1-RC1
-PINGDATASYNC_IMAGE_TAG=v2.0.1-RC1
+PINGACCESS_IMAGE_TAG=v2.0.1
+PINGACCESS_WAS_IMAGE_TAG=v2.0.1
+PINGFEDERATE_IMAGE_TAG=v2.0.1
+PINGDELEGATOR_IMAGE_TAG=v2.0.1
+PINGCENTRAL_IMAGE_TAG=v2.0.1
+PINGDATASYNC_IMAGE_TAG=v2.0.1
 
 ############################################################
 # Ping solution image tags
 ############################################################
-BOOTSTRAP_IMAGE_TAG=v2.0.1-RC1
-P14C_INTEGRATION_IMAGE_TAG=v2.0.1-RC1
+BOOTSTRAP_IMAGE_TAG=v2.0.1
+P14C_INTEGRATION_IMAGE_TAG=v2.0.1
 
 ############################################################
 # Ping observability image tags
 ############################################################
-OS_BOOTSTRAP_IMAGE_TAG=v2.0.1-RC1
-LOGSTASH_IMAGE_TAG=v2.0.1-RC1
+OS_BOOTSTRAP_IMAGE_TAG=v2.0.1
+LOGSTASH_IMAGE_TAG=v2.0.1
 
 ############################################################
 # Cluster name variables

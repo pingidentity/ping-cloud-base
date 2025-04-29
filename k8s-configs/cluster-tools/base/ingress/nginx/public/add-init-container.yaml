@@ -7,7 +7,7 @@ spec:
     spec:
       initContainers:
         - name: ingress-init
-          image: public.ecr.aws/r2h3l6e4/pingcloud-services/ingress-bootstrap:v2.0.1-RC1
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/ingress-bootstrap:v2.0.1
           imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false
