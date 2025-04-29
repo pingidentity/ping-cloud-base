@@ -31,6 +31,7 @@
 - Enable OpenSearch data node(pod) draining during a rolling restart
 - Added script of fetch OS-bootstrap and logstash image
 - Fix PC private ingress endpoint in values.yml
+- Enable fluentbit storage layer metrics by updating prometheus metrics API to v2
 
 _Changes:_
 
@@ -63,6 +64,7 @@ _Changes:_
 - [X] PDO-9159 Create customer P1 tenant issuer configmap
 - [X] PDO-9299 Support new folder structure /deploy for PingAccess upgrades; Support hook overrides for upgrade init-container
 - [X] PDO-9310 Migrate PingOne ORT URLs
+- [X] PDO-9375 FluentBit: Add Grafana Dashboard
 - [X] PDO-9462 Fix PC private ingress endpoint in values.yml
 - [X] PDO-9553 Support heap and ygen sizes for PingFederate microservice
 
