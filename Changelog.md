@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.1.1
+
+- Test: Verify the LetsEncrypt Certificate in PingDirectory Keystore and TrustStore
+
+_Changes:_
+
+- [X] PDO-9178 Test: Verify the LetsEncrypt Certificate in PingDirectory Keystore and TrustStore
+
 ### 2.1.0
 
 - Update PingDirectory resource limits
