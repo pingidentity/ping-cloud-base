@@ -121,10 +121,10 @@ testBootstrapImageTag() {
   $(test "${BOOTSTRAP_IMAGE_TAG}")
   assertEquals "BOOTSTRAP_IMAGE_TAG missing from env_vars file" 0 $?
 
-  unique_count=$(getUniqueTagCount "bootstrap")
+  unique_count=$(getUniqueTagCount "/bootstrap/")
   assertEquals "Bootstrap is using multiple image tag versions" 1 "${unique_count}"
 
-  matched_count=$(getMatchedTagCount "${BOOTSTRAP_IMAGE_TAG}" "bootstrap")
+  matched_count=$(getMatchedTagCount "${BOOTSTRAP_IMAGE_TAG}" "/bootstrap/")
   assertEquals "Bootstrap CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
 }
 
@@ -153,12 +153,12 @@ testLogstashImageTag() {
 
   local logstashImage=$(kubectl get pod -n elastic-stack-logging logstash-elastic-0 -o jsonpath='{.spec.containers[?(@.name=="logstash")].image}' | awk -F: '{print $2}')
   assertEquals "logstash CSR image tag doesn't match Beluga default image tag" "${LOGSTASH_IMAGE_TAG}" "${logstashImage}" 
-  # unique_count=$(getUniqueTagCount "logstash")
-  # assertEquals "Logstash is using multiple image tag versions" 1 "${unique_count}"
+  unique_count=$(getUniqueTagCount "logstash")
+  assertEquals "Logstash is using multiple image tag versions" 1 "${unique_count}"
 
-  # matched_count=$(getMatchedTagCount "${LOGSTASH_IMAGE_TAG}" "logstash")
-  # assertEquals "logstash CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
-  # Uncomment when https://pingidentity.atlassian.net/browse/PDO-8803 is resolved
+  matched_count=$(getMatchedTagCount "${LOGSTASH_IMAGE_TAG}" "logstash")
+  assertEquals "logstash CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+
 }
 
 testOpensearchBootstrapImageTag() {
@@ -169,14 +169,14 @@ testOpensearchBootstrapImageTag() {
   $(test "${OS_BOOTSTRAP_IMAGE_TAG}")
   assertEquals "OS_BOOTSTRAP_IMAGE_TAG missing from env_vars file" 0 $?
 
-  local osBootstrapImage=$(kubectl get pods -n elastic-stack-logging -l job-name=opensearch-bootstrap -o jsonpath='{.items[*].spec.containers[*].image}' | awk -F: '{print $2}')
+  local osBootstrapImage=$(kubectl get job opensearch-bootstrap -n elastic-stack-logging -o jsonpath='{.spec.template.spec.containers[0].image}' | awk -F: '{print $2}')
   assertEquals "os-bootstrap CSR image tag doesn't match Beluga default image tag" "${OS_BOOTSTRAP_IMAGE_TAG}" "${osBootstrapImage}" 
-  # unique_count=$(getUniqueTagCount "os-bootstrap")
-  # assertEquals "OpensearchBootstrap is using multiple image tag versions" 1 "${unique_count}"
+  unique_count=$(getUniqueTagCount "os-bootstrap")
+  assertEquals "OpensearchBootstrap is using multiple image tag versions" 1 "${unique_count}"
 
-  # matched_count=$(getMatchedTagCount "${OS_BOOTSTRAP_IMAGE_TAG}" "os-bootstrap")
-  # assertEquals "os-bootstrap CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
-  # Uncomment when https://pingidentity.atlassian.net/browse/PDO-8803 is resolved
+  matched_count=$(getMatchedTagCount "${OS_BOOTSTRAP_IMAGE_TAG}" "os-bootstrap")
+  assertEquals "os-bootstrap CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+
 }
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
