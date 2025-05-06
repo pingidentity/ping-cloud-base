@@ -21,6 +21,7 @@ spec:
       prometheus.io/scheme: "https"
       prometheus.io/path: "/_prometheus/metrics"
       prometheus.io/port: "9200"
+    drainDataNodes: true # Drain data nodes(pods) on rolling restart operations
     serviceName: opensearch
     serviceAccount: opensearch
     version: 2.11.1

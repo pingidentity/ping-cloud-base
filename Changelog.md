@@ -39,6 +39,7 @@ _Changes:_
 - Add customer-issuer to p14c-bootstrap configs
 - Add customer-issuer to PA Admin pingaccess-p1as-sso container
 - Added script of fetch OS-bootstrap and logstash image
+- Enable OpenSearch data node(pod) draining during a rolling restart
 
 _Changes:_
 
