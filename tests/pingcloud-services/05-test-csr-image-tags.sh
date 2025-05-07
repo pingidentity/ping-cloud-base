@@ -67,21 +67,6 @@ testPingAccessWASImageTag() {
   assertEquals "PingAccess WAS CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
 }
 
-testPingFederateImageTag() {
-  if [ "${ENV_TYPE}" == "customer-hub" ]; then
-    echo "Skipping testPingFederateImageTag as ENV_TYPE is customer-hub"
-    return
-  fi
-  $(test "${PINGFEDERATE_IMAGE_TAG}")
-  assertEquals "PINGFEDERATE_IMAGE_TAG missing from env_vars file" 0 $?
-
-  unique_count=$(getUniqueTagCount "pingfederate")
-  assertEquals "PingFederate is using multiple image tag versions" 1 "${unique_count}"
-
-  matched_count=$(getMatchedTagCount "${PINGFEDERATE_IMAGE_TAG}" "pingfederate")
-  assertEquals "PingFederate CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
-}
-
 testPingDelegatorImageTag() {
   if [ "${ENV_TYPE}" == "customer-hub" ]; then
     echo "Skipping testPingDelegatorImageTag as ENV_TYPE is customer-hub"

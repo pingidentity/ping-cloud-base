@@ -20,6 +20,8 @@ _Changes:_
 - Reconcile Grafana differences with p1as-observability
 - Kustomize: Fix kustomizations to not be completely empty in order to support v5.1+
 - Upgrade Kustomize to 5.5.0
+- Add p1as-pingfederate code-gen directory to PCB
+- p1as-pingfederate Cleanup
 - Integrate init-container to use perpetual license
 - Enable default ingress object to accept LDAPS traffic through Nginx Private
 - Add self-service URL to env_vars
@@ -40,6 +42,7 @@ _Changes:_
 - Add customer-issuer to PA Admin pingaccess-p1as-sso container
 - Added script of fetch OS-bootstrap and logstash image
 - Enable OpenSearch data node(pod) draining during a rolling restart
+- Fix PC private ingress endpoint in values.yml
 
 _Changes:_
 
@@ -64,12 +67,15 @@ _Changes:_
 - [X] PDO-8782 Figure out different setup for newrelic-tags-exporter for microservices
 - [X] PDO-8803 Update Metadata service to pick up OS-bootstrap, and logstash images
 - [X] PDO-8958 Global DNS: Implement Changes in PCB
+- [X] PDO-8970 Add p1as-pingfederate code-gen directory to PCB
+- [X] PDO-8973 p1as-pingfederate Cleanup
 - [X] PDO-8981 Add self-service URL to env_vars
 - [X] PDO-9073 OpenSearch: Deploys in Yellow state due to bootstrap job having run prematurely
 - [X] PDO-9122 Revise the ISM and remove WARM node pools and its components
 - [X] PDO-9159 Create customer P1 tenant issuer configmap
 - [X] PDO-9299 Support new folder structure /deploy for PingAccess upgrades; Support hook overrides for upgrade init-container
 - [X] PDO-9310 Migrate PingOne ORT URLs
+- [X] PDO-9462 Fix PC private ingress endpoint in values.yml
 
 ### 2.0.0
 

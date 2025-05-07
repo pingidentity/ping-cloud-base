@@ -1,0 +1,158 @@
+# PingFederate application settings that are shared with both PingFederate Admin and Engine
+pingfederate:
+  irsaAnnotationKeyValue: "${IRSA_PF_ANNOTATION_KEY_VALUE}"
+  podReaperEnabled: "enabled"
+
+  license:
+    # Only use if you want to provide your own SSM path to perpetual license
+    # The default is that automation will determine SSM path to retrieve product license
+    overrideProductLicense: ""
+
+  # Application settings that is only for PingFederate Admin
+  admin:
+    pfLogLevel: "INFO"
+    verbose: false
+    # PingFederate Heap
+    pfMinHeap: "256m"
+    pfMaxHeap: "512m"
+    pfMinYgen: "128m"
+    pfMaxYgen: "256m"
+
+    # Restore Variables
+    restore:
+      # Choose desired backup to restore from S3. The default is latest.zip which is the most recent backup.
+      backupFileName: ""
+
+      # When deleting PingFederate Admin PVC.
+      # Automation will attempt to pull the latest.zip unless specified differently using 'backupFileName' variable.
+      # Set 'restoreBackup' to 'false' if you don't want to restore the latest backup from S3.
+      restoreBackup: true
+
+    # The following will set PingFederate the minimum and the maximum
+    # number of threads used to configure PingFederate thread pools within run.properties.
+    # By default, this was designed to be empty and the P1AS automation will
+    # dynamically set based on the CPU of the pod. Only override these 2 variables if you truly want to set yourself.
+    # 'PF_JETTY_THREADS_MIN' and 'PF_JETTY_THREADS_MAX' is determined for admin.
+    pfJettyThreadsMin: ""
+    pfJettyThreadsMax: ""
+
+    # Control Ingress Resource for PingFederate Admin
+    ingress:
+      enableExternalIngress: false
+
+    # Set container limits for the PingFederate Admin Statefulset
+    statefulSet:
+      lastUpdateReason: "NA"
+      resources:
+        limits:
+          memory: "4Gi"
+          cpu: "1"
+        requests:
+          memory: "4Gi"
+          cpu: "1"
+
+    # Persistent volume size configuration for PingFederate Admin.
+    persistentVolume:
+      size: 20Gi
+
+  # Application settings that is only for PingFederate Engine
+  engine:
+    pfLogLevel: "INFO"
+    verbose: false
+    pfMinHeap: "256m"
+    pfMaxHeap: "512m"
+    pfMinYgen: "128m"
+    pfMaxYgen: "256m"
+
+    # The following will set PingFederate the minimum and the maximum
+    # number of threads used to configure PingFederate thread pools within run.properties.
+    # By default, this was designed to be empty and the P1AS automation will
+    # dynamically set based on the CPU of the pod. Only override these 2 variables if you truly want to set yourself.
+    # 'PF_JETTY_THREADS_MIN' and 'PF_JETTY_THREADS_MAX' is determined for runtime engine.
+    pfJettyThreadsMin: ""
+    pfJettyThreadsMax: ""
+
+    # Set container limits for the PingFederate Engine Statefulset
+    statefulSet:
+      lastUpdateReason: "NA"
+      replicas: "2"
+      resources:
+        requests:
+          memory: "4Gi"
+          cpu: 2
+        limits:
+          memory: "4Gi"
+          cpu: 2
+      podDisruptionBudget:
+        minAvailable: "30%"
+      hpa:
+        minReplicas: 2
+        maxReplicas: 2
+        averageUtilization: 70
+
+  # Outbound provisioning settings
+  provisioning:
+
+    # Control settings of k8s custom resource PostgresCluster. Also, known as post-gres-operator|PGO
+    postGresCluster:
+      ### Execute a PGO database restore for pf-provisioning
+      ### To restore database set restoreDatabaseAnnotationKeyValue to "postgres-operator.crunchydata.com/pgbackrest-restore: id1"
+      ### ***NOTE: This action will bring down the database until the restoration is complete!***
+      ### If this has been executed before, the id number will need to be incremented to kick off a new restore job
+      restoreDatabaseAnnotationKeyValue: ""
+      replicas: 3
+      minAvailable: 1
+      resources:
+        limits:
+          cpu: 2
+          memory: "4Gi"
+        requests:
+          cpu: 2
+          memory: "2Gi"
+      repo1:
+        s3:
+          bucket: ${PGO_BACKUP_BUCKET_NAME}
+        schedules:
+          full: "0 0 * * *"
+          differential: "30 */6 * * *"  
+    # Control the StorageClass settings of PostgresCluster.
+    persistentVolume:
+      storage: 20Gi
+
+  # Periodic CronJob settings for backing up PingFederate Admin
+  periodicBackupCronJob:
+    schedule: "30 * * * *"
+    resources:
+      limits:
+        memory: "50Mi"
+        cpu: "50m"
+      requests:
+        memory: "25Mi"
+        cpu: "25m"
+
+  # Radius Proxy settings
+  radiusProxy:
+    enabled: false
+
+    # Control side-car container within PingFederate statefulset
+    statefulSet:
+      resources:
+        requests:
+          memory: "200Mi"
+          cpu: "200m"
+        limits:
+          memory: "500Mi"
+          cpu: "400m"
+
+  # Heartbeat Exporter settings
+  heartbeatExporter:
+
+    # Control side-car container within PingFederate statefulset
+    statefulSet:
+      resources:
+        requests:
+          memory: "300Mi"
+          cpu: "100m"
+        limits:
+          memory: "300Mi"
+          cpu: "100m"
