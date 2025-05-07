@@ -139,48 +139,6 @@ patchesStrategicMerge:
   apiVersion: v1
   kind: ConfigMap
   metadata:
-    name: pingfederate-admin-environment-variables
-  data:
-    PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}
-    PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY}
-    BACKUP_URL: ${BACKUP_URL}
-    PA_WAS_ADMIN_PUBLIC_HOSTNAME: pingaccess-was-admin.${TENANT_DOMAIN}
-    PA_WAS_ENGINE_PUBLIC_HOSTNAME: pingaccess-was.${TENANT_DOMAIN}
-    PA_ADMIN_PUBLIC_HOSTNAME: pingaccess-admin.${TENANT_DOMAIN}
-    PA_ADMIN_API_PUBLIC_HOSTNAME: pingaccess-admin-api.${TENANT_DOMAIN}
-    PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
-    PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
-    PF_ADMIN_API_PUBLIC_HOSTNAME: pingfederate-admin-api.${TENANT_DOMAIN}
-    PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
-    PD_DELEGATOR_PUBLIC_HOSTNAME: pingdelegator.${TENANT_DOMAIN}
-    PD_HTTP_PUBLIC_HOSTNAME: pingdirectory.${TENANT_DOMAIN}
-    REGION: ${REGION}
-    NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: pingfederate-environment-variables
-  data:
-    PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}
-    PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY}
-    BACKUP_URL: ${BACKUP_URL}
-    PA_WAS_ADMIN_PUBLIC_HOSTNAME: pingaccess-was-admin.${TENANT_DOMAIN}
-    PA_WAS_ENGINE_PUBLIC_HOSTNAME: pingaccess-was.${TENANT_DOMAIN}
-    PA_ADMIN_PUBLIC_HOSTNAME: pingaccess-admin.${TENANT_DOMAIN}
-    PA_ADMIN_API_PUBLIC_HOSTNAME: pingaccess-admin-api.${TENANT_DOMAIN}
-    PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
-    PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
-    PF_ADMIN_API_PUBLIC_HOSTNAME: pingfederate-admin-api.${TENANT_DOMAIN}
-    PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
-    PD_DELEGATOR_PUBLIC_HOSTNAME: pingdelegator.${TENANT_DOMAIN}
-    PD_HTTP_PUBLIC_HOSTNAME: pingdirectory.${TENANT_DOMAIN}
-    REGION: ${REGION}
-    NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
     name: pingdatasync-environment-variables
   data:
     PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}
@@ -226,32 +184,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingdelegator.${TENANT_DOMAIN}
-
-- target:
-    group: networking.k8s.io
-    version: v1
-    kind: Ingress
-    name: pingfederate-ingress
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingfederate.${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingfederate.${TENANT_DOMAIN}
-
-- target:
-    group: networking.k8s.io
-    version: v1
-    kind: Ingress
-    name: pingfederate-admin-ingress
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingfederate-admin-api.${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingfederate-admin-api.${TENANT_DOMAIN}
 
 - target:
     group: networking.k8s.io
@@ -306,14 +238,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-admin.${TENANT_DOMAIN}
-
-    ### PingFederate Admin ###
-    - op: replace
-      path: /spec/tls/0/hosts/1
-      value: pingfederate-admin.${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/1/host
-      value: pingfederate-admin.${TENANT_DOMAIN}
 
     ### Grafana ###
     - op: replace
@@ -380,16 +304,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingcentral.${TENANT_DOMAIN}
-
-# pingfederate engine radius ports
-- target:
-    version: v1
-    kind: Service
-    name: udp-loadbalancer
-  patch: |-
-    - op: replace
-      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
-      value: pingfederate-radius.${TENANT_DOMAIN}
 
 # Make the admin nodes available externally for test purposes. In general, they
 # will be behind a VPN gateway on all CDEs so only admins have access to them.

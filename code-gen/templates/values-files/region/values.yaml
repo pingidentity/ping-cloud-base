@@ -21,3 +21,10 @@ global:
 
   # Customer-specific artifacts URL for region
   artifactRepoUrl: "${ARTIFACT_REPO_URL}"
+
+  ########################################################
+  # Public Hostnames
+  ########################################################
+  pdHttpPublicHostname: "pingdirectory.${VALUES_FILES_DNS_ZONE}"
+  pdDelegatorPublicHostname: "pingdelegator.${VALUES_FILES_DNS_ZONE}"
+  pfEnginePublicHostname: "pingfederate.${VALUES_FILES_DNS_ZONE}"
