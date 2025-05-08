@@ -40,6 +40,7 @@ _Changes:_
 - Added script of fetch OS-bootstrap and logstash image
 - Fix PC private ingress endpoint in values.yml
 - Enable fluentbit storage layer metrics by updating prometheus metrics API to v2
+- Fix push-cluster-state.sh failing when no remote branches are available
 
 _Changes:_
 
@@ -75,6 +76,7 @@ _Changes:_
 - [X] PDO-9375 FluentBit: Add Grafana Dashboard
 - [X] PDO-9462 Fix PC private ingress endpoint in values.yml
 - [X] PDO-9553 Support heap and ygen sizes for PingFederate microservice
+- [X] PDO-9616 Fix push-cluster-state.sh failing when no remote branches are available
 
 ### 2.0.0
 
