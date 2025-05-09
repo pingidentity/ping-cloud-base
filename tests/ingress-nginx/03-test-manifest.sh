@@ -8,11 +8,19 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testNGINXVersionMatch() {
-  export nginx_expected_version="1.11.2"
-  # Use UBER_YAML outputted by compile stage to check version of ingress-nginx
-  yq -e 'select(.metadata.labels."app.kubernetes.io/name" == "ingress-nginx") | select(.metadata.labels."app.kubernetes.io/version" != env(nginx_expected_version))' "${UBER_YAML}"
-  assertEquals "Some matches were found matching a version other than expected, see output from yq above^^" 1 $?
+# Global expected values
+export nginx_expected_version="1.11.5"
+
+testNGINXPublicVersionMatch() {
+  # Ensure expected nginx version is used
+  yq -e 'select(.metadata.labels."app.kubernetes.io/name" == "ingress-nginx-public" and .metadata.labels."app.kubernetes.io/version" != env(nginx_expected_version))' "${UBER_YAML}"
+  assertEquals "Unexpected ingress-nginx version found!, see output from yq above^^" 1 $?
+}
+
+testNGINXPrivateVersionMatch() {
+  # Ensure expected nginx version is used
+  yq -e 'select(.metadata.labels."app.kubernetes.io/name" == "ingress-nginx-private" and .metadata.labels."app.kubernetes.io/version" != env(nginx_expected_version))' "${UBER_YAML}"
+  assertEquals "Unexpected ingress-nginx version found!, see output from yq above^^" 1 $?
 }
 
 # When arguments are passed to a script you must

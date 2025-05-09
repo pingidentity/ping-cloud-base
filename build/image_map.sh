@@ -30,6 +30,7 @@ export IMAGE_MAP="pingcloud-apps/pingaccess
    pingcloud-services/ingress-bootstrap"
 
 export CHART_MAP="p1as-beluga-tools
+   p1as-cluster-tools
    p1as-pingdirectory
    p1as-self-service
    p1as-cloudwatch

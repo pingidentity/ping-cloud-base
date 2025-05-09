@@ -14,51 +14,51 @@ configMapGenerator:
 patchesStrategicMerge:
 
 ### Assign Elastic IP addresses to the ingress-nginx-public Network Load Balancer by adding the annotation ###
-- |-
-  apiVersion: v1
-  kind: Service
-  metadata:
-    name: ingress-nginx
-    namespace: ingress-nginx-public
-    annotations:
-      service.beta.kubernetes.io/aws-load-balancer-type: nlb
-      ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
+# - |-
+#   apiVersion: v1
+#   kind: Service
+#   metadata:
+#     name: ingress-nginx
+#     namespace: ingress-nginx-public
+#     annotations:
+#       service.beta.kubernetes.io/aws-load-balancer-type: nlb
+#       ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
 
 ### Ingress service account ###
-- |-
-  apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    name: nginx-ingress-serviceaccount
-    annotations:
-      ${IRSA_INGRESS_ANNOTATION_KEY_VALUE}
+# - |-
+#   apiVersion: v1
+#   kind: ServiceAccount
+#   metadata:
+#     name: nginx-ingress-serviceaccount
+#     annotations:
+#       ${IRSA_INGRESS_ANNOTATION_KEY_VALUE}
 
 patchesJson6902:
 
-- target:
-    group: apps
-    version: v1
-    kind: Deployment
-    name: nginx-ingress-controller
-    namespace: ingress-nginx-public
-  patch: |-
-    - op: add
-      path: /spec/template/spec/containers/0/args/-
-      value:
-        --default-ssl-certificate=${PING_CLOUD_NAMESPACE}/acme-tls-cert
+# - target:
+#     group: apps
+#     version: v1
+#     kind: Deployment
+#     name: nginx-ingress-controller
+#     namespace: ingress-nginx-public
+#   patch: |-
+#     - op: add
+#       path: /spec/template/spec/containers/0/args/-
+#       value:
+#         --default-ssl-certificate=${PING_CLOUD_NAMESPACE}/acme-tls-cert
 
 ### Patch to inject environment variables to SigSci agent container ###
-- target:
-    group: apps
-    version: v1
-    kind: Deployment
-    name: nginx-ingress-controller
-    namespace: ingress-nginx-public
-  patch: |-
-    - op: replace
-      path: /spec/template/spec/containers/1/env/0/value
-      value: ${REGION}
+# - target:
+#     group: apps
+#     version: v1
+#     kind: Deployment
+#     name: nginx-ingress-controller
+#     namespace: ingress-nginx-public
+#   patch: |-
+#     - op: replace
+#       path: /spec/template/spec/containers/1/env/0/value
+#       value: ${REGION}
 
-    - op: replace
-      path: /spec/template/spec/containers/1/env/1/value
-      value: ${ENVIRONMENT_PREFIX}
+#     - op: replace
+#       path: /spec/template/spec/containers/1/env/1/value
+#       value: ${ENVIRONMENT_PREFIX}

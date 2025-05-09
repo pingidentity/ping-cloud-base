@@ -6,7 +6,7 @@ resources:
 - cert-manager
 - cluster-autoscaler
 - service-discovery
-- ingress
+# - ingress
 - logging
 - metrics
 - monitoring
@@ -16,4 +16,3 @@ resources:
 - pgo
 #- karpenter
 - kube-downscaler
-

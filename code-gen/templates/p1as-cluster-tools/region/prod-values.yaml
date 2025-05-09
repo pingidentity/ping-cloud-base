@@ -1,0 +1,10 @@
+# p1as-cluster-tools prod settings
+
+# ingress-nginx-public values
+ingress-nginx-public:
+  ingress-nginx:
+    controller:
+      autoscaling:
+        minReplicas: 4
+        maxReplicas: 6
+        targetCPUUtilizationPercentage: 50
