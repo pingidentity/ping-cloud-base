@@ -5,7 +5,7 @@ workflow:
     - if: $CI_MERGE_REQUEST_ID
       when: never
     - when: always
-    
+
 ## Pipeline stages ##
 stages:
 - compile

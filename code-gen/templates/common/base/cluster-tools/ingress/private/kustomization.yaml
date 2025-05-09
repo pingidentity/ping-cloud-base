@@ -7,14 +7,14 @@ resources:
 patchesJson6902:
 
 ### Change the default TLS secret for the ingress controllers ###
-- target:
-    group: apps
-    version: v1
-    kind: Deployment
-    name: nginx-ingress-controller
-    namespace: ingress-nginx-private
-  patch: |-
-    - op: add
-      path: /spec/template/spec/containers/0/args/-
-      value:
-        --default-ssl-certificate=${PING_CLOUD_NAMESPACE}/acme-tls-cert
+# - target:
+#     group: apps
+#     version: v1
+#     kind: Deployment
+#     name: nginx-ingress-controller
+#     namespace: ingress-nginx-private
+#   patch: |-
+#     - op: add
+#       path: /spec/template/spec/containers/0/args/-
+#       value:
+#         --default-ssl-certificate=${PING_CLOUD_NAMESPACE}/acme-tls-cert

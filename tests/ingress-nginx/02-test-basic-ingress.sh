@@ -65,7 +65,7 @@ testNginxPublicMetadataEndpoint() {
 testNginxSigSciModule() {
   command_to_run="grep sigsci_module /etc/nginx/nginx.conf"
   log "Checking for SigSci module loaded in config at /etc/nginx/nginx.conf"
-  kubectl exec -ti -n ingress-nginx-public deployment/nginx-ingress-controller -c nginx-ingress-controller -- ${command_to_run}
+  kubectl exec -ti -n ingress-nginx-public deployment/ingress-nginx -c controller -- ${command_to_run}
   assertEquals "Module not found in NGINX public" 0 $?
 }
 
@@ -74,25 +74,27 @@ testSigSciVersion() {
   sigsci_expected_version="4.57.0"
   command_to_run="/home/sigsci/sigsci-agent --version"
   log "Checking SigSci version in SigSci agent container against expected version: ${sigsci_expected_version}"
-  sigsci_found_version=$(kubectl exec -ti -n ingress-nginx-public deployment/nginx-ingress-controller -c sigsci-agent -- ${command_to_run})
+  sigsci_found_version=$(kubectl exec -ti -n ingress-nginx-public deployment/ingress-nginx -c sigsci-agent -- ${command_to_run})
   # Remove carriage returns from output
   command_filtered=$(echo "${sigsci_found_version}" | sed -e 's/\r//g')
   assertEquals "Correct SigSci version not found" "${sigsci_expected_version}" "${command_filtered}"
 }
 
 testNginxPrivateConfigMap() {
-  check_configmap_key_exists "ingress-nginx-private" "nginx-configuration" "location-snippet"
-  check_configmap_key_exists "ingress-nginx-private" "nginx-configuration" "log-format-upstream"
+  local configmap_private="ingress-nginx"
+  check_configmap_key_exists "ingress-nginx-private" $configmap_private "location-snippet"
+  check_configmap_key_exists "ingress-nginx-private" $configmap_private "log-format-upstream"
 }
 
 testNginxPublicConfigMap() {
-  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "location-snippet"
-  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "log-format-upstream"
-  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "main-snippet"
-  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "max-worker-connections"
-  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "ssl-ciphers"
-  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "ssl-dh-param"
-  check_configmap_key_exists "ingress-nginx-public" "nginx-configuration" "worker-processes"
+  local configmap_public="ingress-nginx"
+  check_configmap_key_exists "ingress-nginx-public" $configmap_public "location-snippet"
+  check_configmap_key_exists "ingress-nginx-public" $configmap_public "log-format-upstream"
+  check_configmap_key_exists "ingress-nginx-public" $configmap_public "main-snippet"
+  check_configmap_key_exists "ingress-nginx-public" $configmap_public "max-worker-connections"
+  check_configmap_key_exists "ingress-nginx-public" $configmap_public "ssl-ciphers"
+  check_configmap_key_exists "ingress-nginx-public" $configmap_public "ssl-dh-param"
+  check_configmap_key_exists "ingress-nginx-public" $configmap_public "worker-processes"
 }
 
 # When arguments are passed to a script you must
