@@ -323,14 +323,12 @@ patches:
       namespace: ingress-nginx
   patch: |
     - op: add
-      path: /metadata/annotations
-      value:
-          service.beta.kubernetes.io/aws-load-balancer-type: nlb
+      path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-type
+      value: nlb
 
     - op: add
-      path: /metadata/annotations
-      value:
-          service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+      path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-cross-zone-load-balancing-enabled
+      value: "true"
 
     - op: add
       path: /spec/externalTrafficPolicy
