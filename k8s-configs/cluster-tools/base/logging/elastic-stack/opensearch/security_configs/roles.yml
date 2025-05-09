@@ -330,6 +330,8 @@ query_save_export:
       allowed_actions:
         - "read"
         - "indices:monitor/settings/get"
+        - "indices:data/read/scroll"
+        - "indices:data/read/scroll/clear"
     - index_patterns:
         - ".kibana*"
         - ".opensearch_dashboards*"
