@@ -36,6 +36,18 @@ testNginxPublicMetadataEndpoint() {
   assertEquals "Metadata ingress response code was not 200" "200" "${nginx_metadata_resp_code}"
 }
 
+
+testPrivateKeyConfigs(){
+  log "Extracting private key from cluster"
+  output=$(kubectl get secret acme-tls-cert -n ping-cloud -o jsonpath='{.data.tls\.key}' | base64 -d | openssl rsa -noout -text 2>/dev/null)
+  exit_code=$?
+  assertEquals "Key is not a valid RSA private key" "0" "${exit_code}"
+
+  echo "${output}" | grep -q "Private-Key: (2048 bit"
+  exit_code=$?
+  assertEquals "Key is not 2048 bits" "0" "${exit_code}"
+}
+
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
 # or your script won't run.  For integration

@@ -5,9 +5,11 @@
 - OSD: Enable Save Query and CSV Export of Logs
 - Enable fluentbit storage layer metrics by updating prometheus metrics API to v2
 - FluentBit: Adjust Buffer and Limit Configuration by removing Mem_Buf_Limit and storage.pause_on_chunks_overlimit parameters
+- Explicitly set Lets Encrypt configuration via cert-manager
 
 _Changes:_
 
+- [X] PDO-7817 Explicitly set Lets Encrypt configuration via cert-manager
 - [X] PDO-8754 OSD: Enable Save Query and CSV Export of Logs
 - [X] PDO-9375 FluentBit: Add Grafana Dashboard
 - [X] PDO-9376 FluentBit: Adjust Buffer and Limit Configuration
