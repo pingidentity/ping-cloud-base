@@ -53,10 +53,10 @@ patchesStrategicMerge:
   metadata:
     labels:
       app: enrichment
-    name: enrichment
+    name: bootstrap-serviceaccount
     annotations:
       purpose: service-account-for-ping-cloud-stack
-      ${IRSA_PING_ANNOTATION_KEY_VALUE}
+      ${IRSA_BOOTSTRAP_ANNOTATION_KEY_VALUE}
 
 - |-
   # Add IRSA role annotation to logstash-elastic service account

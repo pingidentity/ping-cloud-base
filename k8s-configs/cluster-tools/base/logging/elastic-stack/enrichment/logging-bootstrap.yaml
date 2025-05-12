@@ -10,7 +10,7 @@ metadata:
 spec:
   template:
     spec:
-      serviceAccountName: enrichment
+      serviceAccountName: bootstrap-serviceaccount
       containers:
       - name: logging-bootstrap
         securityContext:
