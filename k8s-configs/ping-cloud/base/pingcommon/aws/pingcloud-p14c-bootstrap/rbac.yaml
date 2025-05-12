@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: p14c-bootstrap-serviceaccount
+  name: bootstrap-serviceaccount
 
 ---
 
@@ -50,4 +50,4 @@ roleRef:
   name: p14c-bootstrap-role
 subjects:
   - kind: ServiceAccount
-    name: p14c-bootstrap-serviceaccount
+    name: bootstrap-serviceaccount

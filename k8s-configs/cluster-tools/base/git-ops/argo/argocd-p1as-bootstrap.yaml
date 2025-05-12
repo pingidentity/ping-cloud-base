@@ -1,3 +1,39 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bootstrap-serviceaccount
+  labels:
+    app: argocd-p1as-bootstrap
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argocd-p1as-bootstrap
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  - configmaps
+  verbs:
+  - create
+  - get
+  - list
+  - update
+  - patch
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argocd-p1as-bootstrap
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: argocd-p1as-bootstrap
+subjects:
+- kind: ServiceAccount
+  name: bootstrap-serviceaccount
 # Configure ArgoCD toleration to allow it to be scheduled on nodes tainted with CriticalAddonsOnly=core. This is done so we can dynamically manage these nodes using Karpenter.
 ---
 apiVersion: batch/v1
@@ -13,7 +49,7 @@ spec:
         # We create this job once, but we want the pod deleted long-term and not the job resource to prevent Argo drift
         pod-reaper: enabled
     spec:
-      serviceAccountName: argocd-server
+      serviceAccountName: bootstrap-serviceaccount
       containers:
       - name: argocd-p1as-bootstrap
         securityContext:

@@ -12,7 +12,7 @@ spec:
       annotations:
         lastUpdateReason: "NA"
     spec:
-      serviceAccount: p14c-bootstrap-serviceaccount
+      serviceAccount: bootstrap-serviceaccount
       securityContext:
         runAsGroup: 9999
         runAsNonRoot: true

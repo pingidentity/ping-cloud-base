@@ -19,6 +19,9 @@ global:
   # irsaPingAnnotationKeyValue is the IAM roles for service accounts
   irsaPingAnnotationKeyValue: "${IRSA_PING_ANNOTATION_KEY_VALUE}"
 
+  # irsaBootstrapAnnotationKeyValue is the IAM roles for bootstrap service accounts
+  irsaBootstrapAnnotationKeyValue: "${IRSA_BOOTSTRAP_ANNOTATION_KEY_VALUE}"
+
   # Customer-specific artifacts URL for region
   artifactRepoUrl: "${ARTIFACT_REPO_URL}"
 

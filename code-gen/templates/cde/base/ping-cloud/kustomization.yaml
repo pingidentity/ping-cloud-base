@@ -54,7 +54,7 @@ patchesStrategicMerge:
   apiVersion: v1
   kind: ServiceAccount
   metadata:
-    name: p14c-bootstrap-serviceaccount
+    name: bootstrap-serviceaccount
     annotations:
       purpose: service-account-for-ping-cloud-stack
-      ${IRSA_PING_ANNOTATION_KEY_VALUE}
+      ${IRSA_BOOTSTRAP_ANNOTATION_KEY_VALUE}

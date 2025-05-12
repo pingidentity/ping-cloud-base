@@ -75,3 +75,10 @@ metadata:
   annotations:
     ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bootstrap-serviceaccount
+  annotations:
+    ${IRSA_BOOTSTRAP_ANNOTATION_KEY_VALUE}
+---
