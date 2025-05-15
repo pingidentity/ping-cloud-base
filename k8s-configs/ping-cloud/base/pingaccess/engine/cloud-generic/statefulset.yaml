@@ -203,10 +203,10 @@ spec:
           mountPath: /opt/sso/p1as_configs
         readinessProbe:
           exec:
-            command: [ /opt/staging/hooks/99-pa-engine-liveness.sh ]
-          initialDelaySeconds: 60
+            command: [ /opt/staging/hooks/99-pa-engine-readiness.sh  ]
+          initialDelaySeconds: 0
           periodSeconds: 5
-          failureThreshold: 3
+          failureThreshold: 1
           timeoutSeconds: 5
         livenessProbe:
           exec:
