@@ -6,6 +6,7 @@
 - Update bootstrap pods to use new bootstrap IRSA role
 - Enable fluentbit storage layer metrics by updating prometheus metrics API to v2
 - FluentBit: Adjust Buffer and Limit Configuration by removing Mem_Buf_Limit and storage.pause_on_chunks_overlimit parameters
+- Set initialDelaySeconds and failureThreshold on readiness probe for PingAccess and PingAccess-WAS
 - Explicitly set Lets Encrypt configuration via cert-manager
 
 _Changes:_
@@ -16,6 +17,7 @@ _Changes:_
 - [X] PDO-9021 Enable p1as-cluster-tools microservice in PCB
 - [X] PDO-9375 FluentBit: Add Grafana Dashboard
 - [X] PDO-9376 FluentBit: Adjust Buffer and Limit Configuration
+- [X] PDO-9414 Set initialDelaySeconds and failureThreshold on readiness probe for PingAccess and PingAccess-WAS
 
 ### 2.1.0
 
@@ -114,7 +116,7 @@ _Changes:_
 - [X] PDO-5888 Implement p1as-pingdirectory pipeline deploy stage
 - [X] PDO-5900 Add p1as-pingdirectory code-gen directory to PCB
 - [X] PDO-5901 Pingdirectory Monorepo Cleanup
-- [X] PDO-6511 Update static files in PF upgrade to v12.1.0
+- [X] PDO-6511 Update static files in PF upgrade to v12.1.0 
 - [X] PDO-6573 Support customer bringing their own certificate for their external server and adding it to PingDataSync truststore
 - [X] PDO-6744 Refactor update and generate scripts to pull from microservice repo mirrors
 - [X] PDO-6877 Update HPAs to prevent flapping on short bursting CPU loads
@@ -249,7 +251,7 @@ _Changes:_
 - Update Grafana to v10.1.0
 - Update Alertmanager to v0.26
 - Add Karpenter capacity and performance Grafana dashboard
-- Add fluent-bit input filter to Karpenter logs
+- Add fluent-bit input filter to Karpenter logs 
 - Update Amazon-Cloudwatch-agent to v1.300026.3b189
 - Update EBS Driver to 1.21.0 for EKS 1.27
 - Update newrelic-java-agent to v8.6.0
@@ -279,7 +281,7 @@ _Changes:_
 - Remove prime-thread-count setting from userRoot backend within PingDirectory
 - Implemented: OpenSearch EBS gp3 Storage Class + Kubernetes-Volume-Autoscaler
 - Allow CSR to override the duration and renewBefore properties within cert-manager
-- Updating image-map.sh to include CHART_MAP variable.
+- Updating image-map.sh to include CHART_MAP variable. 
 - Logstash: Migrate to AWS EBS gp3 Volumes
 - Newrelic-Prometheus-Agent: Send Kubernetes-volume-Autoscaler Metrics to New Relic
 - Update CreateCluster script to provision Karpenter-ready Cluster.
@@ -327,7 +329,7 @@ _Changes:_
 - [X] PDO-5371 Update PCB Pipeline to deploy CDE dev Environment
 - [X] PDO-5373 PingCentral testing in PCB Pipeline CDE deployment
 - [X] PDO-5378 Automate a test to ensure passwords dont leak in pod logs
-- [X] PDO-5396 Create new RBAC rules , ping role and service accounts for PD backups and restore
+- [X] PDO-5396 Create new RBAC rules , ping role and service accounts for PD backups and restore 
 - [X] PDO-5400 Update PD backup/restore integration tests
 - [X] PDO-5408 Add boolean flag to skip pod liveness probe script for PingFederate engines, PingAccess/WAS engines, and PingDirectory
 - [X] PDO-5409 Add ability to Update Upgrade Scripts w/o Release of New Beluga Version
@@ -410,7 +412,7 @@ _Changes:_
 - [X] PDO-6187 Increase wait time for backup alerts for PGO
 - [X] PDO-6189 Fluentbit: Performance degradation under high load
 - [X] PDO-6190 Logstash: Readiness probe fails under high load
-- [X] PDO-6224 Remove Grafana ping-app patches from remove-from-secondary-patch.yaml
+- [X] PDO-6224 Remove Grafana ping-app patches from remove-from-secondary-patch.yaml 
 - [X] PDO-6241 Remove Grafana from ping-cloud-base image tag list
 - [X] PDO-6242 Configure newrelic-prometheus-agent to collect FluentBit and Logstash metrics
 - [X] PDO-6263 ArgoCD sync failing due to timeout on v1.19-release-branch
@@ -440,7 +442,7 @@ _Changes:_
 - Selectively restore a backend in PD
 - Capture hourly PingDirectory CSD data
 - Enable and manage daily encrypted exports
-- Updated external-dns to v0.13.1
+- Updated external-dns to v0.13.1 
 - Update cluster tools to latest version: kube-state-metrics v2.6.0
 - Remove PA/PF SIEM console logging
 - Updated cluster-autoscaler to v1.23.0
@@ -455,7 +457,7 @@ _Changes:_
 - Add PA-WAS to customer-hub env
 - Replace deprecated topologyKey
 - Enable the skipped integration tests.
-- Automate creation of ping-cloud-dashboards new release branch
+- Automate creation of ping-cloud-dashboards new release branch 
 - Update cluster tools to latest version: metrics-server v0.6.2
 - Update all PodDisruptionBudget resources to API v1
 - [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
@@ -502,7 +504,7 @@ _Changes:_
 - Default ngnix hpa configuration in medium environment is lower than small
 - Fix cluster_name variable in Grafana Dashboards for CHUB
 - Remove PC resources from secondary customer-hub
-- Allow users to pick and enable only the external ingress they want.
+- Allow users to pick and enable only the external ingress they want. 
 - Fixed Pending state of nri-bundle-nrk8s-kubelet pods running by CDE
 - Add pingaccess-was-license secret placeholder entry to CHUB
 - Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
@@ -526,7 +528,7 @@ _Changes:_
 - Fix IRSA role for pingfederate-admin-serviceaccount
 - Add "--skipPrime" flag to PD start-server script
 - Upgrade PingFederate
-- Update PA-WAS admin/engine CSD upload job to reference PA-WAS CSD upload configMaps, rather than just pingaccess.
+- Update PA-WAS admin/engine CSD upload job to reference PA-WAS CSD upload configMaps, rather than just pingaccess.  
 - Fluent-Bit: change IMDS vesrion to v2
 - Remove docker logs from fluent-bit
 - Reset 'cn=replication' server ID entry within PingDirectory on startup
@@ -601,7 +603,7 @@ _Changes:_
 - [X] PDO-5018 PGO resources - handle secondary region v1.18
 - [X] PDO-5025 Improve fluent-bit multiline log parsing
 - [X] PDO-5030 New base configuration for PingDirectory permissions
-- [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
+- [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone 
 - [X] PDO-5039 Automate cleanup of external dns records for CI/CD clusters
 - [X] PDO-5041 node-role.kubernetes.io/master (deprecated)
 - [X] PDO-5043 Legacy Logging Mode: Remove Feature Flag, Code Logic and Refactor Filters
@@ -612,7 +614,7 @@ _Changes:_
 - [X] PDO-5123 Create new folders "Backup-ops-template" "restore-ops-template" for PD backups,restore process
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
 - [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
-- [X] PDO-5138 Add a new hook script '02-health-check.sh' to support readiness and liveness probes
+- [X] PDO-5138 Add a new hook script '02-health-check.sh' to support readiness and liveness probes 
 - [X] PDO-5141 Fix the ArgoCD App name
 - [X] PDO-5143 Add logstash and fluent-bit alerts
 - [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
@@ -639,7 +641,7 @@ _Changes:_
 - [X] PDO-5302 Fix PF multiline parsing
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 - [X] PDO-5319 The cluster name is not displayed correctly in Grafana Dashboard for the CHUB cluster
-- [X] PDO-5328 Add pingaccess-was-license secret placeholder entry to CHUB
+- [X] PDO-5328 Add pingaccess-was-license secret placeholder entry to CHUB 
 - [X] PDO-5377 Patch CA to balance node across all AZs
 - [X] PDO-5390 nri-bundle-nrk8s-kubelet-* pods running by CDE stuck in Pending state
 - [X] PDO-5393 Bugfix - secondary CSR missing app dir
@@ -898,16 +900,16 @@ _Changes:_
 - Add ArgoCD slack notifications secret within SSM and remove from k8s secret
 - Added argo-events version 1.7.2
 - Enable newrelic-logging for host logs and service cluster-tools pods(kube-system namespace + external-dns)
-- Resolve tag _grokparsefailure and log components are missing
+- Resolve tag _grokparsefailure and log components are missing 
 - Add new env_var "DEFAULT_USER_BASE_DN"
 - Added event source and webhook for argo-events to enable notification
 - LEGACY_LOGGING defaulted to False
-- update pingcloud-bom and pingcloud-oauth securityContext with allowPrivilegeEscalation set to false
+- update pingcloud-bom and pingcloud-oauth securityContext with allowPrivilegeEscalation set to false 
 - Use camelCase for healthcheck test tags and filenames
 - Implemented must-have monitoring/alerting of PGO
 - Implement PGO alerting via argo-events
 - Added argo-image-updater version v0.12.0
-- Fix: Events are not displayed in New Relic for some pods in some namespaces
+- Fix: Events are not displayed in New Relic for some pods in some namespaces 
 - Fix: New relic not reporting accurate pod metrics for some environments
 - Switch Delegated Admin to use OAuth Authorization Flow instead of Implicit Flow
 - Added ArgoCD slack notifications
@@ -1127,7 +1129,7 @@ _Changes:_
 - [X] PDO-3907 Create Cluster Health Tests for Health Checks Pt 1
 - [X] PDO-3910 Create a logstash parsers for all ping-app non-SIEM logs
 - [X] PDO-3911 Warning message in es-cluster pods logs
-- [X] PDO-3912 Few PF Kibana Dashboards and one PD Kibana Dashboard not showing data
+- [X] PDO-3912 Few PF Kibana Dashboards and one PD Kibana Dashboard not showing data 
 - [X] PDO-3913 Few data views are listed twice in Kibana Discover tab
 - [X] PDO-3915 Create Reaper Deployment in PCB
 - [X] PDO-3919 Create Cluster Health Tests for Health Checks Pt 2
@@ -1330,7 +1332,7 @@ _Changes:_
 - [X] PDO-3401 Upgrade PingFederate to v10.3.5 to resolve security vulnerability SECADV029 and SECBL021
 - [X] PDO-3513 (BugFix) Logstash crashlooping due to updated plugin dependencies
 - [X] PDO-3764 Turn off pod logs from going into NewRelic
-- [X] PDO-3782 Encrypt K8s StorageClass
+- [X] PDO-3782 Encrypt K8s StorageClass 
 
 ### 1.11.0
 

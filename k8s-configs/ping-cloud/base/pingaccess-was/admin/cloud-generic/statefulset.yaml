@@ -292,9 +292,9 @@ spec:
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/85-pa-admin-readiness.sh ]
-          initialDelaySeconds: 60
+          initialDelaySeconds: 0
           periodSeconds: 5
-          failureThreshold: 3
+          failureThreshold: 1
           timeoutSeconds: 5
         livenessProbe:
           exec:
