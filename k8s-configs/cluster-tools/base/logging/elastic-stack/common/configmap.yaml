@@ -1,0 +1,15 @@
+# create configmap for cluster name and aws region for CloudWatch Logs
+# need to replace the placeholders cluster_name and region_name
+# newrelic_cluster_name is used by fluentbit from cluster-info configmap
+# tenant_domain and primary_tenant_domain are utilized by Opensearch bootstrap job
+# cluster.name and logs.region are utilized by logstash-elastic statefulset
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-info
+  namespace: elastic-stack-logging
+data:
+  cluster.name: cluster_name
+  logs.region: region_name
+  tenant_domain: tenant_domain
+  primary_tenant_domain: tenant_domain

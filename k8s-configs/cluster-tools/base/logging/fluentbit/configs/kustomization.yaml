@@ -11,6 +11,11 @@ configMapGenerator:
   - name: fluent-bit-config
     files:
       - fluent-bit.conf
+    literals:
+      - log.level=error
+      - read.head=True
+      - read.tail=Off
+      - newrelic_cluster_name=cluster_name
   - name: fluent-bit-parsers
     files:
       - parsers.conf
