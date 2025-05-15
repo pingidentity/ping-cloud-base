@@ -9,6 +9,12 @@ if skipTest "${0}"; then
   exit 0
 fi
 
+# Switching to Private Ingress to test URLs given PingFederate Basic Auth is being blocked by PingAccess-WAS
+PINGFEDERATE_PRIVATE="https://pingfederate-admin-api.${DNS_ZONE}"
+PINGFEDERATE_CONSOLE="${PINGFEDERATE_PRIVATE}/pingfederate/app"
+PINGFEDERATE_API_DOCS="${PINGFEDERATE_PRIVATE}/pf-admin-api/api-docs/"
+PINGFEDERATE_API="${PINGFEDERATE_PRIVATE}/pf-admin-api/v1/version"
+
 testUrls() {
 
   exit_code=0
