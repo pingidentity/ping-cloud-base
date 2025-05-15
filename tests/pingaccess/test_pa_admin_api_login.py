@@ -123,15 +123,3 @@ class TestPAAdminAPILogin(unittest.TestCase):
             verify=False,
         )
         self.assertEqual(200, res.status_code)
-
-    def test_basic_auth_login(self):
-        res = requests.get(
-            url=f"{self.pa_admin_api_url}/auth/oauth",
-            auth=requests.auth.HTTPBasicAuth(
-                username=self.pa_admin_env_vars["PA_ADMIN_USER_USERNAME"],
-                password=self.pa_passwords["PA_ADMIN_USER_PASSWORD"],
-            ),
-            headers={"X-XSRF-Header": "PingAccess"},
-            verify=False,
-        )
-        self.assertEqual(200, res.status_code)

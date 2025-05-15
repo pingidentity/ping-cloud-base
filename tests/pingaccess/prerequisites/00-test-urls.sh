@@ -9,6 +9,12 @@ if skipTest "${0}"; then
   exit 0
 fi
 
+# Switching to Private Ingress to test URLs given PingAccess Basic Auth is being blocked by PingAccess-WAS
+PINGACCESS_PRIVATE="https://pingaccess-admin-api.${DNS_ZONE}"
+PINGACCESS_CONSOLE="${PINGACCESS_PRIVATE}"
+PINGACCESS_API="${PINGACCESS_PRIVATE}/pa-admin-api/v3"
+PINGACCESS_SWAGGER="${PINGACCESS_PRIVATE}/pa-admin-api/api-docs"
+
 testUrls() {
 
   return_code=0

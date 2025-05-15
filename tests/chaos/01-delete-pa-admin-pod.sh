@@ -17,6 +17,10 @@ testDeletePaAdmin() {
     return 0
   fi
 
+
+  # Switching to Private Ingress to test URLs given PingAccess Basic Auth is being blocked by PingAccess-WAS
+  PINGACCESS_PRIVATE="https://pingaccess-admin-api.${DNS_ZONE}"
+  PINGACCESS_API="${PINGACCESS_PRIVATE}/pa-admin-api/v3"
   PA_ADMIN_PASSWORD=${PA_ADMIN_PASSWORD:-2FederateM0re}
 
   kubectl delete pod pingaccess-admin-0 -n "${PING_CLOUD_NAMESPACE}"
