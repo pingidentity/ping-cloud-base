@@ -168,7 +168,8 @@ if ! ${DISABLE_GIT}; then
 fi
 
 # This is a destructive script by design. Add a warning to the user if local changes are being destroyed though.
-CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
+echo "INFO: Check if there are local uncommitted changes."
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2> /dev/null || true )"
 if test "${CURRENT_BRANCH}" && test -n "$(git status -s)" && ! ${DISABLE_GIT}; then
   echo "WARN: The following local changes in current branch '${CURRENT_BRANCH}' will be destroyed:"
   git status
@@ -183,12 +184,18 @@ REMOTE_BRANCHES=""
 
 # Get a list of the remote branches from the server.
 if ! ${DISABLE_GIT}; then
-  git pull
   REMOTE_BRANCHES="$(git ls-remote --quiet --heads 2> /dev/null)"
   LS_REMOTE_EXIT_CODE=$?
 
   if test ${LS_REMOTE_EXIT_CODE} -ne 0; then
     echo "WARN: Unable to retrieve remote branches from the server. Exit code: ${LS_REMOTE_EXIT_CODE}"
+  fi
+
+  if [ -z "$REMOTE_BRANCHES" ]; then
+    echo "INFO: No branches found on remote. Skipping 'git pull'."
+  else
+    echo "INFO: Remote branches found. Proceeding with 'git pull'..."
+    git pull
   fi
 fi
 
@@ -238,6 +245,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
   if ! ${DISABLE_GIT}; then
     # Check if the branch exists locally. If so, switch to it.
+    echo "INFO: Check if local branch ${GIT_BRANCH} exists, and switch to it if found."
     if git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
       echo "Branch ${GIT_BRANCH} exists locally. Switching to it."
       git checkout "${GIT_BRANCH}"
@@ -274,6 +282,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   fi
 
   # Check if the branch exists on remote. If so, pull the latest code from remote.
+  echo "INFO: Check if the local branch ${GIT_BRANCH} exists on remote. If found then pull the latest code."
   if echo "${REMOTE_BRANCHES}" | grep -q "${GIT_BRANCH}" 2> /dev/null; then
     echo "Branch ${GIT_BRANCH} exists on server. Checking out latest code from server."
     git pull --no-edit origin "${GIT_BRANCH}" -X theirs
@@ -282,6 +291,8 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   elif test "${REMOTE_BRANCHES}"; then
     echo "Branch ${GIT_BRANCH} does not exist on server."
   fi
+
+  echo "INFO: Clean up the repo and copy over files."
 
   if "${IS_PRIMARY}"; then
     if is_all_apps; then

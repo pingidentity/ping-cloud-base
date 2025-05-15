@@ -4,7 +4,6 @@
 
 - OSD: Enable Save Query and CSV Export of Logs
 - Update bootstrap pods to use new bootstrap IRSA role
-- Enable fluentbit storage layer metrics by updating prometheus metrics API to v2
 - FluentBit: Adjust Buffer and Limit Configuration by removing Mem_Buf_Limit and storage.pause_on_chunks_overlimit parameters
 - Set initialDelaySeconds and failureThreshold on readiness probe for PingAccess and PingAccess-WAS
 - Explicitly set Lets Encrypt configuration via cert-manager
@@ -15,7 +14,6 @@ _Changes:_
 - [X] PDO-8754 OSD: Enable Save Query and CSV Export of Logs
 - [X] PDO-8834 Update bootstrap pods to use new bootstrap IRSA role
 - [X] PDO-9021 Enable p1as-cluster-tools microservice in PCB
-- [X] PDO-9375 FluentBit: Add Grafana Dashboard
 - [X] PDO-9376 FluentBit: Adjust Buffer and Limit Configuration
 - [X] PDO-9414 Set initialDelaySeconds and failureThreshold on readiness probe for PingAccess and PingAccess-WAS
 
@@ -50,6 +48,8 @@ _Changes:_
 - Added script of fetch OS-bootstrap and logstash image
 - Enable OpenSearch data node(pod) draining during a rolling restart
 - Fix PC private ingress endpoint in values.yml
+- Enable fluentbit storage layer metrics by updating prometheus metrics API to v2
+- Fix push-cluster-state.sh failing when no remote branches are available
 
 _Changes:_
 
@@ -82,7 +82,10 @@ _Changes:_
 - [X] PDO-9159 Create customer P1 tenant issuer configmap
 - [X] PDO-9299 Support new folder structure /deploy for PingAccess upgrades; Support hook overrides for upgrade init-container
 - [X] PDO-9310 Migrate PingOne ORT URLs
+- [X] PDO-9375 FluentBit: Add Grafana Dashboard
 - [X] PDO-9462 Fix PC private ingress endpoint in values.yml
+- [X] PDO-9553 Support heap and ygen sizes for PingFederate microservice
+- [X] PDO-9616 Fix push-cluster-state.sh failing when no remote branches are available
 
 ### 2.0.0
 
