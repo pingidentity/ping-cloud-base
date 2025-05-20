@@ -9,6 +9,15 @@ pingfederate:
     pfMinYgen: "1536m"
     pfMaxYgen: "1536m"
 
+    statefulSet:
+      resources:
+        limits:
+          memory: "4Gi"
+          cpu: "2"
+        requests:
+          memory: "4Gi"
+          cpu: "2"
+
   # Application settings that is only for PingFederate Engine
   engine:
     # PingFederate Heap
@@ -21,3 +30,10 @@ pingfederate:
       hpa:
         minReplicas: 3
         maxReplicas: 8
+      resources:
+        limits:
+          memory: "4Gi"
+          cpu: "2"
+        requests:
+          memory: "4Gi"
+          cpu: "2"
