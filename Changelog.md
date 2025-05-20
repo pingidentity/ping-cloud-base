@@ -7,6 +7,7 @@
 - FluentBit: Adjust Buffer and Limit Configuration by removing Mem_Buf_Limit and storage.pause_on_chunks_overlimit parameters
 - Set initialDelaySeconds and failureThreshold on readiness probe for PingAccess and PingAccess-WAS
 - Explicitly set Lets Encrypt configuration via cert-manager
+- Remove PA_LOG_LEVEL from log4j file
 
 _Changes:_
 
@@ -16,6 +17,7 @@ _Changes:_
 - [X] PDO-9021 Enable p1as-cluster-tools microservice in PCB
 - [X] PDO-9376 FluentBit: Adjust Buffer and Limit Configuration
 - [X] PDO-9414 Set initialDelaySeconds and failureThreshold on readiness probe for PingAccess and PingAccess-WAS
+- [X] PDO-9533 Remove PA_LOG_LEVEL from log4j file
 
 ### 2.1.0
 

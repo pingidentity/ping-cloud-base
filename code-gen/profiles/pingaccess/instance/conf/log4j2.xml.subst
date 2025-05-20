@@ -17,7 +17,7 @@
 <Configuration monitorInterval="30" shutdownHook="enable" packages="com.pingidentity.pa.cli.logging.appenders.log4j2,com.pingidentity.pa.cli.logging.layouts.log4j2,com.pingidentity.pa.cli.logging.filters.log4j2">
     <Loggers>
         <!-- PingAccess Loggers-->
-        <AsyncLogger name="com.pingidentity" level="${PA_LOG_LEVEL}" additivity="false" includeLocation="false">
+        <AsyncLogger name="com.pingidentity" level="INFO" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
             <!--<AppenderRef ref="CONSOLE-SIEM"/>-->
             <!--<AppenderRef ref="CONSOLE" />-->
