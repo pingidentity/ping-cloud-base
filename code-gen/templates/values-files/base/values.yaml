@@ -201,9 +201,9 @@ global:
   selfServiceSsmPathPrefix : "${SELF_SERVICE_SSM_PATH_PREFIX}"
 
   # PingFederate Communication
-  pfPdBindPort: 1389
-  pfPdBindProtocol: "ldap"
-  pfPdBindUseSsl: false
+  pfPdBindPort: "${PF_PD_BIND_PORT}"
+  pfPdBindProtocol: "${PF_PD_BIND_PROTOCOL}"
+  pfPdBindUseSsl: "${PF_PD_BIND_USESSL}"
 
   ########################################################
   # Public Hostnames
