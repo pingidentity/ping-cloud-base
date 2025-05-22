@@ -9,6 +9,11 @@ data:
     # Block PingAccess and PingFederate heartbeat endpoints.
     # Only block successful 200 status codes. Do nothing in the event of an error.
     if ($request_uri ~* "^/(pa|pf)/heartbeat.ping") {
+      header_filter_by_lua_block {
+        if ngx.status == ngx.HTTP_OK then
+          ngx.header.content_length = nil
+        end
+      }
       body_filter_by_lua_block {
         if ngx.status == ngx.HTTP_OK then
           ngx.arg[1] = '{}'  -- Replace the response body with an empty JSON object
