@@ -644,6 +644,14 @@ organize_code_for_csr() {
         mv "${app_target_dir}/region" "${app_target_dir}/${REGION_NICK_NAME}"
       fi
 
+      # Substitute the env vars in the app directories
+      substitute_vars "${app_target_dir}" "${REPO_VARS}"
+      # TODO: These duplicate calls are needed to substitute the derived variables & the IS_BELUGA_ENV
+      #  clean this up with PDO-5769 when all apps are migrated to values files by adding IS_BELUGA_ENV to DEFAULT_VARS
+      #  and redoing how derived variables are set
+      substitute_vars "${app_target_dir}" "${REPO_VARS}"
+
+
       # Handle prod vs. non-prod values files
       case "${ENV}" in
         dev | test)
@@ -660,12 +668,6 @@ organize_code_for_csr() {
           ;;
       esac
 
-      # Substitute the env vars in the app directories
-      substitute_vars "${app_target_dir}" "${REPO_VARS}"
-      # TODO: These duplicate calls are needed to substitute the derived variables & the IS_BELUGA_ENV
-      #  clean this up with PDO-5769 when all apps are migrated to values files by adding IS_BELUGA_ENV to DEFAULT_VARS
-      #  and redoing how derived variables are set
-      substitute_vars "${app_target_dir}" "${REPO_VARS}"
     fi
   done
 }
