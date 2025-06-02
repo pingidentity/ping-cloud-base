@@ -349,6 +349,7 @@ class ConsoleUILoginTestBase(unittest.TestCase):
                 f"Browser contents: {self.p1_ui.browser.page_source}"
             )
 
+    @unittest.skip("Must disable MFA for local_user to run this test")
     def test_user_can_access_console(self):
         # Wait for admin console to be reachable if it has been restarted by another test
         self.p1_ui.wait_until_url_is_reachable(self.config.console_url)
