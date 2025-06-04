@@ -10,6 +10,7 @@
 - Explicitly set Lets Encrypt configuration via cert-manager
 - Remove PA_LOG_LEVEL from log4j file
 - Add pod-reaper enabled label to PingCentral
+- Upgrade fluent-bit to version 3.2.10
 
 _Changes:_
 
@@ -22,6 +23,7 @@ _Changes:_
 - [X] PDO-9414 Set initialDelaySeconds and failureThreshold on readiness probe for PingAccess and 
 - [X] PDO-9533 Remove PA_LOG_LEVEL from log4j file
 - [X] PDO-9576 Add pod-reaper enabled label to PingCentral
+- [X] PDO-9692 [FluentBit] Upgrade to version 3.2.10
 
 ### 2.1.0
 
