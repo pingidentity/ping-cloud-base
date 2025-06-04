@@ -13,10 +13,10 @@ pingfederate:
     pfLogLevel: "INFO"
     verbose: false
     # PingFederate Heap
-    pfMinHeap: "256m"
-    pfMaxHeap: "512m"
-    pfMinYgen: "128m"
-    pfMaxYgen: "256m"
+    pfMinHeap: "1536m"
+    pfMaxHeap: "1536m"
+    pfMinYgen: "768m"
+    pfMaxYgen: "768m"
 
     # Restore Variables
     restore:
@@ -59,10 +59,10 @@ pingfederate:
   engine:
     pfLogLevel: "INFO"
     verbose: false
-    pfMinHeap: "256m"
-    pfMaxHeap: "512m"
-    pfMinYgen: "128m"
-    pfMaxYgen: "256m"
+    pfMinHeap: "1536m"
+    pfMaxHeap: "1536m"
+    pfMinYgen: "768m"
+    pfMaxYgen: "768m"
 
     # The following will set PingFederate the minimum and the maximum
     # number of threads used to configure PingFederate thread pools within run.properties.

@@ -390,6 +390,9 @@ ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
 ${ACCOUNT_TYPE}
 ${LETS_ENCRYPT_SERVER}
+${PF_PD_BIND_PORT}
+${PF_PD_BIND_PROTOCOL}
+${PF_PD_BIND_USESSL}
 ${USER_BASE_DN}
 ${USER_BASE_DN_2}
 ${USER_BASE_DN_3}
@@ -1231,6 +1234,17 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     fi
   fi
   export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER}"
+
+  # Set PF variables based on ENV
+  if echo "${LETS_ENCRYPT_SERVER}" | grep -q 'staging'; then
+    export PF_PD_BIND_PORT=1389
+    export PF_PD_BIND_PROTOCOL=ldap
+    export PF_PD_BIND_USESSL=false
+  else
+    export PF_PD_BIND_PORT=1636
+    export PF_PD_BIND_PROTOCOL=ldaps
+    export PF_PD_BIND_USESSL=true
+  fi
 
   # Update the product specific variables based on environment.
   case "${ENV}" in
