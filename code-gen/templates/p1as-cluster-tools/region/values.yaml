@@ -34,7 +34,7 @@ ingress-nginx-public:
           runAsUser: 1000
         env:
           - name: AGENT_NAME
-            value: sigsci-agent
+            value: ${TENANT_NAME}-${ENVIRONMENT_TYPE}-${REGION}
           - name: AWS_REGION
             value: ${REGION}
           - name: ENVIRONMENT_PREFIX
