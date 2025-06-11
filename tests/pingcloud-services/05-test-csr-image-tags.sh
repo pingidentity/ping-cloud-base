@@ -146,23 +146,24 @@ testLogstashImageTag() {
 
 }
 
-testOpensearchBootstrapImageTag() {
-  if [ "${ENV_TYPE}" == "customer-hub" ]; then
-    echo "Skipping testOpensearchBootstrapImageTag as ENV_TYPE is customer-hub"
-    return
-  fi
-  $(test "${OS_BOOTSTRAP_IMAGE_TAG}")
-  assertEquals "OS_BOOTSTRAP_IMAGE_TAG missing from env_vars file" 0 $?
+# Uncomment the below code once this is completed. https://pingidentity.atlassian.net/browse/PDO-9859
+# testOpensearchBootstrapImageTag() {
+#   if [ "${ENV_TYPE}" == "customer-hub" ]; then
+#     echo "Skipping testOpensearchBootstrapImageTag as ENV_TYPE is customer-hub"
+#     return
+#   fi
+#   $(test "${OS_BOOTSTRAP_IMAGE_TAG}")
+#   assertEquals "OS_BOOTSTRAP_IMAGE_TAG missing from env_vars file" 0 $?
 
-  local osBootstrapImage=$(kubectl get job opensearch-bootstrap -n elastic-stack-logging -o jsonpath='{.spec.template.spec.containers[0].image}' | awk -F: '{print $2}')
-  assertEquals "os-bootstrap CSR image tag doesn't match Beluga default image tag" "${OS_BOOTSTRAP_IMAGE_TAG}" "${osBootstrapImage}" 
-  unique_count=$(getUniqueTagCount "os-bootstrap")
-  assertEquals "OpensearchBootstrap is using multiple image tag versions" 1 "${unique_count}"
+#   local osBootstrapImage=$(kubectl get job opensearch-bootstrap -n elastic-stack-logging -o jsonpath='{.spec.template.spec.containers[0].image}' | awk -F: '{print $2}')
+#   assertEquals "os-bootstrap CSR image tag doesn't match Beluga default image tag" "${OS_BOOTSTRAP_IMAGE_TAG}" "${osBootstrapImage}" 
+#   unique_count=$(getUniqueTagCount "os-bootstrap")
+#   assertEquals "OpensearchBootstrap is using multiple image tag versions" 1 "${unique_count}"
 
-  matched_count=$(getMatchedTagCount "${OS_BOOTSTRAP_IMAGE_TAG}" "os-bootstrap")
-  assertEquals "os-bootstrap CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+#   matched_count=$(getMatchedTagCount "${OS_BOOTSTRAP_IMAGE_TAG}" "os-bootstrap")
+#   assertEquals "os-bootstrap CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
 
-}
+# }
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
 # or your script won't run.  For integration

@@ -9,3 +9,4 @@ resources:
 - secret.yaml
 - pdb.yaml
 - customer_pipelines
+- configmap.yaml

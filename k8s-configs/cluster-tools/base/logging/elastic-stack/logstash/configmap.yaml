@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opensearch-health-check-script
+data:
+  health-check.sh: |
+    #!/bin/sh
+    # Check if the OpenSearch cluster health is green
+    cluster_health=$(curl -k https://opensearch-cluster-headless:9200/_cluster/health)
+    cluster_status=$(echo "$cluster_health" | jq -r '.status')
+
+    if [ "$cluster_status" != "green" ]; then
+      echo "OpenSearch cluster is not green. Cluster status: $cluster_status"
+      exit 1
+    fi
+
+    # Check if document(ID=1) exists in the 'bootstrap-status' index
+    doc_exists=$(curl -k -s -u "$OS_USER:$OS_PASSWORD" -o /dev/null -w "%{http_code}" https://opensearch-cluster-headless:9200/bootstrap-status/_doc/1)
+    if [ "$doc_exists" -ne 200 ]; then
+      echo "Document with ID '1' does not exist in the 'bootstrap-status' index, error: $doc_exists"
+      exit 1
+    fi
+
+    echo "OpenSearch cluster is healthy"
+    echo "Bootstrap document exists"
