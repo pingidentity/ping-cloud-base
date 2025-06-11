@@ -271,6 +271,9 @@ bootstrap:
         - 'indices:data/write/delete'
         - 'read'
         - 'indices_monitor'
+        - 'indices:admin/get'
+        - 'indices:admin/exists'
+        - 'indices:admin/mapping/put'
     - index_patterns:
         - '.kibana*'
       allowed_actions:

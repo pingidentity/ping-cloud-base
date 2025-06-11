@@ -34,7 +34,65 @@ spec:
                         - logstash-elastic
                 topologyKey: "topology.kubernetes.io/zone"
       initContainers:
-        - name: wait-for-bootstrap-completed
+        - name: opensearch-bootstrap
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v2.2-release-branch-latest
+          imagePullPolicy: Always
+          env:
+          - name: OS_HOST
+            value: "opensearch.elastic-stack-logging.svc.cluster.local"
+          - name: OS_PORT
+            value: "9200"
+          - name: BOOTSTRAP_USER
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: os-bootstrap-creds
+          - name: BOOTSTRAP_PASS
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: os-bootstrap-creds
+          - name: TENANT_DOMAIN
+            valueFrom:
+              configMapKeyRef:
+                name: cluster-info
+                key: tenant_domain
+          - name: PRIMARY_TENANT_DOMAIN
+            valueFrom:
+              configMapKeyRef:
+                name: cluster-info
+                key: primary_tenant_domain
+          - name: INDEX_TEMPLATES_PATH
+            value: "/usr/share/opensearch/data/index-templates"
+          - name: ALERTS_PATH
+            value: "/usr/share/opensearch/data/alerts"
+          - name: NOTIFICATIONS_PATH
+            value: "/usr/share/opensearch/data/notifications"
+          - name: ISM_PATH
+            value: "/usr/share/opensearch/data/ism-policies"
+          - name: OSD_URL
+            value: "http://opensearch-dashboards:5601"
+          - name: DASHBOARDS_PATH
+            value: "/usr/share/opensearch/data/dashboards"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 9031
+            runAsGroup: 9999
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: os-notifications-channels
+              mountPath: /usr/share/opensearch/data/notifications
+            - name: os-dashboards-pd
+              mountPath: /usr/share/opensearch/data/dashboards/pd
+            - name: os-dashboards-pf
+              mountPath: /usr/share/opensearch/data/dashboards/pf
+            - name: os-dashboards-pf-threat
+              mountPath: /usr/share/opensearch/data/dashboards/pf-threat
+            - name: os-dashboards-pa
+              mountPath: /usr/share/opensearch/data/dashboards/pa
+            - name: os-dashboards-pa-was
+              mountPath: /usr/share/opensearch/data/dashboards/pa-was
+        - name: wait-for-os-health
           securityContext:
             runAsGroup: 2000
             runAsNonRoot: true
@@ -42,12 +100,22 @@ spec:
             allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.22.0
           imagePullPolicy: IfNotPresent
-          command:
-            - sh
-            - '-c'
-            - >-
-              kubectl wait --for=condition=complete --timeout=900s -n
-              elastic-stack-logging job/opensearch-bootstrap
+          env:
+          - name: OS_USER
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: os-logstash-creds
+          - name: OS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: os-logstash-creds
+          command: ["/bin/sh", "/opt/logstash/health-check.sh"]
+          volumeMounts:
+          - name: health-check-script
+            mountPath: /opt/logstash
+            readOnly: true
         - name: create-enrichment-cache-files
           securityContext:
             runAsNonRoot: true
@@ -262,6 +330,27 @@ spec:
             name: enrichment-cache
         - name: enrichment-cache-files
           emptyDir: {}
+        - name: health-check-script
+          configMap:
+            name: opensearch-health-check-script
+        - name: os-notifications-channels
+          configMap:
+            name: os-notifications-channels
+        - name: os-dashboards-pd
+          configMap:
+            name: os-dashboards-pd
+        - name: os-dashboards-pf
+          configMap:
+            name: os-dashboards-pf
+        - name: os-dashboards-pf-threat
+          configMap:
+            name: os-dashboards-pf-threat
+        - name: os-dashboards-pa
+          configMap:
+            name: os-dashboards-pa
+        - name: os-dashboards-pa-was
+          configMap:
+            name: os-dashboards-pa-was
   serviceName: logstash-elastic
   volumeClaimTemplates:
     - metadata:

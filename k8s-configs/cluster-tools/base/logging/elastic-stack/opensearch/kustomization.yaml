@@ -6,7 +6,6 @@ namespace: elastic-stack-logging
 resources:
 - notifications
 - security_configs
-- bootstrap.yaml
 - cluster.yaml
 - service.yaml
 - storageclass.yaml
