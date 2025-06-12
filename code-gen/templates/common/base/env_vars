@@ -233,7 +233,7 @@ PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 
 RADIUS_PROXY_ENABLED=${RADIUS_PROXY_ENABLED}
 # List of ping apps(pingaccess,pingaccess-was,pingdelegator) for which you can enable external ingress(the values are ping app names)Examplelist:(pingaccess pingaccess-was)
-# Note pingdirectory & pingfederate external ingress is now controlled through the value 'extIngressEnabled' in the 'p1as-pingdirectory/<region>/values.yaml' & 'p1as-pingfederate/<region>/values.yaml file'.
+# Note pingdirectory & pingfederate external ingress is now controlled through the value 'ingress.enableExternalIngress' in the 'p1as-pingdirectory/<region>/values.yaml' & 'p1as-pingfederate/<region>/values.yaml file'.
 EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED}"
 
 # Runbook: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/427688292/How+to+Enable+and+Disable+Healthchecks+-+1.19.0
