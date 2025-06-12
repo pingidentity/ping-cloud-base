@@ -326,7 +326,9 @@ query_save_export:
   reserved: false
   hidden: false
   static: false
-  cluster_permissions: []
+  cluster_permissions:
+     - "indices:data/read/scroll"
+     - "indices:data/read/scroll/clear"
   index_permissions:
     - index_patterns:
         - "*"
