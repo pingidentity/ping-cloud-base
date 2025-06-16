@@ -112,12 +112,7 @@ spec:
   template:
     spec:
       initContainers:
-        - name: wait-for-bootstrap-completed
+        - name: opensearch-bootstrap
           $patch: delete
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: opensearch-bootstrap
-  namespace: elastic-stack-logging
-$patch: delete
+        - name: wait-for-os-health
+          $patch: delete
