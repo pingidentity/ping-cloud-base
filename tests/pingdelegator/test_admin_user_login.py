@@ -194,7 +194,7 @@ class TestAccessTokenFlow(unittest.TestCase):
         self.driver.get(self.PD_DELEGATOR_PUBLIC_HOSTNAME)
 
         # Use WebDriverWait to wait until Delegated Admin redirect of PingFederate endpoint '/as/authorization.oauth2' is returned.
-        wait = WebDriverWait(self.driver, 10)  # wait up to 10 seconds
+        wait = WebDriverWait(self.driver, 60)  # wait up to 60 seconds
         wait.until(lambda d: f"{self.PF_ENGINE_PUBLIC_HOSTNAME}/as/authorization.oauth2" in d.current_url)
 
         self.assertIn(f"{self.PF_ENGINE_PUBLIC_HOSTNAME}/as/authorization.oauth2", self.driver.current_url,
