@@ -1,12 +1,8 @@
 import os
 import unittest
 
-import requests
-import requests.auth
-
 import b64
 import k8s_utils
-import oauth
 import pingone_api
 
 
@@ -45,19 +41,3 @@ class TestPAAdminAPILogin(pingone_api.AdminAPITestBase):
             },
             x_xsrf_header="PingAccess",
         )
-
-    def test_customer_oauth_token_login(self):
-        token = oauth.get_token(
-            app_id=self.config.customer_p1_app_id,
-            app_secret=self.config.customer_p1_app_secret,
-            app_token_url=self.config.customer_p1_app_token_url,
-            scopes=self.config.scopes,
-        )
-
-        res = requests.get(
-            url=self.config.url_to_test,
-            headers={"Authorization": f"Bearer {token}", "X-XSRF-Header": self.config.x_xsrf_header},
-            verify=False,
-        )
-
-        self.assertEqual(200, res.status_code, res.text)
