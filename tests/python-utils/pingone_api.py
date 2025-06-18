@@ -144,6 +144,22 @@ class AdminAPITestBase(unittest.TestCase):
         )
         self.assertEqual(200, res.status_code, f"Failed to login with token: {token}")
 
+    def test_customer_oauth_token_login(self):
+        token = oauth.get_token(
+            app_id=self.config.customer_p1_app_id,
+            app_secret=self.config.customer_p1_app_secret,
+            app_token_url=self.config.customer_p1_app_token_url,
+            scopes=self.config.scopes,
+        )
+
+        res = requests.get(
+            url=self.config.url_to_test,
+            headers={"Authorization": f"Bearer {token}", "X-XSRF-Header": self.config.x_xsrf_header},
+            verify=False,
+        )
+
+        self.assertEqual(200, res.status_code, res.text)
+
     def test_basic_auth_login(self):
         res = requests.get(
             url=self.config.url_to_test,
