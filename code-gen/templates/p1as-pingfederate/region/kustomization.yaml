@@ -34,3 +34,6 @@ patchesStrategicMerge:
   ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
   - custom-patches.yaml
   - ../base/custom-patches.yaml  
+
+transformers:
+  - ../base/namespace.yaml
