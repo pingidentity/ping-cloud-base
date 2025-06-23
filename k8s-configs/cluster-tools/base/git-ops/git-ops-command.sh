@@ -166,17 +166,6 @@ enable_external_ingress() {
 ########################################################################################################################
 # Disable grafana operator CRDs if not argo environment.
 ########################################################################################################################
-disable_grafana_crds() {
-  cd "${TMP_DIR}"
-  search_term="grafana-operator\/base"
-  for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
-      comment_lines_in_file "${kust_file}" "${search_term}"
-    done
-}
-
-########################################################################################################################
-# Disable grafana operator CRDs if not argo environment.
-########################################################################################################################
 disable_os_operator_crds() {
   cd "${TMP_DIR}"
   search_term="opensearch-operator\/crd"
@@ -352,7 +341,6 @@ monorepo_main() {
   fi
 
   if ! command -v argocd &> /dev/null ; then
-    disable_grafana_crds
     disable_os_operator_crds
   fi
 

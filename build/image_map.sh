@@ -35,4 +35,5 @@ export CHART_MAP="p1as-beluga-tools
    p1as-self-service
    p1as-cloudwatch
    p1as-newrelic
+   p1as-grafana
    p1as-pingfederate"

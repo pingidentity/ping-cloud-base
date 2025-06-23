@@ -11,14 +11,21 @@
 # $2 - version - the version of the script to source
 # $3 - aws_profile - optional - the AWS_PROFILE to use
 ########################################################################################################################
+
 pingcloud-scripts::source_script() {
     local script_name="${1}"
     local version="${2}"
     local aws_profile="${3:-${AWS_PROFILE}}"
     local usage="pingcloud-scripts::source_script SCRIPT_NAME VERSION [aws_profile]"
 
+
+    # Source script locally only if LOCAL=true is set.  
+    # Ensures PCC_PATH is defined to avoid sourcing errors during local testing.
     if [[ "${LOCAL}" == "true" ]]; then
-        # NOTE: You must set LOCAL and the location for PCC_PATH to enable local testing
+        if [[ -z "${PCC_PATH}" ]]; then
+            echo "[ERROR] LOCAL sourcing enabled for '${script_name}', but PCC_PATH is not set"
+            return 1
+        fi
         source "${PCC_PATH}/pingcloud-scripts/${script_name}/${script_name}.sh"
         return 0
     fi
