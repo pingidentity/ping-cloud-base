@@ -3,10 +3,12 @@
 ### 2.1.1
 
 - Test: Verify the LetsEncrypt Certificate in PingDirectory Keystore and TrustStore
+- Fix p1as-pingfederate namespace issue
 
 _Changes:_
 
 - [X] PDO-9178 Test: Verify the LetsEncrypt Certificate in PingDirectory Keystore and TrustStore
+- [X] PDO-9820 Fix p1as-pingfederate namespace issue
 
 ### 2.1.0
 
