@@ -7,7 +7,5 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
-namespace: ${PING_CLOUD_NAMESPACE}
-
 # NOTE: remove empty list '[]' if adding resources to this file. Empty list must exist in kustomize 5.1+ if no resources are referenced.
 resources: []

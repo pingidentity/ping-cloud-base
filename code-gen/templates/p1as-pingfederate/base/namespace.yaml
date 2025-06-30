@@ -1,0 +1,6 @@
+apiVersion: builtin
+kind: NamespaceTransformer
+metadata:
+  name: p1as-pingfederate-namespace
+  namespace: ping-cloud
+unsetOnly: true
