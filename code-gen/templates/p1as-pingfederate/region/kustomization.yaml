@@ -22,15 +22,15 @@ configMapGenerator:
   - name: pingfederate-last-update-reason
     literals:
       - UPDATE_REASON=""
-    namespace: ${PING_CLOUD_NAMESPACE}
   ### This is needed for the empty custom-patches.yaml file to work ###
   - name: pingfederate-custom-placeholder
-    namespace: ${PING_CLOUD_NAMESPACE}
   ### This is needed for the empty custom-patches.yaml file to work in base folder ###
   - name: pingfederate-custom-placeholder-base
-    namespace: ${PING_CLOUD_NAMESPACE}
 
 patchesStrategicMerge:
   ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
   - custom-patches.yaml
   - ../base/custom-patches.yaml  
+
+transformers:
+  - ../base/namespace.yaml

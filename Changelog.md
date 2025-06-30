@@ -29,6 +29,14 @@ _Changes:_
 - [X] PDO-9576 Add pod-reaper enabled label to PingCentral
 - [X] PDO-9692 [FluentBit] Upgrade to version 3.2.10
 
+### 2.1.1
+
+- Fix p1as-pingfederate namespace issue
+
+_Changes:_
+
+- [X] PDO-9820 Fix p1as-pingfederate namespace issue
+
 ### 2.1.0
 
 - Update PingDirectory resource limits
