@@ -13,6 +13,7 @@
 - Upgrade fluent-bit to version 3.2.10
 - Logstash: Revise Bootstrap Process to Directly Check Status of OpenSearch
 - Add p1as-Observability to PCB Grafana
+- push-cluster-state: remove INCLUDE_PROFILES_IN_CSR
 
 _Changes:_
 
@@ -20,6 +21,7 @@ _Changes:_
 - [X] PDO-8754 OSD: Enable Save Query and CSV Export of Logs
 - [X] PDO-8834 Update bootstrap pods to use new bootstrap IRSA role
 - [X] PDO-9021 Enable p1as-cluster-tools microservice in PCB
+- [X] PDO-9192 push-cluster-state: remove INCLUDE_PROFILES_IN_CSR
 - [X] PDO-9231 Add p1as-observability to PCB: Grafana
 - [X] PDO-9312 Get pingone URL from env variable
 - [X] PDO-9376 FluentBit: Adjust Buffer and Limit Configuration
