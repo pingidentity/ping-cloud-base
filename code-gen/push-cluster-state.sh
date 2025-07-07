@@ -17,9 +17,6 @@
 #   IS_PRIMARY -> A flag indicating whether or not this is the primary region. Defaults to false, if unset.
 #   IS_PROFILE_REPO -> A flag indicating whether or not this push is targeted for the server profile repo. Defaults to
 #       false, if unset.
-#   INCLUDE_PROFILES_IN_CSR -> A flag indicating whether or not to include profile code into the CSR. Defaults to
-#       true, if unset. This flag will be removed (or its default set to true) when Versent provisions a new profile
-#       repo exclusively for server profiles.
 #   SUPPORTED_ENVIRONMENT_TYPES -> A space-separated list of environments. Defaults to 'dev test stage prod customer-hub',
 #       if unset. If provided, it must contain all or a subset of the environments currently created by the
 #       generate-cluster-state.sh script, i.e. dev, test, stage, prod, customer-hub.
@@ -155,8 +152,6 @@ ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
 
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
-
-INCLUDE_PROFILES_IN_CSR="${INCLUDE_PROFILES_IN_CSR:-false}"
 
 PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
 PUSH_TO_SERVER="${PUSH_TO_SERVER:-true}"
@@ -306,7 +301,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       done
     fi
 
-    if "${IS_PROFILE_REPO}" || "${INCLUDE_PROFILES_IN_CSR}"; then
+    if "${IS_PROFILE_REPO}"; then
       if is_all_apps; then
         # Copy the base files into the repo.
         src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}"
