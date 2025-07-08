@@ -35,6 +35,9 @@ spec:
         volumeMounts:
           - name: prometheus-config-volume
             mountPath: /etc/prometheus/
+          - name: os-creds
+            mountPath: /etc/secrets
+            readOnly: true      
         ports:
         - containerPort: 9090
         resources:
@@ -48,6 +51,11 @@ spec:
       - name: prometheus-config-volume
         configMap:
           name: prometheus-agent-config
-
+      - name: os-creds
+        secret:
+          secretName: opensearch-grafana-credentials       
+          items:
+            - key: password
+              path: os-password    
 
 ---
