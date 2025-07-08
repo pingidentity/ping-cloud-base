@@ -5,12 +5,15 @@
 - Test: Verify the LetsEncrypt Certificate in PingDirectory Keystore and TrustStore
 - Fix p1as-pingfederate namespace issue
 - OSD: Enable Save Query and CSV Export of Logs
+- Disable anonymous authentication for OpenSearch
+
 
 _Changes:_
 
 - [X] PDO-9178 Test: Verify the LetsEncrypt Certificate in PingDirectory Keystore and TrustStore
 - [X] PDO-9820 Fix p1as-pingfederate namespace issue
 - [X] PDO-9899 OSD: Enable Save Query and CSV Export of Logs
+- [X] PDO-9971 OpenSearch: Disable anonymous login
 
 ### 2.1.0
 

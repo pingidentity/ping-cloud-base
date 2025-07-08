@@ -17,7 +17,7 @@ spec:
   general:
     annotations:
       newrelic.io/scrape: "true"
-      prometheus.io/scrape: "true"
+      prometheus.io/scrape_auth: "true"
       prometheus.io/scheme: "https"
       prometheus.io/path: "/_prometheus/metrics"
       prometheus.io/port: "9200"
