@@ -21,7 +21,7 @@ class TestOpensearchUILogin(p1_ui.ConsoleUILoginTestBase):
             app_name="Opensearch",
             console_url=cls.console_url,
             roles={"p1asOpensearchRoles": ["os-configteam"]},
-            access_granted_xpaths=["//h4[contains(text(), 'Select your tenant')]"],
+            access_granted_xpaths=["//div[contains(text(), 'Introducing new OpenSearch Dashboards look & feel')]"],
             access_denied_xpaths=["//h3[contains(text(), 'Missing Role')]"],
         )
 

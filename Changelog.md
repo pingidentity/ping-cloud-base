@@ -14,6 +14,7 @@
 - Logstash: Revise Bootstrap Process to Directly Check Status of OpenSearch
 - Add p1as-Observability to PCB Grafana
 - push-cluster-state: remove INCLUDE_PROFILES_IN_CSR
+- Opensearch Upgrade to 2.19.0
 
 _Changes:_
 
@@ -30,6 +31,7 @@ _Changes:_
 - [X] PDO-9533 Remove PA_LOG_LEVEL from log4j file
 - [X] PDO-9576 Add pod-reaper enabled label to PingCentral
 - [X] PDO-9692 [FluentBit] Upgrade to version 3.2.10
+- [X] PDO-9950 [Opensearch] Upgrade to version 2.19.0
 
 ### 2.1.1
 
