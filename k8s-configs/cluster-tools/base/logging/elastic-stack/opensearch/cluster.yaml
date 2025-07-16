@@ -24,7 +24,7 @@ spec:
     drainDataNodes: true # Drain data nodes(pods) on rolling restart operations
     serviceName: opensearch
     serviceAccount: opensearch
-    version: 2.11.1
+    version: 2.19.0
     image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/opensearch/dev:v2.2-release-branch-latest
     podSecurityContext:
       runAsNonRoot: true
@@ -45,7 +45,7 @@ spec:
       opensearch.notifications.general.filter_by_backend_roles: "false"
   dashboards:
     enable: true
-    version: 2.11.1
+    version: 2.19.0
     podSecurityContext:
       runAsNonRoot: true
       runAsUser: 1000
@@ -94,7 +94,7 @@ spec:
     opensearchCredentialsSecret:
       name: opensearch-dashboard-credentials
     replicas: 1
-    image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/opensearchproject/opensearch-dashboards:2.11.1
+    image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/opensearchproject/opensearch-dashboards:2.19.0
     resources:
       requests:
          memory: "512Mi"
