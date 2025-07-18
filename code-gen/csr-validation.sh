@@ -82,6 +82,15 @@ if ! kustomize version | grep -q "${KUSTOMIZE_VERSION}"; then
   exit 1
 fi
 
+# Ensure Helm version is correct
+HELM_VERSION="3.15.2"
+CURRENT_HELM_VERSION=$(helm version --short | sed 's/^v\([0-9.]*\)+.*/\1/')
+if ! [ "$CURRENT_HELM_VERSION" == "${HELM_VERSION}" ]; then
+  echo "Error: Helm version must be ${HELM_VERSION}"
+  echo "See https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/36635601/Third+Party+Software+Versions for more information."
+  exit 1
+fi
+
 # delete any "charts" directories that exist from previous runs to force helm to pull new charts
 cleanup_charts
 
