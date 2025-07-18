@@ -32,6 +32,7 @@ _Changes:_
 - [X] PDO-9576 Add pod-reaper enabled label to PingCentral
 - [X] PDO-9692 [FluentBit] Upgrade to version 3.2.10
 - [X] PDO-9950 [Opensearch] Upgrade to version 2.19.0
+- [X] PDO-6878 Move PingFederate IK upload scripts from ping-cloud-base to ping-cloud-tools repository
 
 ### 2.1.1
 
