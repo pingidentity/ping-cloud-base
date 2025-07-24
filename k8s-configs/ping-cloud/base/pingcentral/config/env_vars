@@ -2,7 +2,7 @@ ORCHESTRATION_TYPE=kubernetes
 VERBOSE=false
 
 SERVER_PROFILE_PATH=profiles/pingcentral
-SERVER_PROFILE_BRANCH=v2.1-release-branch
+SERVER_PROFILE_BRANCH=v2.1.1-RC3
 
 REGION=us-west-2
 
