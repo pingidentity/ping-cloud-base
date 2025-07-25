@@ -15,6 +15,7 @@
 - Add p1as-Observability to PCB Grafana
 - push-cluster-state: remove INCLUDE_PROFILES_IN_CSR
 - Opensearch Upgrade to 2.19.0
+- Properly fetch GLOBAL_TENANT_DOMAIN value from parameter store
 
 _Changes:_
 
@@ -33,6 +34,7 @@ _Changes:_
 - [X] PDO-9692 [FluentBit] Upgrade to version 3.2.10
 - [X] PDO-9950 [Opensearch] Upgrade to version 2.19.0
 - [X] PDO-6878 Move PingFederate IK upload scripts from ping-cloud-base to ping-cloud-tools repository
+- [X] PDO-9600 Properly fetch GLOBAL_TENANT_DOMAIN value from parameter store
 - [X] PDO-9798 ingress-nginx-private autoscaling min/max replicas
 
 ### 2.1.1
