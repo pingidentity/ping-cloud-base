@@ -1461,6 +1461,10 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
+    if test "${ENV}" != "${CUSTOMER_HUB}"; then
+      # Remove patch that deletes volumeMount from Prometheus, in primary region and non-chub envs only
+      yq 'del(.patchesJson6902)' "${PRIMARY_PING_KUST_FILE}" -i 
+    fi
   else
     # Child regions
     if test "${HEALTHCHECKS_ENABLED}" != "true"; then
