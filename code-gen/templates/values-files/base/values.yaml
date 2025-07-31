@@ -136,7 +136,7 @@ global:
   k8sGitBranch: "${K8S_GIT_BRANCH}"
 
   # ecrRegistryName is the name of the Docker image registry
-  ecrRegistryName: "${ECR_REGISTRY_NAME}/dev"
+  ecrRegistryName: "${ECR_REGISTRY_NAME}"
 
   # clusterName is the eks cluster name
   clusterName: "${CLUSTER_NAME}"
@@ -235,12 +235,12 @@ global:
 
   # pingcloud-p14c-bootstrap application settings
   p14cIntegration:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.1-release-branch-latest
+    image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v2.1.1-RC1
   # prometheus-json-exporter application settings
   prometheusJsonExporter:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v2.1-release-branch-latest
+    image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter:v2.1.0
   grpRadiusProxy:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-services/grp-radiusproxy/dev:v2.1-release-branch-latest
+    image: public.ecr.aws/r2h3l6e4/pingcloud-services/grp-radiusproxy:v2.1.0
 
 
 
