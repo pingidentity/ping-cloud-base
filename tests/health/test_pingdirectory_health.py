@@ -11,7 +11,7 @@ class TestPingDirectoryHealth(TestHealthBase):
     deployment_name = "healthcheck-pingdirectory"
     label = f"role={deployment_name}"
     pingdirectory = "pingDirectory"
-    configmap_name = "pingdirectory-environment-variables"
+    configmap_name = "cluster-health-environment-variables"
     prometheus_service_name = "prometheus"
     prometheus_namespace = "prometheus"
     prometheus_port = "9090"
@@ -29,7 +29,7 @@ class TestPingDirectoryHealth(TestHealthBase):
             "class=pingdirectory-server", self.ping_cloud_ns
         )
         self.env_vars = self.k8s.get_configmap_values(
-            self.ping_cloud, self.configmap_name
+            self.health, self.configmap_name
         )
         self.k8s_cluster_name = f"{self.env_vars.get('CLUSTER_NAME', '')}-{self.env_vars.get('TENANT_NAME')}-{self.env_vars.get('REGION')}"
 
