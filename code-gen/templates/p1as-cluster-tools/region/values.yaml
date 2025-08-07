@@ -14,9 +14,9 @@ ingress-nginx-public:
       service:
         annotations:
           ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
+      extraContainers:
       # Whole container needs to be defined here due to ingress-nginx helm templating
       # See: https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/templates/controller-deployment.yaml#L180-L181
-      extraContainers:
       - name: sigsci-agent
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-agent/dev:v2.2-release-branch-latest
         imagePullPolicy: Always
@@ -47,8 +47,8 @@ ingress-nginx-public:
           - mountPath: /var/run/
             name: sigsci-socket
 
-# ingress-nginx-private values
 ingress-nginx-private:
+# ingress-nginx-private values
   ingress-nginx:
     controller:
       autoscaling:
