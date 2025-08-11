@@ -121,7 +121,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: perpetual-license
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:v2.1.0
         imagePullPolicy: Always
         command: [ "sh", "-c", "python3 /opt/in/perpetual_license.py" ]
         env:
@@ -144,7 +144,7 @@ spec:
         - name: license-dir
           mountPath: /opt/license
       - name: pingaccess-upgrade
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:v2.1.0
         imagePullPolicy: Always
         command: ["/bin/sh"]
         args:
@@ -233,7 +233,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.1-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v2.1.1-RC3
         imagePullPolicy: Always
         env:
           - name: NAMESPACE
@@ -251,7 +251,7 @@ spec:
           - name: customer-issuer
             mountPath: /opt/sso/customer_issuer
       - name: pingaccess-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.1-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:v2.1.0
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
