@@ -106,6 +106,12 @@ spec:
           kind: Job
           jsonPointers:
             - /spec/ttlSecondsAfterFinished
+        - group: ""
+          kind: ConfigMap
+          name: maintenance-mode
+          namespace: ingress-nginx-public
+          jsonPointers:
+            - /data
       syncPolicy:
         automated:
           prune: true
