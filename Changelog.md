@@ -16,6 +16,7 @@
 - push-cluster-state: remove INCLUDE_PROFILES_IN_CSR
 - Opensearch Upgrade to 2.19.0
 - Properly fetch GLOBAL_TENANT_DOMAIN value from parameter store
+- Prevent customer changes to environment during upgrades via maintenance page
 
 _Changes:_
 
@@ -36,6 +37,7 @@ _Changes:_
 - [X] PDO-6878 Move PingFederate IK upload scripts from ping-cloud-base to ping-cloud-tools repository
 - [X] PDO-9600 Properly fetch GLOBAL_TENANT_DOMAIN value from parameter store
 - [X] PDO-9798 ingress-nginx-private autoscaling min/max replicas
+- [X] PDO-10087 Prevent customer changes to environment during upgrades via maintenance page
 
 ### 2.1.1
 
