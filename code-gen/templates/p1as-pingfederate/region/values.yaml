@@ -1,6 +1,6 @@
 # PingFederate application settings that are shared with both PingFederate Admin and Engine
 pingfederate:
-  irsaAnnotationKeyValue: "${IRSA_PF_ANNOTATION_KEY_VALUE}"
+  irsaPfAnnotationKeyValue: "${IRSA_PF_ANNOTATION_KEY_VALUE}"
   podReaperEnabled: "enabled"
 
   license:
