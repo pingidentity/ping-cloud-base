@@ -32,7 +32,6 @@ class TestArgoUILogin(pingone_ui.ConsoleUILoginTestBase):
     def tearDownClass(cls):
         super().tearDownClass()
 
-    @unittest.skip("Must disable MFA for ping_user to run this test")
     def test_ping_user_can_access_argocd_with_any_population(self):
         ping_user = pingone_ui.PingOneUser(
             session=self.config.session,
@@ -43,6 +42,7 @@ class TestArgoUILogin(pingone_ui.ConsoleUILoginTestBase):
         )
         ping_user.delete()
         ping_user.create(add_p1_role=True)
+        ping_user.disable_mfa()
         self.addCleanup(ping_user.delete)
 
         self.p1_ui.wait_until_url_is_reachable(self.console_url)

@@ -94,7 +94,6 @@ class TestPAAdminAPILogin(unittest.TestCase):
 
         self.assertEqual(200, res.status_code, res.text)
 
-    @unittest.skip("Must disable MFA for local_user to run this test")
     def test_user_access_token_login(self):
         ui_test_config = pingone_ui.PingOneUITestConfig(
             app_name="PingAccess-API",

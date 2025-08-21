@@ -18,3 +18,24 @@ selfService:
       requests:
         memory: 400Mi
         cpu: 200m
+    # Enable to require auth for accessing docs page
+    docsRequireAuth: false
+
+# p1as-self-service-ui application settings
+selfServiceUI:
+  # Customization for p1as-self-service ingress resource
+  ingress:
+  # Customization for p1as-self-service service resource
+  service:
+  # Customization for p1as-self-service deployment resource
+  deployment:
+    # Replica count for pods
+    replicaCount: 1
+    # Resource limits for pods
+    resources:
+      limits:
+        memory: 600Mi
+        cpu:  400m
+      requests:
+        memory: 400Mi
+        cpu: 200m
