@@ -9,6 +9,22 @@ resources:
 generatorOptions:
   disableNameSuffixHash: false
 
+### Patch to remove OpenSearch credentials from prometheus-agent, as OS is not deployed in customer-hub
+### As such, it will also not be able to start due to missing secret.  Note that patchesStrategicMerge
+### will not work here due to parsing issues on volumeMounts.  
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: prometheus-agent
+      namespace: prometheus
+    patch: |
+      - op: remove
+        path: /spec/template/spec/containers/0/volumeMounts/1
+      - op: remove
+        path: /spec/template/spec/volumes/1
+
 patchesStrategicMerge:
 
 ### MANUAL UPDATES SECTION - START

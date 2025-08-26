@@ -7,6 +7,23 @@ resources:
   - pingdelegator
   - custom-resources
 
+### Remove OpenSearch credentials from prometheus-agent, as OS is not deployed in child-region CDEs
+### As such, it will also not be able to start due to missing secret.  Note that patchesStrategicMerge
+### will not work here due to parsing issues on volumeMounts.  It will be deleted by 
+### generate-cluster-state script when primary region is detected.
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: prometheus-agent
+      namespace: prometheus
+    patch: |
+      - op: remove
+        path: /spec/template/spec/containers/0/volumeMounts/1
+      - op: remove
+        path: /spec/template/spec/volumes/1
+
 generatorOptions:
   disableNameSuffixHash: false
 
