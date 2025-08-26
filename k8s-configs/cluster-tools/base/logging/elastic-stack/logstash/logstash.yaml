@@ -92,30 +92,6 @@ spec:
               mountPath: /usr/share/opensearch/data/dashboards/pa
             - name: os-dashboards-pa-was
               mountPath: /usr/share/opensearch/data/dashboards/pa-was
-        - name: wait-for-os-health
-          securityContext:
-            runAsGroup: 2000
-            runAsNonRoot: true
-            runAsUser: 1000
-            allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.22.0
-          imagePullPolicy: IfNotPresent
-          env:
-          - name: OS_USER
-            valueFrom:
-              secretKeyRef:
-                key: username
-                name: os-logstash-creds
-          - name: OS_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                key: password
-                name: os-logstash-creds
-          command: ["/bin/sh", "/opt/logstash/health-check.sh"]
-          volumeMounts:
-          - name: health-check-script
-            mountPath: /opt/logstash
-            readOnly: true
         - name: create-enrichment-cache-files
           securityContext:
             runAsNonRoot: true
@@ -330,9 +306,6 @@ spec:
             name: enrichment-cache
         - name: enrichment-cache-files
           emptyDir: {}
-        - name: health-check-script
-          configMap:
-            name: opensearch-health-check-script
         - name: os-notifications-channels
           configMap:
             name: os-notifications-channels
