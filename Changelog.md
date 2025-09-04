@@ -19,9 +19,12 @@
 - Properly fetch GLOBAL_TENANT_DOMAIN value from parameter store
 - Prevent customer changes to environment during upgrades via maintenance page
 - Refactor os-bootstrap code, remove wait-for-os-health initContainer
+- Adding JSON parsing support for PingFederate logs
+
 
 _Changes:_
 
+- [X] PDO-7325 JSON Logging: Implement JSON logging for PF logs
 - [X] PDO-7817 Explicitly set Lets Encrypt configuration via cert-manager
 - [X] PDO-8754 OSD: Enable Save Query and CSV Export of Logs
 - [X] PDO-8834 Update bootstrap pods to use new bootstrap IRSA role
