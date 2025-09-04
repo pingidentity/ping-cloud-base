@@ -153,7 +153,7 @@ PINGDATASYNC_IMAGE_TAG=v2.1.0
 # Ping solution image tags
 ############################################################
 BOOTSTRAP_IMAGE_TAG=v2.1.0
-P14C_INTEGRATION_IMAGE_TAG=v2.1.1-RC3
+P14C_INTEGRATION_IMAGE_TAG=v2.1.1
 
 ############################################################
 # Ping observability image tags
