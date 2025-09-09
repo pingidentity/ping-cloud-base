@@ -20,7 +20,7 @@
 - Prevent customer changes to environment during upgrades via maintenance page
 - Refactor os-bootstrap code, remove wait-for-os-health initContainer
 - Adding JSON parsing support for PingFederate logs
-
+- Update generate code to have granular control for removing helm charts in chub envs
 
 _Changes:_
 
@@ -43,6 +43,7 @@ _Changes:_
 - [X] PDO-6878 Move PingFederate IK upload scripts from ping-cloud-base to ping-cloud-tools repository
 - [X] PDO-9600 Properly fetch GLOBAL_TENANT_DOMAIN value from parameter store
 - [X] PDO-9798 ingress-nginx-private autoscaling min/max replicas
+- [X] PDO-9923 Helm-based secondary region exclusion logic
 - [X] PDO-9972 [Logstash] OS bootstrap code refactor
 - [X] PDO-10087 Prevent customer changes to environment during upgrades via maintenance page
 
