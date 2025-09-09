@@ -641,7 +641,18 @@ organize_code_for_csr() {
 
       if { test "${REGION}" != "${PRIMARY_REGION}" && test "${PRIMARY_REGION_ONLY_DEPLOY}" = "true"; }; then
         # Remove the region directory if not primary region and PRIMARY_REGION_ONLY_DEPLOY is true.
+        echo "Found PRIMARY_REGION_ONLY_DEPLOY set to True, removing ${app_target_dir}/region entirely"
         rm -rf "${app_target_dir}/region"
+      elif [[ -n "${PRIMARY_REGION_ONLY_DEPLOY}" && "${REGION}" != "${PRIMARY_REGION}" ]]; then
+        # If PRIMARY_REGION_ONLY_DEPLOY is an array, iterate through it and remove entries
+        for chart_name in "${PRIMARY_REGION_ONLY_DEPLOY[@]}"; do
+          echo "Found ${chart_name} in PRIMARY_REGION_ONLY_DEPLOY, removing reference in ${app_target_dir}/region/kustomization.yaml"
+          yq -i 'del(.helmCharts[] | select(.name == "'"${chart_name}"'"))' "${app_target_dir}/region/kustomization.yaml"
+          if [[ $? -ne 0 ]]; then
+            echo "yq command failed while removing chart references for ${chart_name} in ${app_target_dir}/region/kustomization.yaml"
+            exit 1
+          fi
+        done
       else
         # Rename to the actual region nick name.
         mv "${app_target_dir}/region" "${app_target_dir}/${REGION_NICK_NAME}"
