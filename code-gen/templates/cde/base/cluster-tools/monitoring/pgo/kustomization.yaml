@@ -1,9 +1,0 @@
-kind: Component
-apiVersion: kustomize.config.k8s.io/v1alpha1
-
-components: []
-### Feature flag - To enable Postgres Operator (PGO) monitoring
-### 1. Comment out the empty components block above
-### 2. Uncomment the components block below
-# components:
-# - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/monitoring/pgo?ref=${K8S_GIT_BRANCH}

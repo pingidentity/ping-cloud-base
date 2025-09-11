@@ -5,8 +5,6 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/${KUSTOMIZE_BASE}/monitoring?ref=${K8S_GIT_BRANCH}
 - prometheus
 
-components:
-  - pgo
 
 patchesStrategicMerge:    
 
