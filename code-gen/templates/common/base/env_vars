@@ -42,7 +42,6 @@ PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
 PD_MONITOR_BUCKET_URL=${PD_MONITOR_BUCKET_URL}
 LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 BACKUP_URL=${BACKUP_URL}
-PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME}
 
 ############################################################
 # Platform event queue and SSM variables
@@ -231,6 +230,7 @@ PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 # !!! Provisioning for PingFederate is not yet available for multi-region customers !!!
 # Runbook: https://confluence.pingidentity.com/display/PingCloud/How+to+Enable+and+Configure+PingFederate+Provisioning
 PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
+
 
 RADIUS_PROXY_ENABLED=${RADIUS_PROXY_ENABLED}
 # List of ping apps(pingaccess,pingaccess-was,pingdelegator) for which you can enable external ingress(the values are ping app names)Examplelist:(pingaccess pingaccess-was)

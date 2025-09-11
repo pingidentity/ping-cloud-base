@@ -4,7 +4,6 @@
 #   - HPA min/max replicas and target CPU utilization
 #   - Memory/CPU requests/limits
 #   - Disk size
-#   - Execute PGO database restore
 #
 # It serves just as a sample and not included from any kustomization.yaml file. PS/GSO must update the
 # custom-patches.yaml file using these snippets as appropriate for a customer environment for it to be effective.

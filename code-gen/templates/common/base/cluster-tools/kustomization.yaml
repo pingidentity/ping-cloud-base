@@ -13,6 +13,5 @@ resources:
 - security
 - pod-reaper
 - health
-- pgo
 #- karpenter
 - kube-downscaler

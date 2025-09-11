@@ -22,7 +22,7 @@ The P1AS StorageClass default parameters,
 
 
 ## Notes
-  - `mountOptions: -discard` After discussing with the team during Beluga office hours, the team decided to enable trim for data-intensive workloads for example opensearch-sc1, pingdirectory-gp3 and pgo-gp3.
+  - `mountOptions: -discard` After discussing with the team during Beluga office hours, the team decided to enable trim for data-intensive workloads for example opensearch-sc1, pingdirectory-gp3.
 
 
 ## Example

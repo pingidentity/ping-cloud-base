@@ -92,32 +92,8 @@ pingfederate:
 
   # Outbound provisioning settings
   provisioning:
-
-    # Control settings of k8s custom resource PostgresCluster. Also, known as post-gres-operator|PGO
-    postGresCluster:
-      ### Execute a PGO database restore for pf-provisioning
-      ### To restore database set restoreDatabaseAnnotationKeyValue to "postgres-operator.crunchydata.com/pgbackrest-restore: id1"
-      ### ***NOTE: This action will bring down the database until the restoration is complete!***
-      ### If this has been executed before, the id number will need to be incremented to kick off a new restore job
-      restoreDatabaseAnnotationKeyValue: ""
-      replicas: 3
-      minAvailable: 1
-      resources:
-        limits:
-          cpu: 2
-          memory: "4Gi"
-        requests:
-          cpu: 2
-          memory: "2Gi"
-      repo1:
-        s3:
-          bucket: ${PGO_BACKUP_BUCKET_NAME}
-        schedules:
-          full: "0 0 * * *"
-          differential: "30 */6 * * *"  
-    # Control the StorageClass settings of PostgresCluster.
-    persistentVolume:
-      storage: 20Gi
+    # Secret path for storing Provisioning RDS database details
+    provisioningRdsDetails: "${PF_RDS_SECRET_PATH}"
 
   # Periodic CronJob settings for backing up PingFederate Admin
   periodicBackupCronJob:
