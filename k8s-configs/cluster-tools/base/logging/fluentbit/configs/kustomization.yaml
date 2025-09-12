@@ -19,6 +19,9 @@ configMapGenerator:
   - name: fluent-bit-parsers
     files:
       - parsers.conf
-
-resources:
-  - pipelines
+  - name: fluent-bit-pipeline-core
+    files:
+      - pipeline-core.conf
+  - name: fluent-bit-pipeline-outputs
+    files:
+      - pipeline-outputs.conf

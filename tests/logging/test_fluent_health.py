@@ -56,7 +56,7 @@ class TestFluentBitMetrics(unittest.TestCase):
 
         configmaps = cls.kube_utils.core_client.list_namespaced_config_map(cls.namespace).items
         for cm in configmaps:
-            if "fluent-bit-pipeline-elk" in cm.metadata.name:
+            if "fluent-bit-pipeline-core" in cm.metadata.name:
                 cls.configmap_name = cm.metadata.name
                 break
         if not cls.configmap_name:
@@ -77,14 +77,14 @@ class TestFluentBitMetrics(unittest.TestCase):
             return
 
         updated_data = (
-            configmap_data["elk.conf"]
+            configmap_data["pipeline-core.conf"]
             + "\n[OUTPUT]\n    Name                stdout\n    Match               elk.kube.general.*\n"
         )
 
         self.kube_utils.core_client.patch_namespaced_config_map(
             name=self.configmap_name,
             namespace=self.namespace,
-            body={"data": {"elk.conf": updated_data}},
+            body={"data": {"pipeline-core.conf": updated_data}},
         )
         print(f"Updated ConfigMap: {self.configmap_name}")
 
