@@ -365,7 +365,7 @@ patches:
           initContainers:
           # Installs custom tools
           - name: install-custom-tools
-            image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/python:3.9.1-slim
+            image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/python:3.9-slim-bullseye
             command: [ "install-custom-tools.sh" ]
             volumeMounts:
             - name: tools-dir
