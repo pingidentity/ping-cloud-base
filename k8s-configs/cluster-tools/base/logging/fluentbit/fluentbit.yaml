@@ -52,14 +52,21 @@ spec:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/scheme: "http"
-        prometheus.io/path: "/api/v2/metrics/prometheus"
+        prometheus.io/path: "/api/v1/metrics/prometheus"
         prometheus.io/port: "2020"
         newrelic.io/scrape: "true"
     spec:
       containers:
       - name: fluent-bit
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/fluent/fluent-bit:3.2.10
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-for-fluent-bit:2.31.7
         imagePullPolicy: Always
+        command:
+          - /bin/sh
+        args:
+          - -c
+          - |
+            export S3_BUCKET_NAME="${S3_BUCKET#s3://}"; \
+            exec /entrypoint.sh -c /fluent-bit/etc/fluent-bit.conf
         securityContext:
           capabilities:
             drop:
@@ -67,6 +74,16 @@ spec:
             add:
               - CAP_FOWNER
         env:
+            - name: S3_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: s3-raw-logs-bucket
+                  key: bucketName
+            - name: AWS_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: cluster-info
+                  key: logs.region
             - name: READ_FROM_HEAD
               valueFrom:
                 configMapKeyRef:
@@ -111,10 +128,10 @@ spec:
         resources:
             limits:
               cpu: "2"
-              memory: 1Gi
+              memory: 2Gi
             requests:
               cpu: 200m
-              memory: 100Mi
+              memory: 500Mi
         ports:
           - containerPort: 2020
             name: metrics
@@ -134,15 +151,14 @@ spec:
         - name: fluent-bit-parsers
           mountPath: /fluent-bit/etc/parsers.conf
           subPath: parsers.conf
-        - name: fluent-bit-pipeline-elk
-          mountPath: /fluent-bit/etc/pipelines_elk.conf
-          subPath: elk.conf
-        - name: fluent-bit-pipeline-s3
-          mountPath: /fluent-bit/etc/pipelines_s3.conf
-          subPath: s3.conf
-        - name: fluent-bit-pipeline-customer
-          mountPath: /fluent-bit/etc/pipelines_customer.conf
-          subPath: customer.conf
+          # pipeline (inputs + filters)
+        - name: fluent-bit-pipeline-core
+          mountPath: /fluent-bit/etc/pipeline-core.conf
+          subPath: pipeline-core.conf
+          # Outputs
+        - name: fluent-bit-pipeline-outputs
+          mountPath: /fluent-bit/etc/pipeline-outputs.conf
+          subPath: pipeline-outputs.conf
         - name: runlogjournal
           mountPath: /run/log/journal
           readOnly: true
@@ -169,15 +185,12 @@ spec:
       - name: fluent-bit-parsers
         configMap:
           name: fluent-bit-parsers
-      - name: fluent-bit-pipeline-elk
+      - name: fluent-bit-pipeline-core
         configMap:
-          name: fluent-bit-pipeline-elk
-      - name: fluent-bit-pipeline-s3
+          name: fluent-bit-pipeline-core
+      - name: fluent-bit-pipeline-outputs
         configMap:
-          name: fluent-bit-pipeline-s3
-      - name: fluent-bit-pipeline-customer
-        configMap:
-          name: fluent-bit-pipeline-customer
+          name: fluent-bit-pipeline-outputs
       - name: runlogjournal
         hostPath:
           path: /run/log/journal

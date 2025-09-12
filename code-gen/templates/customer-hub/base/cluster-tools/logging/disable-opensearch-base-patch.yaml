@@ -1,11 +1,38 @@
-# Overwrite the configMap fluent-bit-pipeline-elk.conf
+# Overwrite the configMap fluent-bit-pipeline-outputs
 # config in order to disable the main(opensearch) pipeline.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: fluent-bit-pipeline-elk
+  name: fluent-bit-pipeline-outputs
   namespace: elastic-stack-logging
 data:
+ pipeline-outputs.conf: |
+    [OUTPUT]
+        Name                http
+        Alias               logstash_customer_out
+        Match               elk.kube.*
+        Host                logstash-elastic.elastic-stack-logging
+        Port                8084
+        Format              json
+        Retry_Limit         False
+        compress            gzip
+        net.keepalive_idle_timeout  10
+        net.keepalive_max_recycle   100
+        storage.total_limit_size  3000M
+
+    [OUTPUT]
+        Name                http
+        Alias               s3_app_out
+        Match               *
+        Host                logstash-elastic.elastic-stack-logging
+        Port                8081
+        Format              json
+        Retry_Limit         False
+        compress            gzip
+        net.keepalive_idle_timeout  10
+        net.keepalive_max_recycle   100
+        storage.total_limit_size  3000M
+$patch: replace
 
 ---
 # original port is 8080
