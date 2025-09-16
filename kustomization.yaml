@@ -184,6 +184,9 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingdelegator.${TENANT_DOMAIN}
+    - op: replace
+      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      value: "https://pingdelegator.${TENANT_DOMAIN}/delegator"
 
 - target:
     group: networking.k8s.io
@@ -197,6 +200,9 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess.${TENANT_DOMAIN}
+    - op: replace
+      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      value: "https://pingaccess.${TENANT_DOMAIN}/"
 
 - target:
     group: networking.k8s.io
@@ -210,6 +216,9 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-admin-api.${TENANT_DOMAIN}
+    - op: replace
+      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      value: "https://pingaccess-admin-api.${TENANT_DOMAIN}/pa-admin-api/v3/api-docs/"
 
 - target:
     group: networking.k8s.io
@@ -223,6 +232,9 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-agent.${TENANT_DOMAIN}
+    - op: replace
+      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      value: "https://pingaccess-agent.${TENANT_DOMAIN}/"
 
 # Ingresses through PA-WAS engines
 - target:

@@ -18,6 +18,11 @@
 #   annotations:
 #     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 #     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#     selfservice.metadata.pingidentity.com/name: "Delegated Admin Console"
+#     selfservice.metadata.pingidentity.com/category: "Product Administration"
+#     selfservice.metadata.pingidentity.com/displayURL: "https://ext-pingdelegator.${DNS_ZONE}/delegator"
+#   labels:
+#     selfservice: urls
 # spec:
 #   ingressClassName: nginx-public
 #   tls:
@@ -76,6 +81,11 @@
 #   annotations:
 #     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 #     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#     selfservice.metadata.pingidentity.com/name: "PingAccess Admin API"
+#     selfservice.metadata.pingidentity.com/category: "Product Administration"
+#     selfservice.metadata.pingidentity.com/displayURL: "https://ext-pingaccess-admin-api.${DNS_ZONE}/pa-admin-api/v3/api-docs/"
+#   labels:
+#     selfservice: urls
 # spec:
 #   ingressClassName: nginx-public
 #   tls:

@@ -21,6 +21,7 @@
 - Refactor os-bootstrap code, remove wait-for-os-health initContainer
 - Adding JSON parsing support for PingFederate logs
 - Update generate code to have granular control for removing helm charts in chub envs
+- Add self-service annotations and labels to ingresses
 - Update to use aws-for-fluent-bit:2.31.7 and refactor pipeline config
 
 _Changes:_
@@ -46,6 +47,7 @@ _Changes:_
 - [X] PDO-9798 ingress-nginx-private autoscaling min/max replicas
 - [X] PDO-9923 Helm-based secondary region exclusion logic
 - [X] PDO-9972 [Logstash] OS bootstrap code refactor
+- [X] PDO-10066 Add self-service annotations and labels to ingresses
 - [X] PDO-10087 Prevent customer changes to environment during upgrades via maintenance page
 - [X] PDO-10166 FluentBit - Use aws-for-fluent-bit image and consolidate all the pipelines
 
