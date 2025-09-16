@@ -10,6 +10,11 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    selfservice.metadata.pingidentity.com/name: "PingAccess Admin API"
+    selfservice.metadata.pingidentity.com/category: "Product Administration"
+    selfservice.metadata.pingidentity.com/displayURL: "https://pingaccess-admin-api-dev.ping-demo.com/pa-admin-api/v3/api-docs/"
+  labels:
+    selfservice: urls
 spec:
   ingressClassName: nginx-private
   tls:

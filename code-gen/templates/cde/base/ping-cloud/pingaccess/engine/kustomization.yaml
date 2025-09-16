@@ -40,6 +40,9 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess.${DNS_ZONE}
+    - op: replace
+      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      value: "https://pingaccess.${DNS_ZONE}/"
     # PingAccess global ingress
     - op: add
       path: /spec/tls/0/hosts/-
@@ -80,4 +83,7 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-agent.${DNS_ZONE}
+    - op: replace
+      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      value: "https://pingaccess-agent.${DNS_ZONE}/"
 

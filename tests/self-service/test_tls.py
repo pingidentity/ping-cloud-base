@@ -2,8 +2,6 @@ import os
 import unittest
 import warnings
 
-import chromedriver_autoinstaller
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -53,34 +51,19 @@ class TestTlsUI(unittest.TestCase):
             create_local_only=True,
         )
 
-        # Setup dependencies
-        chromedriver_autoinstaller.install()
+        # Setup browser
+        cls.ui_driver = p1_ui.PingOneUIDriver()
+        cls.ui_driver.setup_browser(window_size="1920,1080")
+        cls.ui_driver.login(url=cls.config.console_url, username=cls.config.local_user.username, password=cls.config.local_user.password)
+        cls.browser = cls.ui_driver.browser
+
         # Ignore warnings for insecure http requests
         warnings.filterwarnings(
             "ignore", category=urllib3.exceptions.InsecureRequestWarning
         )
 
-        # Log into Self Service UI
-        options = webdriver.ChromeOptions()
-        # Ignore certificate error warning page from chrome
-        options.add_argument("--ignore-ssl-errors=yes")
-        options.add_argument("--ignore-certificate-errors")
-        options.add_argument("--headless=new")  # run in headless mode in CICD
-        options.add_argument("--window-size=1920,1080")
-        options.add_argument("--no-sandbox")  # run in Docker
-        options.add_argument("--disable-dev-shm-usage")  # run in Docker
-        cls.browser = webdriver.Chrome(options=options)
-        cls.browser.implicitly_wait(60)
-        # Go to login page
-        cls.browser.get(cls.config.console_url)
-        cls.browser.find_element(By.ID, "username").send_keys(cls.config.local_user.username)
-        cls.browser.find_element(By.ID, "password").send_keys(cls.config.local_user.password)
-        cls.browser.find_element(
-            By.CSS_SELECTOR, 'button[data-id="submit-button"]'
-        ).click()
-
         # Set selenium parameters
-        cls.wait_time_sec = 10
+        cls.wait_time_sec = 5
         cls.wait = WebDriverWait(cls.browser, 30)
         cls.loader_locator = (By.CSS_SELECTOR, 'div[aria-label="Loading in progress"]')
 
@@ -92,9 +75,12 @@ class TestTlsUI(unittest.TestCase):
 
     def wait_for_loader(self):
         try:
-            self.wait.until(EC.presence_of_element_located(self.loader_locator))
-            self.browser.implicitly_wait(2)
-            self.wait.until_not(EC.presence_of_element_located(self.loader_locator))
+            WebDriverWait(self.browser, self.wait_time_sec).until(
+                EC.presence_of_element_located(self.loader_locator)
+            )
+            WebDriverWait(self.browser, self.wait_time_sec).until_not(
+                EC.presence_of_element_located(self.loader_locator)
+            )
         except TimeoutException:
             print("Timeout waiting for page loader")
 
@@ -135,8 +121,10 @@ class TestTlsUI(unittest.TestCase):
         nav_btn = self.wait.until(
             EC.element_to_be_clickable((By.ID, f"/self-service/{path}"))
         )
-        nav_btn.click()
-        self.wait_for_loader()
+        classes = nav_btn.get_attribute("class")
+        if "is-selected" not in classes.split():
+            nav_btn.click()
+            self.wait_for_loader()
 
 
     def open_create_form(self):
@@ -301,12 +289,6 @@ class TestTlsUI(unittest.TestCase):
                 EC.element_to_be_clickable(confirm_delete_button_locator)
             )
             confirm_delete_button.click()
-
-            # Wait for the modal to disappear
-            print("Waiting for the delete modal to disappear...")
-            self.wait.until_not(
-                EC.presence_of_element_located(modal_locator)
-            )
             print(f"Delete successful for item: '{item}'.")
         except (TimeoutException, NoSuchElementException) as ex:
             print(f"Error occurred deleting item '{item}': {ex}")
@@ -344,11 +326,10 @@ class TestTlsUI(unittest.TestCase):
         # Secrets list locator
         certificate_list_locator = (By.CSS_SELECTOR, 'div[data-testid="Secrets"]')
 
-        # Click on the Self Service nav link
-        ss_nav_btn = self.wait.until(
+        # Wait for the Self Service nav link
+        self.wait.until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-testid="Self Service"]'))
         )
-        ss_nav_btn.click()
 
         # Select the test environment
         env_selector_btn = self.wait.until(

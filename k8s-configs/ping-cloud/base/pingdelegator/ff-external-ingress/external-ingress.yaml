@@ -7,6 +7,11 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    selfservice.metadata.pingidentity.com/name: "Delegated Admin Console"
+    selfservice.metadata.pingidentity.com/category: "Product Administration"
+    selfservice.metadata.pingidentity.com/displayURL: "https://ext-pingdelegator.ping-demo.com/delegator"
+  labels:
+    selfservice: urls
 spec:
   ingressClassName: nginx-public
   tls:

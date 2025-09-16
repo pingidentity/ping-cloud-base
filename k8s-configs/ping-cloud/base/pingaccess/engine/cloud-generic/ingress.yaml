@@ -10,6 +10,12 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    selfservice.metadata.pingidentity.com/name: "PingAccess Runtime"
+    selfservice.metadata.pingidentity.com/description: "Default endpoint for servicing identity and access management requests when using gateway deployment model"
+    selfservice.metadata.pingidentity.com/category: "Informational"
+    selfservice.metadata.pingidentity.com/displayURL: "https://pingaccess-dev.ping-demo.com/"
+  labels:
+    selfservice: urls
 spec:
   ingressClassName: nginx-public
   tls:
@@ -52,6 +58,12 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    selfservice.metadata.pingidentity.com/name: "PingAccess Agent"
+    selfservice.metadata.pingidentity.com/description: "Default endpoint for servicing identity and access management requests when using agent deployment model"
+    selfservice.metadata.pingidentity.com/category: "Informational"
+    selfservice.metadata.pingidentity.com/displayURL: "https://pingaccess-agent-dev.ping-demo.com/"
+  labels:
+    selfservice: urls
 spec:
   ingressClassName: nginx-public
   tls:
