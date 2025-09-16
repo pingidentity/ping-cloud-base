@@ -6,6 +6,7 @@ data:
   location-snippet: |
     # location-snippet allows you to override all location directives in nginx
     # https://docs.nginx.com/nginx-ingress-controller/configuration/global-configuration/configmap-resource/#snippets-and-custom-templates
+
     # Block PingAccess and PingFederate heartbeat endpoints.
     # Only block successful 200 status codes. Do nothing in the event of an error.
     if ($request_uri ~* "^/(pa|pf)/heartbeat.ping") {
@@ -20,4 +21,41 @@ data:
           ngx.arg[2] = true  -- Indicate that this is the last chunk within response body
         end
       }
+    }
+
+    # Maintenance Mode Enforcement for Admin Interfaces
+    access_by_lua_block {
+      -- Read maintenance-mode flag from file
+      local f = io.open("/etc/nginx/maintenance-mode/maintenance-mode", "r")
+      local m = f and f:read("*a") or ""
+      if f then f:close() end
+
+      -- Get the request host and check if it’s one of the admin interfaces
+      local h = ngx.var.host or ""
+      local is_admin = h:match("pingfederate%-admin") or h:match("pingaccess%-admin") or h:match("pingaccess%-was%-admin")
+
+      -- If maintenance mode is enabled and request is for an admin host, return 403 with a friendly page
+      if m:find("enabled") and is_admin then
+        ngx.status = 403
+        ngx.header.content_type = "text/html"
+        ngx.say([[
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Maintenance Mode</title>
+            <style>
+              body { font-family: sans-serif; text-align: center; padding-top: 10%; background-color: #f7f7f7; color: #333; }
+              h1 { font-size: 2em; }
+              p { font-size: 1.2em; }
+            </style>
+          </head>
+          <body>
+            <h1>Maintenance in Progress</h1>
+            <p>Access to the admin interface is temporarily restricted due to scheduled maintenance.</p>
+            <p>Please try again later.</p>
+          </body>
+          </html>
+        ]])
+        return ngx.exit(403)
+      end
     }
