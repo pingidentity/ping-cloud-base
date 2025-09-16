@@ -8,6 +8,7 @@ resources:
 - hpa.yaml
 - ingress-class.yaml
 - disruption-budget.yaml
+- maintenance-configmap.yaml
 
 namespace: ingress-nginx-public
 
@@ -72,6 +73,14 @@ patchesJson6902:
     version: v1
     kind: Deployment
     name: nginx-ingress-controller
+- path: add-maintenance-cm.yaml
+  target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nginx-ingress-controller
+    namespace: ingress-nginx-public
+    
 
 patchesStrategicMerge:
 - add-init-container.yaml

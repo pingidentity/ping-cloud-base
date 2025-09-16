@@ -32,6 +32,17 @@ spec:
           kind: Job
           jsonPointers:
             - /spec/ttlSecondsAfterFinished
+        - group: ""
+          kind: ConfigMap
+          name: maintenance-mode
+          namespace: ingress-nginx-public
+          jsonPointers:
+            - /data
+      # Excluding maintenance-mode ConfigMap from ArgoCD sync diff.
+      # This ConfigMap is dynamically updated during maintenance workflows to enable or disable admin access.
+      # It is intentionally not managed via Git because its state reflects real-time operational intent.
+      # By ignoring differences in its data field, we prevent ArgoCD from falsely reporting the app as OutOfSync
+      # whenever maintenance mode is toggled outside of GitOps.
       syncPolicy:
         automated:
           prune: true
