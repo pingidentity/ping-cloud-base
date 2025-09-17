@@ -1,0 +1,35 @@
+# Remove PingFederate Admin ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: pingfederate-admin-console-ingress
+$patch: delete
+---
+# Remove PingAccess Admin ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: pingaccess-admin-console-ingress
+$patch: delete
+---
+# Remove Logs ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: logs-ingress
+$patch: delete
+---
+# Remove Prometheus ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: prometheus-ingress
+$patch: delete
+---
+# Remove Monitoring ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: monitoring-ingress
+$patch: delete
+---

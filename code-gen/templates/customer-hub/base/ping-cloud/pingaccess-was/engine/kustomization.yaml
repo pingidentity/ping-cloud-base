@@ -10,6 +10,9 @@ images:
   newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was${ECR_ENV}
   newTag: ${PINGACCESS_WAS_IMAGE_TAG}
 
+patchesStrategicMerge:
+  - remove-unneeded-ingresses.yaml
+
 patchesJson6902:
 
 ### PingAccess WAS Engine Last Update Config Map ###
@@ -25,71 +28,52 @@ patchesJson6902:
         configMapRef:
           name: pingaccess-was-last-update-config
 
-### Ingress patches ###
+### Separated Ingresses through PA-WAS engines ###
 
-# PingAccess admin and PingFederate admin through PingAccess-WAS
+# Argo CD
 - target:
     group: networking.k8s.io
     version: v1
     kind: Ingress
-    name: pingaccess-was-ingress
-  patch: |
-    # Remove PingAccess admin from PingAccess-WAS
-    - op: remove
-      path: /spec/tls/0/hosts/0
-    - op: remove
-      path: /spec/rules/0
-
-    # Remove PingFederate admin from PingAccess-WAS
-    - op: remove
-      path: /spec/tls/0/hosts/1
-    - op: remove
-      path: /spec/rules/1
-
-    # Grafana to pingaccess was runtime
+    name: argocd-ingress
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      value: "https://argocd.${DNS_ZONE}/"
     - op: replace
       path: /spec/tls/0/hosts/0
-      value: monitoring.${DNS_ZONE}
+      value: argocd.${DNS_ZONE}
     - op: replace
       path: /spec/rules/0/host
-      value: monitoring.${DNS_ZONE}
+      value: argocd.${DNS_ZONE}
 
-    # Prometheus to pingaccess was runtime
+# Healthcheck
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: healthcheck-httpbin-pa-was-ingress
+  patch: |-
     - op: replace
-      path: /spec/tls/0/hosts/1
-      value: prometheus.${DNS_ZONE}
-    - op: replace
-      path: /spec/rules/1/host
-      value: prometheus.${DNS_ZONE}
-
-    # OpenSearch Dashboards pingaccess was runtime
-    - op: replace
-      path: /spec/tls/0/hosts/2
-      value: logs.${DNS_ZONE}
-    - op: replace
-      path: /spec/rules/2/host
-      value: logs.${DNS_ZONE}
-
-    # PingCentral console through PA-WAS engines
-    - op: replace
-      path: /spec/tls/0/hosts/3
-      value: pingcentral-admin.${DNS_ZONE}
-    - op: replace
-      path: /spec/rules/3/host
-      value: pingcentral-admin.${DNS_ZONE}
-
-    # Healthcheck httpbin service through PA-WAS engines
-    - op: replace
-      path: /spec/tls/0/hosts/4
+      path: /spec/tls/0/hosts/0
       value: healthcheck-httpbin-pa-was.${DNS_ZONE}
     - op: replace
-      path: /spec/rules/4/host
+      path: /spec/rules/0/host
       value: healthcheck-httpbin-pa-was.${DNS_ZONE}
 
-    # Argo CD pingaccess was runtime
+# PingCentral Admin
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: pingcentral-admin-ingress
+  patch: |-
     - op: replace
-      path: /spec/tls/0/hosts/5
-      value: argocd.${DNS_ZONE}
+      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      value: "https://pingcentral-admin.${DNS_ZONE}/"
     - op: replace
-      path: /spec/rules/5/host
-      value: argocd.${DNS_ZONE}
+      path: /spec/tls/0/hosts/0
+      value: pingcentral-admin.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingcentral-admin.${DNS_ZONE}

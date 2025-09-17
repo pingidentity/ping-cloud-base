@@ -47,6 +47,7 @@ _Changes:_
 - [X] PDO-9798 ingress-nginx-private autoscaling min/max replicas
 - [X] PDO-9923 Helm-based secondary region exclusion logic
 - [X] PDO-9972 [Logstash] OS bootstrap code refactor
+- [X] PDO-9865 Implement PA-WAS separation of ingresses in PCB
 - [X] PDO-10066 Add self-service annotations and labels to ingresses
 - [X] PDO-10087 Prevent customer changes to environment during upgrades via maintenance page
 - [X] PDO-10166 FluentBit - Use aws-for-fluent-bit image and consolidate all the pipelines
