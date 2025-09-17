@@ -1,0 +1,29 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+commonLabels:
+  app: ping-cloud
+
+commonAnnotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/modsecurity-snippet: |
+      Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf
+      SecRuleEngine DetectionOnly
+      SecRequestBodyAccess On
+      SecAuditEngine RelevantOnly
+      SecAuditLogParts ABCDEFGHIJKZ
+      SecAuditLogType Serial
+      SecAuditLogFormat JSON
+      SecAuditLog /dev/stdout
+
+resources:
+  - ingress-argo.yaml
+  - ingress-healthcheck.yaml
+  - ingress-logs.yaml
+  - ingress-monitoring.yaml
+  - ingress-pa-admin.yaml
+  - ingress-pf-admin.yaml
+  - ingress-pc-admin.yaml
+  - ingress-prometheus.yaml

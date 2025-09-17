@@ -10,22 +10,6 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testArgoHostInPAWASIngress() {
-  ingress_json=$(kubectl get ingress pingaccess-was-ingress -n ping-cloud -o json)
-  ingress_hosts=$(jq -r '.spec.tls[0].hosts' <<< "${ingress_json}")
-  found=$(jq -r 'any(.spec.tls[0]; .hosts[] | startswith("argocd"))' <<< "${ingress_json}")
-  assertEquals 0 $?
-  assertTrue "The ArgoCD host was not found in the pingaccess-was-ingress list of hosts: ${ingress_hosts}" "${found}"
-}
-
-testArgoRuleInPAWASIngress() {
-  ingress_json=$(kubectl get ingress pingaccess-was-ingress -n ping-cloud -o json)
-  ingress_rule_hosts=$(jq -r '[.spec.rules[].host]' <<< "${ingress_json}")
-  found=$(jq -r 'any(.spec.rules[]; .host | startswith("argocd"))' <<< "${ingress_json}")
-  assertEquals 0 $?
-  assertTrue "The ArgoCD rule was not found in the pingaccess-was-ingress list of rule hosts: ${ingress_rule_hosts}" "${found}"
-}
-
 testArgoBootstrapConfigmapHasRegionEnvVars() {
   cm_json=$(kubectl get cm argocd-bootstrap -n argocd -o json)
   cm_keys=$(jq -r '.data | keys' <<< "${cm_json}")

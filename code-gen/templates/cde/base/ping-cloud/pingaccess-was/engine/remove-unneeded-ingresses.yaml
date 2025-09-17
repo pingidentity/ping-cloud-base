@@ -1,0 +1,13 @@
+# Remove Argocd-ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: argocd-ingress
+$patch: delete
+---
+# Remove PingCentral Admin ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: pingcentral-admin-ingress
+$patch: delete

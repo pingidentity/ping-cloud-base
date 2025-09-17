@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pingcentral-admin-ingress
+  annotations:
+    selfservice.metadata.pingidentity.com/name: "PingCentral Admin Console"
+    selfservice.metadata.pingidentity.com/category: "Product Administration"
+    selfservice.metadata.pingidentity.com/displayURL: "https://pingcentral-admin.ping-demo.com/"
+  labels:
+    selfservice: urls
+spec:
+  ingressClassName: nginx-public
+  rules:
+  - host: pingcentral-admin.ping-demo.com
+    http:
+      paths:
+      # This rule allows external access to PingCentral via the pingaccess-was runtime service
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: pingaccess-was
+            port:
+              number: 443
+  tls:
+  - hosts:
+      - pingcentral-admin.ping-demo.com

@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pingaccess-admin-console-ingress
+  annotations:
+    selfservice.metadata.pingidentity.com/name: "PingAccess Admin Console"
+    selfservice.metadata.pingidentity.com/category: "Product Administration"
+    selfservice.metadata.pingidentity.com/displayURL: "https://pingaccess-admin.ping-demo.com/"
+  labels:
+    selfservice: urls
+spec:
+  ingressClassName: nginx-public
+  rules:
+  - host: pingaccess-admin.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess-was
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - pingaccess-admin.ping-demo.com

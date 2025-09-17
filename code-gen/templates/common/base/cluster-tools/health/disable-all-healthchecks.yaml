@@ -96,3 +96,11 @@ metadata:
 $patch: delete
 
 ---
+
+# Remove Healthcheck ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: healthcheck-httpbin-pa-was-ingress
+$patch: delete
+---

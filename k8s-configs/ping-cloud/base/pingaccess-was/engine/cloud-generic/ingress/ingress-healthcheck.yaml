@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: healthcheck-httpbin-pa-was-ingress
+spec:
+  ingressClassName: nginx-public
+  rules:
+  - host: healthcheck-httpbin-pa-was.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess-was
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - healthcheck-httpbin-pa-was.ping-demo.com

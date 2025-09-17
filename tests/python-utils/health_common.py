@@ -34,7 +34,10 @@ class TestHealthBase(unittest.TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.k8s = K8sUtils()
-        cls.healthcheck_endpoint = cls.k8s.get_endpoint("healthcheck")
+        # Get the healthcheck endpoint (healthcheck-ingress)
+        # Added '.' to the end of healthcheck to not match healthcheck-httpbin-pa-was-ingress
+        cls.healthcheck_endpoint = cls.k8s.get_endpoint("healthcheck.")
+        print(f"Healthcheck endpoint: {cls.healthcheck_endpoint}")
         # Handle cases where the tests are still retrying by killing the pods and running the check
         cls.k8s.kill_pods(label=f"role={cls.deployment_name}", namespace=cls.health)
         cls.k8s.wait_for_pod_running(label=f"role={cls.deployment_name}", namespace=cls.health)
@@ -54,6 +57,11 @@ class TestHealthBase(unittest.TestCase):
         :return: Test results dictionary in the format {"test name": "PASS/FAIL", ...}
         """
         response = requests.get(self.healthcheck_endpoint, verify=False)
+        print(f"Healthcheck URL: {self.healthcheck_endpoint}")
+        print(f"Healthcheck suite: {suite}")
+        print(f"Healthcheck category: {category}")
+        print(f"Healthcheck status code: {response.status_code}")
+        print(f"Healthcheck response type: {response.headers.get('Content-Type')}")
         return response.json()["health"][suite]["tests"][category]
 
     def deployment_exists(self):
