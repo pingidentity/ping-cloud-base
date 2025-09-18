@@ -81,6 +81,16 @@ patchesStrategicMerge:
       purpose: service-account-for-opensearch
       ${IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE}
 
+- |-
+  # Add base_redirect_url to fix ui-conntect.sh script
+  apiVersion: opensearch.opster.io/v1
+  kind: OpenSearchCluster
+  metadata:
+    name: opensearch-cluster
+  spec:
+    dashboards:
+      additionalConfig:
+        opensearch_security.openid.base_redirect_url: "https://logs.${DNS_ZONE}"
 
 patchesJson6902:
 - target:
@@ -102,3 +112,4 @@ patchesJson6902:
     - op: replace
       path: /data/newrelic_cluster_name
       value: "${NEW_RELIC_ENVIRONMENT_NAME}"
+

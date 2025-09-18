@@ -21,6 +21,7 @@
 - Refactor os-bootstrap code, remove wait-for-os-health initContainer
 - Adding JSON parsing support for PingFederate logs
 - Update generate code to have granular control for removing helm charts in chub envs
+- Fix Opensearch when using ui-connect.sh
 - Add self-service annotations and labels to ingresses
 - Update to use aws-for-fluent-bit:2.31.7 and refactor pipeline config
 
@@ -46,6 +47,7 @@ _Changes:_
 - [X] PDO-9600 Properly fetch GLOBAL_TENANT_DOMAIN value from parameter store
 - [X] PDO-9798 ingress-nginx-private autoscaling min/max replicas
 - [X] PDO-9923 Helm-based secondary region exclusion logic
+- [X] PDO-9937 Fix Opensearch when using ui-connect.sh
 - [X] PDO-9972 [Logstash] OS bootstrap code refactor
 - [X] PDO-9865 Implement PA-WAS separation of ingresses in PCB
 - [X] PDO-10066 Add self-service annotations and labels to ingresses
