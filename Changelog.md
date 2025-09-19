@@ -1,12 +1,19 @@
 # Changelog
 
+### 2.1.2
+
+- Integrate PingDirectory service with external DNS by setting its policy to sync.
+
+_Changes:_
+
+- [X] PDO-8907 Integrate PingDirectory service with external DNS by setting its policy to sync
+
 ### 2.1.1
 
 - Test: Verify the LetsEncrypt Certificate in PingDirectory Keystore and TrustStore
 - Fix p1as-pingfederate namespace issue
 - OSD: Enable Save Query and CSV Export of Logs
 - Disable anonymous authentication for OpenSearch
-
 
 _Changes:_
 
