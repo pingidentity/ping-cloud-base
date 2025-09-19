@@ -24,6 +24,8 @@
 - Fix Opensearch when using ui-connect.sh
 - Add self-service annotations and labels to ingresses
 - Update to use aws-for-fluent-bit:2.31.7 and refactor pipeline config
+- Updated TestBootstrapImage func to get os-bootstrap initContainer Image 
+
 
 _Changes:_
 
@@ -46,6 +48,7 @@ _Changes:_
 - [X] PDO-6878 Move PingFederate IK upload scripts from ping-cloud-base to ping-cloud-tools repository
 - [X] PDO-9600 Properly fetch GLOBAL_TENANT_DOMAIN value from parameter store
 - [X] PDO-9798 ingress-nginx-private autoscaling min/max replicas
+- [X] PDO-9859 Update Metadata code to check for Opensearch Bootstrap[InitContainer-logstash]
 - [X] PDO-9923 Helm-based secondary region exclusion logic
 - [X] PDO-9937 Fix Opensearch when using ui-connect.sh
 - [X] PDO-9972 [Logstash] OS bootstrap code refactor
