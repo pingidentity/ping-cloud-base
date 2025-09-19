@@ -32,7 +32,7 @@ data:
 
       -- Get the request host and check if it’s one of the admin interfaces
       local h = ngx.var.host or ""
-      local is_admin = h:match("pingfederate%-admin") or h:match("pingaccess%-admin") or h:match("pingaccess%-was%-admin")
+      local is_admin = h:match("pingfederate%-admin") or h:match("pingaccess%-admin") or h:match("pingaccess%-was%-admin") or h:match("self%-service")
 
       -- If maintenance mode is enabled and request is for an admin host, return 403 with a friendly page
       if m:find("enabled") and is_admin then
