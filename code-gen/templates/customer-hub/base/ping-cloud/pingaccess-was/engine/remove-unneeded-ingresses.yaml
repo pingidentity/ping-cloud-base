@@ -19,17 +19,3 @@ metadata:
  name: logs-ingress
 $patch: delete
 ---
-# Remove Prometheus ingress
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
- name: prometheus-ingress
-$patch: delete
----
-# Remove Monitoring ingress
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
- name: monitoring-ingress
-$patch: delete
----

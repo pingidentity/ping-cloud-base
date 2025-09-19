@@ -61,6 +61,23 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: healthcheck-httpbin-pa-was.${DNS_ZONE}
 
+# Monitoring
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: monitoring-ingress
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      value: "https://monitoring.${DNS_ZONE}/"
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: monitoring.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/0/host
+      value: monitoring.${DNS_ZONE}
+
 # PingCentral Admin
 - target:
     group: networking.k8s.io
@@ -77,3 +94,20 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingcentral-admin.${DNS_ZONE}
+
+# Prometheus
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: prometheus-ingress
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      value: "https://prometheus.${DNS_ZONE}/"
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: prometheus.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/0/host
+      value: prometheus.${DNS_ZONE}
