@@ -112,6 +112,26 @@ spec:
           namespace: ingress-nginx-public
           jsonPointers:
             - /data
+        - group: ""
+          kind: ConfigMap
+          name: restart-strategy
+          namespace: ping-cloud
+          jsonPointers:
+            - /data
+        - group: ""
+          kind: ConfigMap
+          name: p1as-restart-strategy
+          namespace: ping-cloud
+          jsonPointers:
+            - /data
+        - group: ""
+          kind: ConfigMap
+          name: run-offline-flag
+          namespace: ping-cloud
+          jsonPointers:
+            - /data
       syncPolicy:
         automated:
           prune: true
+        syncOptions:
+          - RespectIgnoreDifferences=true  # Argo CD will not apply Git changes to the fields marked under ignoreDifferences..
