@@ -127,5 +127,10 @@ if __name__ == "__main__":
         cert_file = sys.argv[1]
         seal = SealSecrets(cert_file)
         seal.seal_secrets()
+    elif len(sys.argv) == 3:
+        cert_file = sys.argv[1]
+        values_file = sys.argv[2]
+        seal = SealSecrets(cert_file, values_file)
+        seal.seal_secrets()
     else:
-        raise Exception("Error in usage. No cert file passed in.\nUsage: python3 seal-secret-values.py [CERT_FILE]")
+        raise Exception("Error in usage. No cert file passed in.\nUsage: python3 seal-secret-values.py [CERT_FILE] [VALUES_FILE]")
