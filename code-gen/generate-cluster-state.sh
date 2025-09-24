@@ -622,7 +622,7 @@ organize_code_for_csr() {
     echo "Using CDE_DEPLOY: ${CDE_DEPLOY}"
     echo "Using CHUB_DEPLOY:  ${CHUB_DEPLOY}"
     echo "Using DEVELOPER_DEPLOY: ${DEVELOPER_DEPLOY}"
-    echo "Using PRIMARY_REGION_ONLY_DEPLOY: ${PRIMARY_REGION_ONLY_DEPLOY}"
+    echo "Using PRIMARY_REGION_ONLY_DEPLOY: ${PRIMARY_REGION_ONLY_DEPLOY[@]}"
     echo
 
     # exclude anything that shouldn't deploy to dev envs
@@ -643,17 +643,19 @@ organize_code_for_csr() {
         # Remove the region directory if not primary region and PRIMARY_REGION_ONLY_DEPLOY is true.
         echo "Found PRIMARY_REGION_ONLY_DEPLOY set to True, removing ${app_target_dir}/region entirely"
         rm -rf "${app_target_dir}/region"
-      elif [[ -n "${PRIMARY_REGION_ONLY_DEPLOY}" && "${REGION}" != "${PRIMARY_REGION}" ]]; then
-        # If PRIMARY_REGION_ONLY_DEPLOY is an array, iterate through it and remove entries
-        for chart_name in "${PRIMARY_REGION_ONLY_DEPLOY[@]}"; do
-          echo "Found ${chart_name} in PRIMARY_REGION_ONLY_DEPLOY, removing reference in ${app_target_dir}/region/kustomization.yaml"
-          yq -i 'del(.helmCharts[] | select(.name == "'"${chart_name}"'"))' "${app_target_dir}/region/kustomization.yaml"
-          if [[ $? -ne 0 ]]; then
-            echo "yq command failed while removing chart references for ${chart_name} in ${app_target_dir}/region/kustomization.yaml"
-            exit 1
-          fi
-        done
       else
+        if { test "${REGION}" != "${PRIMARY_REGION}" && declare -p PRIMARY_REGION_ONLY_DEPLOY 2>/dev/null | grep -q 'declare -a\|typeset -a'; }; then
+          # If PRIMARY_REGION_ONLY_DEPLOY is an array, iterate through it and remove entries
+          for chart_name in "${PRIMARY_REGION_ONLY_DEPLOY[@]}"; do
+            echo "Chart ${chart_name} is set for PRIMARY_REGION_ONLY_DEPLOY, removing reference in ${app_target_dir}/region/kustomization.yaml"
+            yq -i 'del(.helmCharts[] | select(.name == "'"${chart_name}"'"))' "${app_target_dir}/region/kustomization.yaml"
+            if [[ $? -ne 0 ]]; then
+              log "yq command failed while removing chart references for ${chart_name} in ${app_target_dir}/region/kustomization.yaml"
+              exit 1
+            fi
+          done
+        fi
+
         # Rename to the actual region nick name.
         mv "${app_target_dir}/region" "${app_target_dir}/${REGION_NICK_NAME}"
       fi
