@@ -600,6 +600,29 @@ set_ssh_key_pair() {
   fi
 }
 
+########################################################################################################################
+# Checks if the provided value is either "true" or an array.
+#
+# Arguments
+#   ${1} -> The value to check
+########################################################################################################################
+is_true_or_array() {
+  local var_name="${1}"
+  local var_value="${!1}"
+
+  if test "${var_value}" = "true"; then
+    return 0
+  else
+    local var_info=$(declare -p "${var_name}" 2>/dev/null)
+
+    if [[ "$var_info" =~ "declare -a" || "$var_info" =~ "declare -A" ]]; then
+      return 0
+    else
+      return 1
+    fi
+  fi
+}
+
 # Organizes the files from code-gen directory to a tmp directory for push-cluster-state script
 organize_code_for_csr() {
   # find all the apps under code-gen/templates directory
@@ -620,7 +643,7 @@ organize_code_for_csr() {
     echo ---
     echo "For app '${app_name}':"
     echo "Using CDE_DEPLOY: ${CDE_DEPLOY}"
-    echo "Using CHUB_DEPLOY:  ${CHUB_DEPLOY}"
+    echo "Using CHUB_DEPLOY:  ${CHUB_DEPLOY[@]}"
     echo "Using DEVELOPER_DEPLOY: ${DEVELOPER_DEPLOY}"
     echo "Using PRIMARY_REGION_ONLY_DEPLOY: ${PRIMARY_REGION_ONLY_DEPLOY[@]}"
     echo
@@ -631,7 +654,7 @@ organize_code_for_csr() {
     fi
 
     # Add the app directory to the tmp directory if the deploy env var aligns with the env env var
-    if { test "${ENV}" = "${CUSTOMER_HUB}" && test "${CHUB_DEPLOY}" = "true"; } || { test "${ENV}" != "${CUSTOMER_HUB}" && test "${CDE_DEPLOY}" = "true"; }; then
+    if { test "${ENV}" = "${CUSTOMER_HUB}" && is_true_or_array "CHUB_DEPLOY"; } || { test "${ENV}" != "${CUSTOMER_HUB}" && test "${CDE_DEPLOY}" = "true"; }; then
       local app_target_dir=${ENV_DIR}/${app_name}
       mkdir -p "${app_target_dir}"
 
@@ -639,6 +662,24 @@ organize_code_for_csr() {
       rsync -rR * --exclude config.sh "${app_target_dir}"
       cd - >/dev/null 2>&1
 
+      # Handle granular removal of non-chub apps from repo
+      if { test "${ENV}" == "${CUSTOMER_HUB}" && declare -p CHUB_DEPLOY 2>/dev/null | grep -q 'declare -a\|typeset -a'; }; then
+        # Get all helm chart entries in regional kustomization file
+        local chart_references=$(yq '.helmCharts[].name' "${app_target_dir}/region/kustomization.yaml")
+        for chart_name in ${chart_references}; do
+          # Check if chart_name exists in CHUB_DEPLOY variable (space-separated array)
+          if ! [[ " ${CHUB_DEPLOY[@]} " =~ " ${chart_name} " ]]; then
+            echo "Chart ${chart_name} is NOT set for CHUB_DEPLOY, removing reference in ${app_target_dir}/region/kustomization.yaml"
+            yq -i 'del(.helmCharts[] | select(.name == "'"${chart_name}"'"))' "${app_target_dir}/region/kustomization.yaml"
+            if [[ $? -ne 0 ]]; then
+              log "yq command failed while removing chart references for ${chart_name} in ${app_target_dir}/region/kustomization.yaml"
+              exit 1
+            fi
+          fi
+        done
+      fi
+
+      # Handle region deploy
       if { test "${REGION}" != "${PRIMARY_REGION}" && test "${PRIMARY_REGION_ONLY_DEPLOY}" = "true"; }; then
         # Remove the region directory if not primary region and PRIMARY_REGION_ONLY_DEPLOY is true.
         echo "Found PRIMARY_REGION_ONLY_DEPLOY set to True, removing ${app_target_dir}/region entirely"
@@ -683,7 +724,6 @@ organize_code_for_csr() {
           done
           ;;
       esac
-
     fi
   done
 }
