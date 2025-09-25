@@ -20,6 +20,7 @@
 - Prevent customer changes to environment during upgrades via maintenance page
 - Refactor os-bootstrap code, remove wait-for-os-health initContainer
 - Adding JSON parsing support for PingFederate logs
+- Update generate code to have granular control for removing helm charts in secondary envs
 - Update generate code to have granular control for removing helm charts in chub envs
 - Fix Opensearch when using ui-connect.sh
 - Add self-service annotations and labels to ingresses
@@ -49,6 +50,7 @@ _Changes:_
 - [X] PDO-9600 Properly fetch GLOBAL_TENANT_DOMAIN value from parameter store
 - [X] PDO-9798 ingress-nginx-private autoscaling min/max replicas
 - [X] PDO-9859 Update Metadata code to check for Opensearch Bootstrap[InitContainer-logstash]
+- [X] PDO-9901 Update CHUB_DEPLOY setting for Observability applications within PCB
 - [X] PDO-9923 Helm-based secondary region exclusion logic
 - [X] PDO-9937 Fix Opensearch when using ui-connect.sh
 - [X] PDO-9972 [Logstash] OS bootstrap code refactor
