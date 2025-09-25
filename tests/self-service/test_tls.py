@@ -197,9 +197,9 @@ class TestTlsUI(unittest.TestCase):
             self.open_create_form()
 
             # Fill the form
-            name_input = self.wait.until(EC.presence_of_element_located((By.NAME, "name")))
-            fullchain_textarea = self.wait.until(EC.presence_of_element_located((By.NAME, "fullchain")))
-            privkey_textarea = self.wait.until(EC.presence_of_element_located((By.NAME, "privkey")))
+            name_input = self.wait.until(EC.visibility_of_element_located((By.NAME, "name")))
+            fullchain_textarea = self.wait.until(EC.visibility_of_element_located((By.NAME, "fullchain")))
+            privkey_textarea = self.wait.until(EC.visibility_of_element_located((By.NAME, "privkey")))
 
             name_input.send_keys(self.certname)
             fullchain_textarea.send_keys(self.default_fullchain.rstrip())
@@ -208,6 +208,11 @@ class TestTlsUI(unittest.TestCase):
             # Submit the form
             submit_button = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[type="submit"]')))
             submit_button.click()
+
+            # check the toast notification
+            ttype, message = self.get_toast_notification()
+            assert ttype == "Success Message"
+            assert message == "Certificate created successfully"
             print(f"Certificate created: {self.certname}")
         except (TimeoutException, NoSuchElementException) as ex:
             print(f"Error occurred creating certificate '{self.certname}': {ex}")
@@ -221,7 +226,7 @@ class TestTlsUI(unittest.TestCase):
             self.open_create_form()
 
             # Fill the form
-            hostname_input = self.wait.until(EC.presence_of_element_located((By.NAME, "hostname")))
+            hostname_input = self.wait.until(EC.visibility_of_element_located((By.NAME, "hostname")))
             hostname_input.clear() # Make sure field is empty
             hostname_input.send_keys(hostname)
 
@@ -239,6 +244,11 @@ class TestTlsUI(unittest.TestCase):
             # Submit the form
             submit_button = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[type="submit"]')))
             submit_button.click()
+
+            # check the toast notification
+            ttype, message = self.get_toast_notification()
+            assert ttype == "Success Message"
+            assert message == "Virtual host created successfully"
             print(f"Hostname created: {hostname}")
         except (TimeoutException, NoSuchElementException) as ex:
             print(f"Error occurred creating hostname '{hostname}': {ex}")
@@ -289,6 +299,15 @@ class TestTlsUI(unittest.TestCase):
                 EC.element_to_be_clickable(confirm_delete_button_locator)
             )
             confirm_delete_button.click()
+
+            # Wait for the modal to disappear
+            print("Waiting for the delete modal to disappear...")
+            self.wait.until_not(EC.visibility_of_element_located(modal_locator))
+
+            # wait for and check the success toast notification
+            ttype, message = self.get_toast_notification()
+            assert ttype == "Success Message"
+            assert message.endswith("deleted successfully")
             print(f"Delete successful for item: '{item}'.")
         except (TimeoutException, NoSuchElementException) as ex:
             print(f"Error occurred deleting item '{item}': {ex}")
@@ -316,6 +335,23 @@ class TestTlsUI(unittest.TestCase):
 
         print("Get item list successfully")
         return list_items
+
+    def get_toast_notification(self):
+        # Wait for toast to appear
+        toast_locator = (By.XPATH, "//div[@role='status' and @aria-label]")
+        toast = self.wait.until(EC.visibility_of_element_located(toast_locator))
+
+        # Get the type from aria-label
+        toast_type = toast.get_attribute("aria-label")
+
+        # Get the text
+        try:
+            message_element = toast.find_element(By.TAG_NAME, "span")
+            toast_text = message_element.text.strip()
+        except Exception:
+            toast_text = toast.text.strip()
+
+        return toast_type, toast_text
 
     def test_vhost_creates_successfully(self):
         """
