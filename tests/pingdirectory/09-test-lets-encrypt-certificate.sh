@@ -10,6 +10,7 @@ if skipTest "${0}"; then
 fi
 
 POD_NAME="pingdirectory-0"
+CONTAINER_NAME="pingdirectory"
 
 oneTimeTearDown() {
   # Need this to suppress tearDown on script EXIT
@@ -30,16 +31,16 @@ testCertificateInKeystore() {
   log "Test: Verify Let's Encrypt Certificate in PingDirectory Keystore and TrustStore (without replacing)"
 
   log "Exporting Keystore certificate from PingDirectory pod..."
-  kubectl exec -n $PING_CLOUD_NAMESPACE $POD_NAME -- sh -c \
+  kubectl exec -n $PING_CLOUD_NAMESPACE $POD_NAME -c $CONTAINER_NAME -- sh -c \
     'manage-certificates export-certificate \
-      --keystore ${SERVER_ROOT_DIR}/config/keystore \
-      --keystore-password-file ${SERVER_ROOT_DIR}/config/keystore.pin \
+      --keystore $SERVER_RUNTIME_DIR/config/keystore \
+      --keystore-password-file $SERVER_RUNTIME_DIR/config/keystore.pin \
       --alias server-cert \
       --output-file /tmp/server-cert-keystore.crt \
       --output-format PEM'
   assertEquals "Failed to run 'manage-certificates export-certificate' for keystore" 0 $?
 
-  kubectl cp $PING_CLOUD_NAMESPACE/$POD_NAME:/tmp/server-cert-keystore.crt /tmp/server-cert-keystore.crt
+  kubectl cp -c $CONTAINER_NAME $PING_CLOUD_NAMESPACE/$POD_NAME:/tmp/server-cert-keystore.crt /tmp/server-cert-keystore.crt
 
   log "Fetching Let's Encrypt cert from Kubernetes secret..."
   cluster_certificate=$(kubectl get secret acme-tls-cert -n $PING_CLOUD_NAMESPACE -o jsonpath='{.data.tls\.crt}')
@@ -60,16 +61,16 @@ testCertificateInKeystore() {
 testCertificateInTruststore() {
 
   log "Exporting Truststore certificate from PingDirectory pod..."
-  kubectl exec -n $PING_CLOUD_NAMESPACE $POD_NAME -- sh -c \
+  kubectl exec -n $PING_CLOUD_NAMESPACE $POD_NAME -c $CONTAINER_NAME -- sh -c \
     'manage-certificates export-certificate \
-      --keystore ${SERVER_ROOT_DIR}/config/truststore \
-      --keystore-password-file ${SERVER_ROOT_DIR}/config/truststore.pin \
+      --keystore $SERVER_RUNTIME_DIR/config/truststore \
+      --keystore-password-file $SERVER_RUNTIME_DIR/config/truststore.pin \
       --alias server-cert \
       --output-file /tmp/server-cert-truststore.crt \
       --output-format PEM'
   assertEquals "Failed to run 'manage-certificates export-certificate' for truststore" 0 $?
 
-  kubectl cp $PING_CLOUD_NAMESPACE/$POD_NAME:/tmp/server-cert-truststore.crt /tmp/server-cert-truststore.crt
+  kubectl cp -c $CONTAINER_NAME $PING_CLOUD_NAMESPACE/$POD_NAME:/tmp/server-cert-truststore.crt /tmp/server-cert-truststore.crt
 
   log "Fetching Let's Encrypt cert from Kubernetes secret..."
   cluster_certificate=$(kubectl get secret acme-tls-cert -n $PING_CLOUD_NAMESPACE -o jsonpath='{.data.tls\.crt}')
