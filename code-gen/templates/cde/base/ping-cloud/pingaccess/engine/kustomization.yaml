@@ -27,6 +27,20 @@ patchesJson6902:
 
 ### Ingress patches ###
 
+# R53 health check ingress
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: pingaccess-route53-health-ingress
+  patch: |
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess.${DNS_ZONE}
+
 # pingaccess runtime
 - target:
     group: networking.k8s.io
@@ -86,4 +100,3 @@ patchesJson6902:
     - op: replace
       path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
       value: "https://pingaccess-agent.${DNS_ZONE}/"
-
