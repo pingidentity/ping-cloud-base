@@ -46,6 +46,34 @@ spec:
             port:
               number: 443
 
+---
+
+# This defines the ingress to allow Route53 health checks to pingacess
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pingaccess-route53-health-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  ingressClassName: nginx-public
+  tls:
+  - hosts:
+    - pingaccess-dev.ping-demo.com
+  rules:
+  - host: pingaccess-dev.ping-demo.com
+    http:
+      paths:
+      # This rule gives external access to the pingaccess runtime service
+      - pathType: Prefix
+        path: /pa/heartbeat.ping
+        backend:
+          service:
+            name: pingaccess
+            port:
+              number: 443
 
 ---
 
