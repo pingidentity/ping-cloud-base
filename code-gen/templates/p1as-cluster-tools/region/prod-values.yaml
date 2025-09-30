@@ -7,7 +7,7 @@ ingress-nginx-public:
       autoscaling:
         minReplicas: 4
         maxReplicas: 6
-        targetCPUUtilizationPercentage: 50
+        targetCPUUtilizationPercentage: 40
       config:
         # prod config settings
         # migrated from PCB/k8s-configs/cluster-tools/prod/small/ingress/nginx
