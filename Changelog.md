@@ -62,6 +62,7 @@ _Changes:_
 - [X] PDO-10166 FluentBit - Use aws-for-fluent-bit image and consolidate all the pipelines
 - [X] PDO-10234 Log4j2.xml - adjust customer pipelines to ensure consistent JSON Log events
 - [X] PDO-10349 Allow AWS R53 health checks to bypass IP allowlisting
+- [X] PDO-10401 Update microservice code to handle umbrella charts for profile repo code
 
 ### 2.1.1
 
