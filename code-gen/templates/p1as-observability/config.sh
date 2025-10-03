@@ -1,3 +1,3 @@
 export CDE_DEPLOY=true
-export CHUB_DEPLOY=("p1as-cloudwatch" "p1as-newrelic")
+export CHUB_DEPLOY=true
 export PRIMARY_REGION_ONLY_DEPLOY=("p1as-grafana")
