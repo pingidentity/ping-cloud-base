@@ -25,10 +25,10 @@
 - Fix Opensearch when using ui-connect.sh
 - Add self-service annotations and labels to ingresses
 - Update to use aws-for-fluent-bit:2.31.7 and refactor pipeline config
+- Updated TestBootstrapImage func to get os-bootstrap initContainer Image
 - Allow AWS R53 health checks to bypass IP allowlisting
-- Updated TestBootstrapImage func to get os-bootstrap initContainer Image 
 - Add backwards compatible JSON filters for customer pipelines (PF/PA)
-
+- Upgrade os-controller-manager(os-operator) to 2.7.0
 
 _Changes:_
 
@@ -63,6 +63,7 @@ _Changes:_
 - [X] PDO-10234 Log4j2.xml - adjust customer pipelines to ensure consistent JSON Log events
 - [X] PDO-10349 Allow AWS R53 health checks to bypass IP allowlisting
 - [X] PDO-10401 Update microservice code to handle umbrella charts for profile repo code
+- [X] PDO-10178 [OpenSearch] Upgrade OpenSearch operator (os-controller-manager) to v2.7.0
 
 ### 2.1.1
 
