@@ -122,7 +122,7 @@ spec:
         - --loglevel=info
         command:
         - /manager
-        image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/opensearchproject/opensearch-operator:2.5.1"
+        image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/opensearchproject/opensearch-operator:2.7.0"
         name: operator-controller-manager
         imagePullPolicy: "Always"
         resources:
