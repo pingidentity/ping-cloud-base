@@ -1,9 +1,0 @@
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: ingress-nginx-public-pdb
-spec:
-  minAvailable: "30%"
-  selector:
-    matchLabels:
-      app.kubernetes.io/role: ingress-nginx-public

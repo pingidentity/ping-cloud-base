@@ -6,7 +6,6 @@ resources:
 - cert-manager
 - cluster-autoscaler
 - service-discovery
-# - ingress
 - logging
 - metrics
 - monitoring
