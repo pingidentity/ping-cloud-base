@@ -6,7 +6,6 @@ resources:
 - cluster-autoscaler
 - service-discovery
 - health
-# - ingress
 - logging
 - metrics
 - monitoring

@@ -1,8 +1,0 @@
-- op: add
-  path: /spec/template/spec/containers/0/args/-
-  value:
-    --ingress-class=nginx-private
-- op: add
-  path: /spec/template/spec/containers/0/args/-
-  value:
-    --controller-class=k8s.io/ingress-nginx-private

@@ -33,3 +33,8 @@ patches:
   ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
   - path: custom-patches.yaml
   - path: ../base/custom-patches.yaml
+
+patchesStrategicMerge:
+  ### sigsci-agent patch to substitute container environment variables
+  - sigsci-agent.yaml
+      

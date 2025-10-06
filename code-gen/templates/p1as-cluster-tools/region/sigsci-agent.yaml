@@ -1,0 +1,18 @@
+# sigsci-agent patch to subsitute container environment variables
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingress-nginx
+  namespace: ingress-nginx-public
+spec:
+  template:
+    spec:
+      containers:
+      - name: sigsci-agent
+        env:
+          - name: AGENT_NAME
+            value: ${TENANT_NAME}-${ENVIRONMENT_TYPE}-${REGION}
+          - name: AWS_REGION
+            value: ${REGION}
+          - name: ENVIRONMENT_PREFIX
+            value: ${ENVIRONMENT_PREFIX}
