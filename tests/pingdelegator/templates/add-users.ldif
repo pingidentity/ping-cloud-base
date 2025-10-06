@@ -4,31 +4,26 @@ objectClass: top
 objectClass: organizationalUnit
 ou: People
 
-dn: uid=user.0,ou=People,dc=example,dc=com
-changetype: add
-objectClass: top
+dn: cn=John.0,ou=People,dc=example,dc=com
+changeType: add
 objectClass: person
 objectClass: organizationalPerson
 objectClass: inetOrgPerson
-objectClass: pf-connected-identities
-sn: Brooke
-cn: Raeann Brooke
-givenName: Raeann
-uid: user.0
-mail: user.0@example.com
-userPassword: 2FederateM0re
-pf-connected-identity: auth-source=pf-local-identity:user-id=user.0
+givenName: John
+sn: Doe
+cn: Test User
+uid: john.0
+userPassword: password
+description: This is the description for john.0.
 
-dn: uid=administrator,ou=People,dc=example,dc=com
+dn: uid=admin,dc=example,dc=com
 changetype: add
 objectClass: top
 objectClass: person
 objectClass: organizationalPerson
 objectClass: inetOrgPerson
-objectClass: pf-connected-identities
-sn: PingFederate
-cn: Administrator
-givenName: PingFederate
-uid: administrator
-userPassword: 2FederateM0re
-pf-connected-identity: auth-source=pf-local-identity:user-id=administrator
+uid: admin
+givenName: Admin
+sn: User
+cn: Admin User
+userPassword: password
