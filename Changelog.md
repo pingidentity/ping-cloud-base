@@ -58,6 +58,7 @@ _Changes:_
 - [X] PDO-9972 [Logstash] OS bootstrap code refactor
 - [X] PDO-9865 Implement PA-WAS separation of ingresses in PCB
 - [X] PDO-10066 Add self-service annotations and labels to ingresses
+- [X] PDO-10068 Configure PA engines in child regions to use OAuth2
 - [X] PDO-10087 Prevent customer changes to environment during upgrades via maintenance page
 - [X] PDO-10166 FluentBit - Use aws-for-fluent-bit image and consolidate all the pipelines
 - [X] PDO-10234 Log4j2.xml - adjust customer pipelines to ensure consistent JSON Log events
