@@ -11,7 +11,7 @@ generatorOptions:
 
 ### Patch to remove OpenSearch credentials from prometheus-agent, as OS is not deployed in customer-hub
 ### As such, it will also not be able to start due to missing secret.  Note that patchesStrategicMerge
-### will not work here due to parsing issues on volumeMounts.  
+### will not work here due to parsing issues on volumeMounts.
 patchesJson6902:
   - target:
       group: apps
@@ -61,7 +61,7 @@ patchesStrategicMerge:
 
 ### Cost saving measures
 - ../base/ping-cloud/pingaccess-was/engine/chub-pingaccess-was-scaledown-patch.yaml
-- ../base/cluster-tools/ingress/public/chub-public-ingress-scaledown-patch.yaml
+
 ### Remove opensearch from chub
 - ../base/cluster-tools/logging/disable-opensearch-base-patch.yaml
 #- ../base/cluster-tools/logging/disable-opensearch-primary-region-patch.yaml
