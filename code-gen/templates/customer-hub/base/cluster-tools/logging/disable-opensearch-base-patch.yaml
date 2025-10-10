@@ -32,7 +32,6 @@ data:
         net.keepalive_idle_timeout  10
         net.keepalive_max_recycle   100
         storage.total_limit_size  3000M
-$patch: replace
 
 ---
 # original port is 8080
