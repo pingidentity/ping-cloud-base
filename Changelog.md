@@ -30,6 +30,7 @@
 - Add backwards compatible JSON filters for customer pipelines (PF/PA)
 - Upgrade os-controller-manager(os-operator) to 2.7.0
 - Add PF and PC creds to PingAccess Admin for PingCentral OAuth2 connection
+- Disable Basic Auth for PA Admin API after enabling OAuth
 
 
 _Changes:_
@@ -46,6 +47,7 @@ _Changes:_
 - [X] PDO-9376 FluentBit: Adjust Buffer and Limit Configuration
 - [X] PDO-9414 Set initialDelaySeconds and failureThreshold on readiness probe for PingAccess and
 - [X] PDO-9455 Logstash: Revise Bootstrap Process to Directly Check Status of OpenSearch
+- [X] PDO-9465 Disable Basic Auth for PA Admin API after enabling OAuth
 - [X] PDO-9533 Remove PA_LOG_LEVEL from log4j file
 - [X] PDO-9538 Configure PingCentral's PA Admin API connection to use OAuth2
 - [X] PDO-9576 Add pod-reaper enabled label to PingCentral

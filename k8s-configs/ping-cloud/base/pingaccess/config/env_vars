@@ -83,3 +83,5 @@ SKIP_LIVENESS=false
 # Only use if you want to provide your own SSM path to perpetual license
 # The default is that automation will determine SSM path to retrieve product license
 OVERRIDE_PRODUCT_LICENSE=
+
+PA_ADMIN_API_BASIC_AUTH_ENABLED=false
