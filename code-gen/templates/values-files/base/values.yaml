@@ -199,6 +199,8 @@ global:
   customerTlsSsmPathPrefix: "${CUSTOMER_TLS_SSM_PATH_PREFIX}"
   # The prefix of a SSM Param / Secret path that contains self-service configurations
   selfServiceSsmPathPrefix : "${SELF_SERVICE_SSM_PATH_PREFIX}"
+  # The prefix of a SSM Param path that contains customer IP allowlists
+  customerIPAllowlistsSsmPathPrefix: "${CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX}"
 
   # PingFederate Communication
   pfPdBindPort: "${PF_PD_BIND_PORT}"

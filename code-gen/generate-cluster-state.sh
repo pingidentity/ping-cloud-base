@@ -199,6 +199,9 @@
 # CUSTOMER_TLS_SSM_PATH_PREFIX     | The prefix of a Secrets Manager path that contains | ${CUSTOMER_SSM_PATH_PREFIX}/tls
 #                                  | TLS state data.                                    |
 #                                  |                                                    |
+# CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX | The prefix of an SSM path that contains      | ${CUSTOMER_SSM_PATH_PREFIX}/ip-allowlist
+#                                  | IP Allowlist data.                                 |
+#                                  |                                                    |
 # PF_PROVISIONING_ENABLED          | Feature Flag - Indicates if the outbound           | False
 #                                  | provisioning feature for PingFederate is enabled   |
 #                                  | !! Not yet available for multi-region customers !! |
@@ -358,6 +361,7 @@ ${PLATFORM_EVENT_QUEUE_NAME}
 ${CUSTOMER_SSM_PATH_PREFIX}
 ${CUSTOMER_SSO_SSM_PATH_PREFIX}
 ${CUSTOMER_TLS_SSM_PATH_PREFIX}
+${CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX}
 ${SELF_SERVICE_SSM_PATH_PREFIX}
 ${SERVICE_SSM_PATH_PREFIX}
 ${REGION}
@@ -758,6 +762,7 @@ echo "Initial CUSTOMER_SSM_PATH_PREFIX: ${CUSTOMER_SSM_PATH_PREFIX}"
 echo "Initial SELF_SERVICE_SSM_PATH_PREFIX: ${SELF_SERVICE_SSM_PATH_PREFIX}"
 echo "Initial CUSTOMER_SSO_SSM_PATH_PREFIX: ${CUSTOMER_SSO_SSM_PATH_PREFIX}"
 echo "Initial CUSTOMER_TLS_SSM_PATH_PREFIX: ${CUSTOMER_TLS_SSM_PATH_PREFIX}"
+echo "Initial CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX: ${CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX}"
 echo "Initial SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
 echo "Initial REGION: ${REGION}"
 echo "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
@@ -875,6 +880,7 @@ export CUSTOMER_SSM_PATH_PREFIX=${CUSTOMER_SSM_PATH_PREFIX:-/pcpt/customer}
 export SELF_SERVICE_SSM_PATH_PREFIX=${SELF_SERVICE_SSM_PATH_PREFIX:-/pcpt/self-service}
 export CUSTOMER_SSO_SSM_PATH_PREFIX=${CUSTOMER_SSO_SSM_PATH_PREFIX:-${CUSTOMER_SSM_PATH_PREFIX}/sso}
 export CUSTOMER_TLS_SSM_PATH_PREFIX=${CUSTOMER_TLS_SSM_PATH_PREFIX:-${CUSTOMER_SSM_PATH_PREFIX}/tls}
+export CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX=${CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX:-${CUSTOMER_SSM_PATH_PREFIX}/ip-allowlist}
 export SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX:-/pcpt/service}
 
 export LAST_UPDATE_REASON="${LAST_UPDATE_REASON:-NA}"
@@ -1081,6 +1087,7 @@ echo "Using CUSTOMER_SSM_PATH_PREFIX: ${CUSTOMER_SSM_PATH_PREFIX}"
 echo "Using SELF_SERVICE_SSM_PATH_PREFIX: ${SELF_SERVICE_SSM_PATH_PREFIX}"
 echo "Using CUSTOMER_SSO_SSM_PATH_PREFIX: ${CUSTOMER_SSO_SSM_PATH_PREFIX}"
 echo "Using CUSTOMER_TLS_SSM_PATH_PREFIX: ${CUSTOMER_TLS_SSM_PATH_PREFIX}"
+echo "Using CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX: ${CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX}"
 echo "Using SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
 echo "Using REGION: ${REGION}"
 echo "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
