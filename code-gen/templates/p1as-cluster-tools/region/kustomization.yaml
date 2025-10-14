@@ -37,4 +37,3 @@ patches:
 patchesStrategicMerge:
   ### sigsci-agent patch to substitute container environment variables
   - sigsci-agent.yaml
-      
