@@ -33,6 +33,13 @@ cert:
   ssm_path_prefix: CUSTOMER_TLS_SSM_PATH_PREFIX
   source: secretsManager
   match_type: prefix
+ip-allowlist:
+  kind: ConfigMap
+  template: templates/ip-allowlist-cm.yaml
+  ssm_type: json
+  ssm_path_prefix: CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX
+  source: paramStore
+  match_type: prefix
 ingress:
   kind: Ingress
   template: templates/tls-ingress.yaml

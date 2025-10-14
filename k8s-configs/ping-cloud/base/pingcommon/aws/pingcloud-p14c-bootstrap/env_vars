@@ -8,3 +8,4 @@ CUSTOMER_SSM_PATH_PREFIX=/pcpt/customer
 SELF_SERVICE_SSM_PATH_PREFIX=/pcpt/customer/self-service
 CUSTOMER_SSO_SSM_PATH_PREFIX=/pcpt/customer/sso
 CUSTOMER_TLS_SSM_PATH_PREFIX=/pcpt/customer/tls
+CUSTOMER_IP_ALLOWLISTS_SSM_PATH_PREFIX=/pcpt/customer/ip-allowlist
