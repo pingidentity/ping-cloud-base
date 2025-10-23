@@ -74,6 +74,7 @@ _Changes:_
 - [X] PDO-10178 [OpenSearch] Upgrade OpenSearch operator (os-controller-manager) to v2.7.0
 - [X] PDO-10397 Add Self-service IP allowlist vars and bootstrap config
 - [X] PDO-10545 FluentBit: The main pipeline-output is not being removed from the customer-hub cde
+- [X] PDO-10579 VolumeAutoscaler: Update Scale Up threshold and percent
 
 ### 2.1.1
 
