@@ -35,7 +35,7 @@ spec:
                 topologyKey: "topology.kubernetes.io/zone"
       initContainers:
         - name: opensearch-bootstrap
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v2.2-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
           env:
           - name: OS_HOST
@@ -98,7 +98,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v2.2-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
           args:
             - create_enrichment_cache_files
@@ -134,7 +134,7 @@ spec:
               cpu: "150m"
               memory: 100Mi
         - name: logstash
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash/dev:v2.2-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
           command:
             - "/bin/sh"
@@ -268,7 +268,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v2.2-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
           args:
             - enrichment_sidecar
