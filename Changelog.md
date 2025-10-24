@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.3.0
+
+- No Changes
+
+_Changes:_
+
+- None
+
 ### 2.2.0
 
 - OSD: Enable Save Query and CSV Export of Logs

@@ -18,7 +18,7 @@ spec:
       serviceAccountName: cluster-healthcheck-serviceaccount
       containers:
       - name: healthcheck-cluster-health
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/robot-framework/dev:v2.2-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/robot-framework/dev:v2.3-release-branch-latest
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
