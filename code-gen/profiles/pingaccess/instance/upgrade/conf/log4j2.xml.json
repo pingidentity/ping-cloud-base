@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration packages="com.pingidentity.pa.upgrade.cli.log4j">
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{ISO8601} %5p %m%n"/>
+        </Console>
+        <Console name="STDOUT_JSON" target="SYSTEM_OUT">
+            <JsonTemplateLayout eventTemplateUri="file:///opt/out/instance/conf/log4j/json-templates/console-stdout-log.json"/>
+        </Console>
+        <RollingFile name="FILE" fileName="${sys:pa.upgrade.home}/log/upgrade.log"
+                     filePattern="${sys:pa.upgrade.home}/log/upgrade-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{ISO8601} %5p %c:%L - %m%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="AUDIT" fileName="${sys:pa.upgrade.home}/log/audit.log"
+                     filePattern="${sys:pa.upgrade.home}/log/audit-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{ISO8601} %m%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+
+        <Console name="CONSOLE-UpgradeLog-JSON" target="SYSTEM_OUT">
+            <JsonTemplateLayout eventTemplateUri="file:///opt/out/instance/conf/log4j/json-templates/upgrade-log.json"/>
+        </Console>
+
+        <Console name="CONSOLE-UpgradeAuditLog-JSON" target="SYSTEM_OUT">
+            <JsonTemplateLayout eventTemplateUri="file:///opt/out/instance/conf/log4j/json-templates/upgrade-audit-log.json"/>
+        </Console>
+
+
+        <DeferredMemory name="ACTION_ITEMS"/>
+        <DeferredMemory name="NOTIFICATION_ITEMS"/>
+    </Appenders>
+    <Loggers>
+        <logger name="actionItems" level="INFO" additivity="false">
+            <AppenderRef ref="ACTION_ITEMS"/>
+        </logger>
+        <logger name="notificationItems" level="INFO" additivity="false">
+            <AppenderRef ref="NOTIFICATION_ITEMS"/>
+        </logger>
+        <logger name="com.pingidentity.pingcommons.upgrade.file.PropertyFileMigrator" level="DEBUG">
+            <AppenderRef ref="CONSOLE-UpgradeAuditLog-JSON"/>
+        </logger>
+        <logger name="com.pingidentity.pa.upgrade.file.FilesystemUpgrader" level="DEBUG">
+            <AppenderRef ref="CONSOLE-UpgradeAuditLog-JSON"/>
+        </logger>
+        <logger name="audit" level="INFO" additivity="false">
+            <AppenderRef ref="CONSOLE-UpgradeAuditLog-JSON"/>
+        </logger>
+        <logger name="upgrade" level="INFO" additivity="false">
+            <AppenderRef ref="CONSOLE-UpgradeLog-JSON"/>
+        </logger>
+        <logger name="org.apache.http" level="WARN"/>
+        <logger name="org.springframework" level="WARN"/>
+        <logger name="org.apache.commons.beanutils" level="WARN"/>
+        <logger name="org.jose4j" level="WARN"/>
+        <logger name="class org.jose4j" level="WARN"/>
+        <Root level="debug">
+            <AppenderRef level="info" ref="STDOUT_JSON"/>
+            <AppenderRef level="debug" ref="CONSOLE-UpgradeLog-JSON"/>
+        </Root>
+    </Loggers>
+</Configuration>

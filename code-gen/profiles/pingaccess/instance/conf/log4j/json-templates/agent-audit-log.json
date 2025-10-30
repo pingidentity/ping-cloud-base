@@ -1,0 +1,63 @@
+{
+  "log_name": "pingaccess_agent_audit",
+  "timestamp": {
+    "$resolver": "timestamp",
+    "pattern": {
+      "format": "yyyy-MM-dd'T'HH:mm:ss.SSSXX"
+    }
+  },
+  "exchangeId": {
+    "$resolver": "mdc",
+    "key": "exchangeId",
+    "stringified": true
+  },
+  "trackingId": {
+    "$resolver": "mdc",
+    "key": "AUDIT.trackingId",
+    "stringified": true
+  },
+  "roundTripMS": {
+    "$resolver": "pattern",
+    "pattern":"%X{AUDIT.roundTripMS} ms"
+  },
+  "resource": {
+    "$resolver": "mdc",
+    "key": "AUDIT.resource",
+    "stringified": true
+  },
+  "client": {
+    "$resolver": "mdc",
+    "key": "AUDIT.client",
+    "stringified": true
+  },
+  "method": {
+    "$resolver": "mdc",
+    "key": "AUDIT.method",
+    "stringified": true
+  },
+  "requestUri": {
+    "$resolver": "mdc",
+    "key": "AUDIT.requestUri",
+    "stringified": true
+  },
+  "responseCode": {
+    "$resolver": "mdc",
+    "key": "AUDIT.responseCode",
+    "stringified": true
+  },
+  "applicationName": {
+    "$resolver": "mdc",
+    "key": "AUDIT.applicationName",
+    "stringified": true
+  },
+  "resourceName": {
+    "$resolver": "mdc",
+    "key": "AUDIT.resourceName",
+    "stringified": true
+  },
+  "pathPrefix": {
+    "$resolver": "mdc",
+    "key": "AUDIT.pathPrefix",
+    "stringified": true
+  }
+}
