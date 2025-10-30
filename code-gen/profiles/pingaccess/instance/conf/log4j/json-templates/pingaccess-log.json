@@ -1,0 +1,42 @@
+{
+  "log_name": "pingaccess",
+  "timestamp": {
+    "$resolver": "timestamp",
+    "pattern": {
+      "format": "yyyy-MM-dd'T'HH:mm:ss.SSSXX"
+    }
+  },
+  "level": {
+    "$resolver": "level",
+    "field": "name"
+  },
+  "logger": {
+    "$resolver": "logger",
+    "field": "name"
+  },
+  "exchangeId": {
+    "$resolver": "mdc",
+    "key": "exchangeId",
+    "stringified": true
+  },
+  "message": {
+    "$resolver": "message",
+    "stringified": true
+  },
+  "exceptionClassName": {
+    "$resolver": "exception",
+    "field": "className"
+  },
+  "exceptionMessage": {
+    "$resolver": "exception",
+    "field": "message",
+    "stringified": true
+  },
+  "exceptionStackTrace": {
+    "$resolver": "exception",
+    "field": "stackTrace",
+    "stackTrace": {
+      "stringified": true
+    }
+  }
+}
