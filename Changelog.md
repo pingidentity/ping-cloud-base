@@ -75,6 +75,14 @@ _Changes:_
 - [X] PDO-10397 Add Self-service IP allowlist vars and bootstrap config
 - [X] PDO-10545 FluentBit: The main pipeline-output is not being removed from the customer-hub cde
 
+### 2.1.2
+
+- Integrate PingDirectory service with external DNS by setting its policy to sync.
+
+_Changes:_
+
+- [X] PDO-8907 Integrate PingDirectory service with external DNS by setting its policy to sync
+
 ### 2.1.1
 
 - Fix p1as-pingfederate namespace issue
