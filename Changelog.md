@@ -34,6 +34,7 @@
 - Add Self-service IP allowlist vars and bootstrap config
 - Adding JSON parsing support for PingAccess and PingAccess-WAS logs
 - Add backward compatible JSON filters for customer pipelines (PD)
+- Add horizontalpodautoscalers resource to kube-state-metrics deployment to expose HPA metrics
 
 _Changes:_
 
@@ -77,6 +78,7 @@ _Changes:_
 - [X] PDO-10397 Add Self-service IP allowlist vars and bootstrap config
 - [X] PDO-10545 FluentBit: The main pipeline-output is not being removed from the customer-hub cde
 - [X] PDO-10579 VolumeAutoscaler: Update Scale Up threshold and percent
+- [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
 
 ### 2.1.2
 
