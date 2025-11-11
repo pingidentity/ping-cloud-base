@@ -34,7 +34,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.0-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v2.0.2-RC1
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
@@ -109,7 +109,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v2.0-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v2.0.1-RC1
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
@@ -138,7 +138,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: pingaccess-was-upgrade
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v2.0-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:v2.0.1-RC3
         imagePullPolicy: Always 
         command: ["/bin/sh"]
         args:
@@ -220,7 +220,7 @@ spec:
             optional: false
       containers:
       - name: pingaccess-was-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v2.0-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:v2.0.1-RC3
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
