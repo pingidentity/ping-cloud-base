@@ -38,6 +38,7 @@
 
 _Changes:_
 
+- [X] PDO-6595 Make healthcheck service endpoint private
 - [X] PDO-7325 JSON Logging: Implement JSON logging for PF logs
 - [X] PDO-7360 JSON Logging: Implement JSON logging for PA/PA-WAS logs
 - [X] PDO-7817 Explicitly set Lets Encrypt configuration via cert-manager

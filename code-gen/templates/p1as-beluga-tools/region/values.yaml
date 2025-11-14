@@ -1,9 +1,5 @@
 ## File for BeOps to change/update app specific variables
 healthcheck:
-  # Customization for healthcheck ingress resource
-  ingress:
-  # Customization for healthcheck service resource
-  service:
   # Customization for healthcheck deployment resource
   deployment:
     # Set container limits for the healthcheck deployment
@@ -17,10 +13,6 @@ healthcheck:
 
 # Metadata application settings
 metadata:
-  # Customization for metadata ingress resource
-  ingress:
-  # Customization for metadata service resource
-  service:
   # Customization for metadata deployment resource
   deployment:
     # Set container limits for the metadata deployment
