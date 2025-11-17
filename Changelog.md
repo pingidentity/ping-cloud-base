@@ -43,6 +43,7 @@ _Changes:_
 
 _Changes:_
 
+- [X] PDO-6595 Make healthcheck service endpoint private
 - [X] PDO-7325 JSON Logging: Implement JSON logging for PF logs
 - [X] PDO-7817 Explicitly set Lets Encrypt configuration via cert-manager
 - [X] PDO-8754 OSD: Enable Save Query and CSV Export of Logs
