@@ -159,7 +159,7 @@ P14C_INTEGRATION_IMAGE_TAG=v2.1.1
 # Ping observability image tags
 ############################################################
 OS_BOOTSTRAP_IMAGE_TAG=v2.1.0
-LOGSTASH_IMAGE_TAG=v2.1.0
+LOGSTASH_IMAGE_TAG=v2.1.2-RC1
 
 ############################################################
 # Cluster name variables
