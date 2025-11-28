@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from kubernetes.client import ApiException
 import urllib3
 
 from k8s_utils import K8sUtils
@@ -73,16 +74,24 @@ class TestTlsUI(unittest.TestCase):
         cls.browser.quit()
     
 
-    def wait_for_loader(self):
+    def get_k8s_resource_status(self, resource):
+        if not resource or not resource.metadata.annotations:
+            return "creating"
+        return resource.metadata.annotations.get("self-service.pingidentity.com/status", "complete")
+
+    def wait_for_loader(self, in_field=False):
+        locator = self.loader_locator
+        if in_field:
+            locator = (By.CSS_SELECTOR, 'button div[aria-label="Loading in progress"]')
         try:
             WebDriverWait(self.browser, self.wait_time_sec).until(
-                EC.presence_of_element_located(self.loader_locator)
-            )
-            WebDriverWait(self.browser, self.wait_time_sec).until_not(
-                EC.presence_of_element_located(self.loader_locator)
+                EC.presence_of_element_located(locator)
             )
         except TimeoutException:
             print("Timeout waiting for page loader")
+        WebDriverWait(self.browser, self.wait_time_sec).until_not(
+            EC.presence_of_element_located(locator)
+        )
 
 
     def wait_for_list_item(
@@ -161,7 +170,7 @@ class TestTlsUI(unittest.TestCase):
             # Wait for dropdown options to load
             if has_async_loader:
                 print("Waiting for the dropdown options to load...")
-                self.wait_for_loader()
+                self.wait_for_loader(in_field=True)
                 print("Dropdown options have loaded")
             
             # Click the dropdown button, scoped to the container
@@ -421,6 +430,7 @@ class TestTlsUI(unittest.TestCase):
                 namespace=self.namespace,
             )
             self.assertIsNotNone(cert, f"Certificate {self.certname} not found in cluster")
+            self.assertEqual(self.get_k8s_resource_status(cert), "complete", f"Certificate {self.certname} status is not 'complete'")
 
         # Check ingresses are created in k8s
         print(f"Checking ingresses created in k8s")
@@ -432,6 +442,7 @@ class TestTlsUI(unittest.TestCase):
                     namespace=self.namespace,
                 )
                 self.assertIsNotNone(ingress, f"Ingress {product}-{self.hostname_suffix} not found in cluster")
+                self.assertEqual(self.get_k8s_resource_status(ingress), "complete", f"Ingress {product}-{self.hostname_suffix} status is not 'complete'")
 
         # Delete the hostnames
         print("Deleting hostnames")
@@ -440,6 +451,18 @@ class TestTlsUI(unittest.TestCase):
             with self.subTest(msg=f"vHost for {product} failed to delete via UI"):
                 self.wait_for_list_item(hostname_list_locator, f"{product}-{self.hostname_suffix}")
                 self.delete_list_item(hostname_list_locator, f"{product}-{self.hostname_suffix}")
+
+                # Check status annotation in k8s
+                try:
+                    ingress = self.k8s_utils.get_ingress_object(
+                        name=f"{product}-{self.hostname_suffix}",
+                        namespace=self.namespace,
+                    )
+                    self.assertEqual(self.get_k8s_resource_status(ingress), "deleting", f"Ingress {product}-{self.hostname_suffix} status is not 'deleting'")
+                except ApiException as ex:
+                    if ex.status != 404:
+                        raise
+
                 self.browser.refresh()
                 self.wait.until(EC.visibility_of_element_located(hostname_list_locator))
 
@@ -463,6 +486,17 @@ class TestTlsUI(unittest.TestCase):
         self.navigate_to_page("secrets")
         with self.subTest(msg=f"Cert {self.certname} failed to delete via UI"):
             self.delete_list_item(certificate_list_locator, self.certname)
+
+            # Check status annotation in k8s
+            try:
+                cert = self.k8s_utils.get_namespaced_secret(
+                    name=self.certname,
+                    namespace=self.namespace,
+                )
+                self.assertEqual(self.get_k8s_resource_status(cert), "deleting", f"Certificate {self.certname} status is not 'deleting'")
+            except ApiException as ex:
+                if ex.status != 404:
+                    raise
 
             # Check if certificate has been removed from UI
             certificate_list = self.get_item_list(certificate_list_locator)
