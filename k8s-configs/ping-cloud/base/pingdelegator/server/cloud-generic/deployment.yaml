@@ -74,7 +74,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdelegator/dev:v2.1-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdelegator:v2.1.0
         imagePullPolicy: Always
         resources:
           requests:
