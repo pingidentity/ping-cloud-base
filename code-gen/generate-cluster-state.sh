@@ -1498,7 +1498,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     name: argocd-ingress
   patch: |-
     - op: replace
-      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
       value: "https://argocd.${DNS_ZONE}/"
     - op: replace
       path: /spec/tls/0/hosts/0

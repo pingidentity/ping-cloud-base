@@ -76,15 +76,15 @@ class TestTlsUI(unittest.TestCase):
 
     def get_service_info(self, ingress_obj):
         annotations = ingress_obj.metadata.annotations or {}
-        name = annotations.get("selfservice.metadata.pingidentity.com/name", "").strip()
+        name = annotations.get("self-service.metadata.pingidentity.com/name", "").strip()
         category = annotations.get(
-            "selfservice.metadata.pingidentity.com/category", ""
+            "self-service.metadata.pingidentity.com/category", ""
         ).strip()
         url_map = self.parse_multiple_urls(
-            annotations.get("selfservice.metadata.pingidentity.com/displayURL", "")
+            annotations.get("self-service.metadata.pingidentity.com/displayURL", "")
         )
         desc_map = self.parse_multiple_urls(
-            annotations.get("selfservice.metadata.pingidentity.com/description", "")
+            annotations.get("self-service.metadata.pingidentity.com/description", "")
         )
 
         services = []
@@ -220,11 +220,11 @@ class TestTlsUI(unittest.TestCase):
 
         ingresses = self.k8s_utils.network_client.list_namespaced_ingress(
             namespace=self.namespace,
-            label_selector="selfservice=urls"
+            label_selector="self-service.urls/managed=true"
         )
         services = self.k8s_utils.core_client.list_namespaced_service(
             namespace=self.namespace,
-            label_selector="selfservice=urls"
+            label_selector="self-service.urls/managed=true"
         )
         service_labels = []
         for kube_obj in chain(ingresses.items, services.items):
