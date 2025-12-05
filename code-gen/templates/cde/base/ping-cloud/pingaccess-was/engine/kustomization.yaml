@@ -52,7 +52,7 @@ patchesJson6902:
     name: logs-ingress
   patch: |-
     - op: replace
-      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
       value: "https://logs.${DNS_ZONE}/"
     - op: replace
       path: /spec/tls/0/hosts/0
@@ -69,7 +69,7 @@ patchesJson6902:
     name: monitoring-ingress
   patch: |-
     - op: replace
-      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
       value: "https://monitoring.${DNS_ZONE}/"
     - op: replace
       path: /spec/tls/0/hosts/0
@@ -86,7 +86,7 @@ patchesJson6902:
     name: pingaccess-admin-console-ingress
   patch: |-
     - op: replace
-      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
       value: "https://pingaccess-admin.${DNS_ZONE}/"
     - op: replace
       path: /spec/tls/0/hosts/0
@@ -103,7 +103,7 @@ patchesJson6902:
     name: pingfederate-admin-console-ingress
   patch: |-
     - op: replace
-      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
       value: "https://pingfederate-admin.${DNS_ZONE}/pingfederate/app"
     - op: replace
       path: /spec/tls/0/hosts/0
@@ -120,7 +120,7 @@ patchesJson6902:
     name: prometheus-ingress
   patch: |-
     - op: replace
-      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
       value: "https://prometheus.${DNS_ZONE}/"
     - op: replace
       path: /spec/tls/0/hosts/0

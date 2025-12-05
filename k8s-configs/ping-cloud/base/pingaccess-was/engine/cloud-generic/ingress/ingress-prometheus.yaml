@@ -3,12 +3,12 @@ kind: Ingress
 metadata:
   name: prometheus-ingress
   annotations:
-    selfservice.metadata.pingidentity.com/name: "Prometheus Console"
-    selfservice.metadata.pingidentity.com/description: "Native Prometheus expression browser for querying raw metrics"
-    selfservice.metadata.pingidentity.com/category: "Platform Administration"
-    selfservice.metadata.pingidentity.com/displayURL: "https://prometheus.ping-demo.com/"
+    self-service.metadata.pingidentity.com/name: "Prometheus Console"
+    self-service.metadata.pingidentity.com/description: "Native Prometheus expression browser for querying raw metrics"
+    self-service.metadata.pingidentity.com/category: "Platform Administration"
+    self-service.metadata.pingidentity.com/displayURL: "https://prometheus.ping-demo.com/"
   labels:
-    selfservice: urls
+    self-service.urls/managed: "true"
 spec:
   ingressClassName: nginx-public
   rules:

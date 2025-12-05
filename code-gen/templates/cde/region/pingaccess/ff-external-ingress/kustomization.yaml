@@ -20,5 +20,5 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: ext-pingaccess-admin-api.${DNS_ZONE}
     - op: replace
-      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
       value: "https://ext-pingaccess-admin-api.${DNS_ZONE}/pa-admin-api/v3/api-docs/"
