@@ -38,7 +38,7 @@ patchesJson6902:
     name: argocd-ingress
   patch: |-
     - op: replace
-      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
       value: "https://argocd.${DNS_ZONE}/"
     - op: replace
       path: /spec/tls/0/hosts/0
@@ -69,7 +69,7 @@ patchesJson6902:
     name: monitoring-ingress
   patch: |-
     - op: replace
-      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
       value: "https://monitoring.${DNS_ZONE}/"
     - op: replace
       path: /spec/tls/0/hosts/0
@@ -86,7 +86,7 @@ patchesJson6902:
     name: pingcentral-admin-ingress
   patch: |-
     - op: replace
-      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
       value: "https://pingcentral-admin.${DNS_ZONE}/"
     - op: replace
       path: /spec/tls/0/hosts/0
@@ -103,7 +103,7 @@ patchesJson6902:
     name: prometheus-ingress
   patch: |-
     - op: replace
-      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
       value: "https://prometheus.${DNS_ZONE}/"
     - op: replace
       path: /spec/tls/0/hosts/0
