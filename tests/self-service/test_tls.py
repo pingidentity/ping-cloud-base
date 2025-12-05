@@ -77,7 +77,7 @@ class TestTlsUI(unittest.TestCase):
     def get_k8s_resource_status(self, resource):
         if not resource or not resource.metadata.annotations:
             return "creating"
-        return resource.metadata.annotations.get("self-service.pingidentity.com/status", "complete")
+        return resource.metadata.annotations.get("self-service.metadata.pingidentity.com/status", "complete")
 
     def wait_for_loader(self, in_field=False):
         locator = self.loader_locator

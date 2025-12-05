@@ -41,7 +41,7 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingaccess-admin-api.${DNS_ZONE}
     - op: replace
-      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
       value: "https://pingaccess-admin-api.${DNS_ZONE}/pa-admin-api/v3/api-docs/"
 
 # Set a hostname for all the headless services so their endpoint IPs are published to Route53

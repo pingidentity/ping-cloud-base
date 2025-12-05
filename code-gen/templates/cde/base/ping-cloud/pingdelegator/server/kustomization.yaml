@@ -42,5 +42,5 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingdelegator.${DNS_ZONE}
     - op: replace
-      path: /metadata/annotations/selfservice.metadata.pingidentity.com~1displayURL
+      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
       value: "https://pingdelegator.${DNS_ZONE}/delegator"
