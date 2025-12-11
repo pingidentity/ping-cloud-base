@@ -1,19 +1,18 @@
-pingdirectory:  
-  backupFileName: ""
-  # This is the environment variable to select the backend(s) to restore in PD
-  # Allowed values:appintegrations platformconfig userRoot userRoot_2 userRoot_3 userRoot_4 userRoot_5
-  # Seperated with a semi-colon(;) Example: userRoot;userRoot_2
-  # No values set would just restore all backends in PD
-  backendsToRestore: ""
-  backupRestorePod: "pingdirectory-0"
-  # Uncomment below to set the backup PVC size. If not set, the default PVC size will be used.
-  # backupPVCSize: ""
+pingdirectory:
+  ####### Backup and Restore Variables #######
+  backup:
+    backupRestorePod: "pingdirectory-0"
+  restore:
+    backupRestorePod: ""
+    backupRestoreRegion: ""
+  ####### Manage Profile Configuration Flags #######
+  manageProfile:
+    skipValidationEnabled: "true"
+    replaceFullProfileEnabled: "true"
   monitorBucketUrl: "${PD_MONITOR_BUCKET_URL}"
   # Changes PURGE_BATCH_SIZE for -Dcom.unboundid.directory.server.plugins.PurgeExpiredDataPlugin.BATCH_SIZE= - default is 10000
   purgeBatchSize: "10000"
   maxHeapSize: "3g"
-  # Set false to avoid skipping liveness probe. Skipping the liveness (SKIP_LIVENESS=true) is the default for PingDirectory.
-  skipLiveness: true
   # The IRSA role ARN to be used for the PingDirectory serviceAccount
   irsaPdAnnotationKeyValue: "${IRSA_PD_ANNOTATION_KEY_VALUE}"
 
