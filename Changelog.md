@@ -2,11 +2,11 @@
 
 ### 2.3.0
 
-- No Changes
+- Upgrade cert-manager to version v1.19.1
 
 _Changes:_
 
-- None
+- [X] PDO-10079 Upgrade cert-manager to version v1.19.1
 
 ### 2.2.0
 
