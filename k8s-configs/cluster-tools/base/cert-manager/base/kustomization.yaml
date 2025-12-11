@@ -73,7 +73,7 @@ patches:
           - --v=2
           - --cluster-resource-namespace=$(POD_NAMESPACE)
           - --leader-election-namespace=kube-system
-          - --acme-http01-solver-image=public.ecr.aws/r2h3l6e4/pingcloud-clustertools/jetstack/cert-manager-acmesolver:v1.16.1
+          - --acme-http01-solver-image=public.ecr.aws/r2h3l6e4/pingcloud-clustertools/jetstack/cert-manager-acmesolver:v1.19.1
           - --max-concurrent-challenges=60
     target:
       name: cert-manager
