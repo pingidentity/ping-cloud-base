@@ -1,0 +1,13 @@
+{
+  "timestamp": {
+    "$resolver": "timestamp",
+    "pattern": { "format": "yyyy-MM-dd'T'HH:mm:ss.SSSXX" }
+  },
+  "logLevel": {
+    "$resolver": "level"
+  },
+  "message": {
+    "$resolver": "message"
+  },
+  "log_name": "pingaccess_stdout"
+}

@@ -77,6 +77,9 @@ RESTORE_BACKUP=true
 
 JAVA_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/in/instance/conf/jmx_export_config.yaml
 
+#System property to add in JAVA_OPTS to ensure Log4j can resolve the JSON template files via a valid file URI at runtime
+#-Dpa.log4j.json.templates.uri=file:///opt/out/instance/conf/log4j/json-templates
+
 # Set to true to skip liveness probe.
 SKIP_LIVENESS=false
 
