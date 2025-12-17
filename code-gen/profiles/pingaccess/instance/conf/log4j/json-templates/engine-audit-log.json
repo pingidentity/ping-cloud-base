@@ -1,0 +1,87 @@
+{
+  "log_name": "pingaccess_engine_audit",
+  "timestamp": {
+    "$resolver": "timestamp",
+    "pattern": {
+      "format": "yyyy-MM-dd'T'HH:mm:ss.SSSXX"
+    }
+  },
+  "exchangeId": {
+    "$resolver": "mdc",
+    "key": "exchangeId",
+    "stringified": true
+  },
+  "trackingId": {
+    "$resolver": "mdc",
+    "key": "AUDIT.trackingId",
+    "stringified": true
+  },
+  "roundTripMS": {
+    "$resolver": "pattern",
+    "pattern":"%X{AUDIT.roundTripMS} ms"
+  },
+  "proxyRoundTripMS": {
+    "$resolver": "pattern",
+    "pattern":"%X{AUDIT.proxyRoundTripMS} ms"
+  },
+  "resource": {
+    "$resolver": "mdc",
+    "key": "AUDIT.resource",
+    "stringified": true
+  },
+  "subject": {
+    "$resolver": "mdc",
+    "key": "AUDIT.subject",
+    "stringified": true
+  },
+  "authMech": {
+    "$resolver": "mdc",
+    "key": "AUDIT.authMech",
+    "stringified": true
+  },
+  "client": {
+    "$resolver": "mdc",
+    "key": "AUDIT.client",
+    "stringified": true
+  },
+  "method": {
+    "$resolver": "mdc",
+    "key": "AUDIT.method",
+    "stringified": true
+  },
+  "requestUri": {
+    "$resolver": "mdc",
+    "key": "AUDIT.requestUri",
+    "stringified": true
+  },
+  "responseCode": {
+    "$resolver": "mdc",
+    "key": "AUDIT.responseCode",
+    "stringified": true
+  },
+  "failedRuleType": {
+    "$resolver": "mdc",
+    "key": "AUDIT.failedRuleType",
+    "stringified": true
+  },
+  "failedRuleName": {
+    "$resolver": "mdc",
+    "key": "AUDIT.failedRuleName",
+    "stringified": true
+  },
+  "applicationName": {
+    "$resolver": "mdc",
+    "key": "AUDIT.applicationName",
+    "stringified": true
+  },
+  "resourceName": {
+    "$resolver": "mdc",
+    "key": "AUDIT.resourceName",
+    "stringified": true
+  },
+  "pathPrefix": {
+    "$resolver": "mdc",
+    "key": "AUDIT.pathPrefix",
+    "stringified": true
+  }
+}

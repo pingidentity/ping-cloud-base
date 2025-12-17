@@ -40,11 +40,13 @@ _Changes:_
 - Add PF and PC creds to PingAccess Admin for PingCentral OAuth2 connection
 - Disable Basic Auth for PA Admin API after enabling OAuth
 - Add Self-service IP allowlist vars and bootstrap config
+- Adding JSON parsing support for PingAccess and PingAccess-WAS logs
 
 _Changes:_
 
 - [X] PDO-6595 Make healthcheck service endpoint private
 - [X] PDO-7325 JSON Logging: Implement JSON logging for PF logs
+- [X] PDO-7360 JSON Logging: Implement JSON logging for PA/PA-WAS logs
 - [X] PDO-7817 Explicitly set Lets Encrypt configuration via cert-manager
 - [X] PDO-8754 OSD: Enable Save Query and CSV Export of Logs
 - [X] PDO-8834 Update bootstrap pods to use new bootstrap IRSA role

@@ -1,0 +1,53 @@
+{
+  "log_name": "pingaccess_api_audit",
+  "timestamp": {
+    "$resolver": "timestamp",
+    "pattern": {
+      "format": "yyyy-MM-dd'T'HH:mm:ss.SSSXX"
+    }
+  },
+  "exchangeId": {
+    "$resolver": "mdc",
+    "key": "exchangeId",
+    "stringified": true
+  },
+  "trackingId": {
+    "$resolver": "mdc",
+    "key": "AUDIT.trackingId",
+    "stringified": true
+  },
+  "roundTripMS": {
+    "$resolver": "pattern",
+    "pattern":"%X{AUDIT.roundTripMS} ms"
+  },
+  "subject": {
+    "$resolver": "mdc",
+    "key": "AUDIT.subject",
+    "stringified": true
+  },
+  "authMech": {
+    "$resolver": "mdc",
+    "key": "AUDIT.authMech",
+    "stringified": true
+  },
+  "client": {
+    "$resolver": "mdc",
+    "key": "AUDIT.client",
+    "stringified": true
+  },
+  "method": {
+    "$resolver": "mdc",
+    "key": "AUDIT.method",
+    "stringified": true
+  },
+  "requestUri": {
+    "$resolver": "mdc",
+    "key": "AUDIT.requestUri",
+    "stringified": true
+  },
+  "responseCode": {
+    "$resolver": "mdc",
+    "key": "AUDIT.responseCode",
+    "stringified": true
+  }
+}
