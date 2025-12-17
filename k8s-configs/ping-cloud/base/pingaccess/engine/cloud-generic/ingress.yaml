@@ -67,7 +67,7 @@ spec:
     http:
       paths:
       # This rule gives external access to the pingaccess runtime service
-      - pathType: Prefix
+      - pathType: Exact
         path: /pa/heartbeat.ping
         backend:
           service:
