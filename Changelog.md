@@ -78,6 +78,7 @@ _Changes:_
 - [X] PDO-10254 dsconfig - adjust customer pipelines to ensure consistent JSON Log events
 - [X] PDO-10397 Add Self-service IP allowlist vars and bootstrap config
 - [X] PDO-10545 FluentBit: The main pipeline-output is not being removed from the customer-hub cde
+- [X] PDO-10575 chub-values.yaml support
 - [X] PDO-10579 VolumeAutoscaler: Update Scale Up threshold and percent
 - [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
 - [X] PDO-10789 Karpenter amiFamily update to Amazon Linux 2023
