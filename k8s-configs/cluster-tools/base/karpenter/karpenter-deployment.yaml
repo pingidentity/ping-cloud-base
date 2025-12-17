@@ -17,6 +17,9 @@ spec:
             requests:
               cpu: "500m"
               memory: "512Mi"
+          env:
+            - name: FEATURE_GATES
+              value: "Drift=false,SpotToSpotConsolidation=false"
       tolerations:
         - key: CriticalAddonsOnly
           operator: Equal

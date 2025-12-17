@@ -82,6 +82,7 @@ _Changes:_
 - [X] PDO-10397 Add Self-service IP allowlist vars and bootstrap config
 - [X] PDO-10545 FluentBit: The main pipeline-output is not being removed from the customer-hub cde
 - [X] PDO-10789 Karpenter amiFamily update to Amazon Linux 2023
+- [X] PDO-10823 Set Karpenter drift to false
 
 
 ### 2.1.1
