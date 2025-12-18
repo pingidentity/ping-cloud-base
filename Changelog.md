@@ -44,6 +44,7 @@ _Changes:_
 - Add Self-service IP allowlist vars and bootstrap config
 - Adding JSON parsing support for PingAccess and PingAccess-WAS logs
 - Add horizontalpodautoscalers resource to kube-state-metrics deployment to expose HPA metrics
+- Add backward compatible JSON filters for customer pipelines (PD)
 
 _Changes:_
 
@@ -84,6 +85,7 @@ _Changes:_
 - [X] PDO-10349 Allow AWS R53 health checks to bypass IP allowlisting
 - [X] PDO-10401 Update microservice code to handle umbrella charts for profile repo code
 - [X] PDO-10178 [OpenSearch] Upgrade OpenSearch operator (os-controller-manager) to v2.7.0
+- [X] PDO-10254 dsconfig - adjust customer pipelines to ensure consistent JSON Log events
 - [X] PDO-10397 Add Self-service IP allowlist vars and bootstrap config
 - [X] PDO-10545 FluentBit: The main pipeline-output is not being removed from the customer-hub cde
 - [X] PDO-10575 chub-values.yaml support
