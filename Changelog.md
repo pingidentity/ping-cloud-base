@@ -43,6 +43,7 @@ _Changes:_
 - Disable Basic Auth for PA Admin API after enabling OAuth
 - Add Self-service IP allowlist vars and bootstrap config
 - Adding JSON parsing support for PingAccess and PingAccess-WAS logs
+- Add horizontalpodautoscalers resource to kube-state-metrics deployment to expose HPA metrics
 
 _Changes:_
 
@@ -88,6 +89,7 @@ _Changes:_
 - [X] PDO-10575 chub-values.yaml support
 - [X] PDO-10789 Karpenter amiFamily update to Amazon Linux 2023
 - [X] PDO-10823 Set Karpenter drift to false
+- [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
 
 
 ### 2.1.1
