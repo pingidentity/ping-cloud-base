@@ -1,10 +1,7 @@
 pingdirectory:
-  ####### Backup and Restore Variables #######
+  ####### Backup Variables #######
   backup:
     backupRestorePod: "pingdirectory-0"
-  restore:
-    backupRestorePod: ""
-    backupRestoreRegion: ""
   ####### Manage Profile Configuration Flags #######
   manageProfile:
     skipValidationEnabled: "true"
