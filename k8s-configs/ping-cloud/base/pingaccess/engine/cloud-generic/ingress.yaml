@@ -57,6 +57,11 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_cache heartbeat_cache;
+      proxy_cache_valid 200 1s;
+      proxy_ignore_headers Cache-Control Expires Set-Cookie;
 spec:
   ingressClassName: nginx-public
   tls:
