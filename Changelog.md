@@ -36,6 +36,7 @@
 - Add backward compatible JSON filters for customer pipelines (PD)
 - Refactor kube-state-metrics to apply HPA-related customisations via Kustomize patch
 - Update engine ingresses to cache healthcheck responses for 1s
+- Update PA 9.0 run.properties
 
 _Changes:_
 
@@ -84,6 +85,7 @@ _Changes:_
 - [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
 - [X] PDO-10789 Karpenter amiFamily update to Amazon Linux 2023
 - [X] PDO-10823 Set Karpenter drift to false
+- [X] PDO-10895 Update PA 9.0 run.properties 
 - [X] PDO-10998 Update engine ingresses to cache healthcheck responses for 1s
 
 ### 2.1.2
