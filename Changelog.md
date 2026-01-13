@@ -5,12 +5,14 @@
 - Upgrade cert-manager to version v1.19.1
 - Remove nri-kubernetes image reference
 - Update Security Contexts for external-dns namespace workloads
+- Update Security Contexts for ping-cloud namespace deployments and cronjobs 
 - Upgrade cluster-autoscaler to version 1.34
 - Upgrade external-dns to version v0.20.0
 
 _Changes:_
 
 - [X] PDO-10079 Upgrade cert-manager to version v1.19.1
+- [X] PDO-10483 Update Security Contexts for ping-cloud namespace workloads - part 1
 - [X] PDO-10486 Update Security Contexts for external-dns namespace workloads
 - [X] PDO-10546 NewRelic: Remove NRI Kubernetes Images from PCD
 - [X] PDO-10077 Upgrade cluster-autoscaler to version 1.34
