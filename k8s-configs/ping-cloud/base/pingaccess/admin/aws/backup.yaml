@@ -14,6 +14,8 @@ spec:
     spec:
       serviceAccount: ping-serviceaccount
       restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
       containers:
       - name: pingaccess-backup
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.3-release-branch-latest
@@ -23,6 +25,8 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
         command:
         - /opt/in/backup-archive-data.sh
         envFrom:
@@ -37,8 +41,12 @@ spec:
         - name: pingcommon-backup
           mountPath: /opt/in/backup-archive-data.sh
           subPath: backup-archive-data.sh
+        - name: tmp-vol
+          mountPath: /tmp
       volumes:
       - name: pingcommon-backup
         configMap:
           name: pingcommon-backup
           defaultMode: 0555
+      - name: tmp-vol
+        emptyDir: {}

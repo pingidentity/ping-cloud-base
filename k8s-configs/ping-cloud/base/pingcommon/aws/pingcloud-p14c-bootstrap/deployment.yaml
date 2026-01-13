@@ -22,6 +22,10 @@ spec:
       - name: p14c-bootstrap
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap/dev:v2.3-release-branch-latest
         imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
         env:
         - name: NAMESPACE
           valueFrom:

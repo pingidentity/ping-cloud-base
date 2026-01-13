@@ -20,6 +20,16 @@ spec:
         - name: discovery-service
           mountPath: /get_ssm_env_vars.sh
           subPath: get_ssm_env_vars.sh
+        - name: aws-config-dir
+          mountPath: /.aws
+          subPath: pingcentral-discovery-service-creds
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65534
+          runAsGroup: 65534
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
       volumes:
       - name: discovery-service
         configMap:
