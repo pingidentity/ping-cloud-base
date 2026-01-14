@@ -1,19 +1,15 @@
-pingdirectory:  
-  backupFileName: ""
-  # This is the environment variable to select the backend(s) to restore in PD
-  # Allowed values:appintegrations platformconfig userRoot userRoot_2 userRoot_3 userRoot_4 userRoot_5
-  # Seperated with a semi-colon(;) Example: userRoot;userRoot_2
-  # No values set would just restore all backends in PD
-  backendsToRestore: ""
-  backupRestorePod: "pingdirectory-0"
-  # Uncomment below to set the backup PVC size. If not set, the default PVC size will be used.
-  # backupPVCSize: ""
+pingdirectory:
+  ####### Backup Variables #######
+  backup:
+    backupRestorePod: "pingdirectory-0"
+  ####### Manage Profile Configuration Flags #######
+  manageProfile:
+    skipValidationEnabled: "true"
+    replaceFullProfileEnabled: "true"
   monitorBucketUrl: "${PD_MONITOR_BUCKET_URL}"
   # Changes PURGE_BATCH_SIZE for -Dcom.unboundid.directory.server.plugins.PurgeExpiredDataPlugin.BATCH_SIZE= - default is 10000
   purgeBatchSize: "10000"
   maxHeapSize: "3g"
-  # Set false to avoid skipping liveness probe. Skipping the liveness (SKIP_LIVENESS=true) is the default for PingDirectory.
-  skipLiveness: true
   # The IRSA role ARN to be used for the PingDirectory serviceAccount
   irsaPdAnnotationKeyValue: "${IRSA_PD_ANNOTATION_KEY_VALUE}"
 
@@ -31,7 +27,7 @@ pingdirectory:
           cpu:  "3"
         requests:
           memory: "12Gi"
-          cpu: "2" 
+          cpu: "2"
     statsdExporter:
       resources:
         limits:
@@ -39,11 +35,11 @@ pingdirectory:
           memory: "300Mi"
         requests:
           cpu: "100m"
-          memory: "100Mi"          
+          memory: "100Mi"
   # Persistent volume size configuration.
   persistentVolume:
     size: 40Gi
-  # PingDirectory Shared Cache Settings 
+  # PingDirectory Shared Cache Settings
   # Set this to 'true' to use shared cache for the local backends
   pdUseSharedCache: "false"
   # Set this to define overall cache size .This would to be shared across all local backends

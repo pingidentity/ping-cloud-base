@@ -93,6 +93,7 @@ _Changes:_
 _Changes:_
 
 - [X] PDO-8907 Integrate PingDirectory service with external DNS by setting its policy to sync
+- [X] PDO-10416 Restructure Backup Variables
 
 ### 2.1.1
 
