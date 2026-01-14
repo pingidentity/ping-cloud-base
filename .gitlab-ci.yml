@@ -31,7 +31,6 @@ variables:
     pingaccess/08-artifact-test.sh
     pingdelegator/01-admin-user-login.sh
     ingress-nginx/01-test-ocsp-stapling.sh
-    ingress-nginx/04-test-pd-admin-ingress.sh
 
 ## Compile stage ##
 compile:
