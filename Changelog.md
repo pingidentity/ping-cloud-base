@@ -53,6 +53,7 @@ _Changes:_
 - Adding JSON parsing support for PingAccess and PingAccess-WAS logs
 - Add horizontalpodautoscalers resource to kube-state-metrics deployment to expose HPA metrics
 - Add backward compatible JSON filters for customer pipelines (PD)
+- Update engine ingresses to cache healthcheck responses for 1s
 
 _Changes:_
 
@@ -100,6 +101,7 @@ _Changes:_
 - [X] PDO-10789 Karpenter amiFamily update to Amazon Linux 2023
 - [X] PDO-10823 Set Karpenter drift to false
 - [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
+- [X] PDO-10998 Update engine ingresses to cache healthcheck responses for 1s
 
 
 ### 2.1.1
