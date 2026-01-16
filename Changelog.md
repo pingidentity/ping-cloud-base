@@ -37,6 +37,7 @@
 - Refactor kube-state-metrics to apply HPA-related customisations via Kustomize patch
 - Update engine ingresses to cache healthcheck responses for 1s
 - Update PA 9.0 run.properties
+- Add p1as-sso-secrets to PA and PA-WAS Upgrade init container
 
 _Changes:_
 
@@ -69,6 +70,7 @@ _Changes:_
 - [X] PDO-9937 Fix Opensearch when using ui-connect.sh
 - [X] PDO-9972 [Logstash] OS bootstrap code refactor
 - [X] PDO-9865 Implement PA-WAS separation of ingresses in PCB
+- [X] PDO-9868 Add p1as-sso-secrets to PA and PA-WAS Upgrade init container
 - [X] PDO-10066 Add self-service annotations and labels to ingresses
 - [X] PDO-10068 Configure PA engines in child regions to use OAuth2
 - [X] PDO-10087 Prevent customer changes to environment during upgrades via maintenance page
