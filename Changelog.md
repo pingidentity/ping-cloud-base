@@ -51,9 +51,9 @@ _Changes:_
 - Disable Basic Auth for PA Admin API after enabling OAuth
 - Add Self-service IP allowlist vars and bootstrap config
 - Adding JSON parsing support for PingAccess and PingAccess-WAS logs
-- Add horizontalpodautoscalers resource to kube-state-metrics deployment to expose HPA metrics
 - Add backward compatible JSON filters for customer pipelines (PD)
 - Update engine ingresses to cache healthcheck responses for 1s
+- Refactor kube-state-metrics to apply HPA-related customisations via Kustomize patch
 
 _Changes:_
 
