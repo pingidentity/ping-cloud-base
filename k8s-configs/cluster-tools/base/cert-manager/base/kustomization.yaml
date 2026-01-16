@@ -31,6 +31,7 @@ patches:
                 effect: NoSchedule
             nodeSelector:
               kubernetes.io/os: linux
+            
   - patch: |-
       apiVersion: apps/v1
       kind: Deployment
@@ -101,6 +102,10 @@ patches:
                   requests:
                     cpu: 50m
                     memory: 80Mi
+                securityContext:
+                  privileged: false
+                  runAsNonRoot: true
+                  runAsUser: 1000
 
   - patch: |-
       apiVersion: apps/v1
@@ -120,6 +125,10 @@ patches:
                   requests:
                     cpu: 50m
                     memory: 64Mi
+                securityContext:
+                  privileged: false
+                  runAsNonRoot: true
+                  runAsUser: 1000
 
   - patch: |-
       apiVersion: apps/v1
@@ -139,3 +148,7 @@ patches:
                   requests:
                     cpu: 50m
                     memory: 64Mi
+                securityContext:
+                  privileged: false
+                  runAsNonRoot: true
+                  runAsUser: 1000
