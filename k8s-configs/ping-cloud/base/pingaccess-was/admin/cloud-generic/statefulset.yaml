@@ -240,9 +240,6 @@ spec:
         envFrom:
         - configMapRef:
             name: pingaccess-was-admin-environment-variables
-        - secretRef:
-            name: newrelic-license-key
-            optional: false
       containers:
       - name: pingaccess-was-admin
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v2.3-release-branch-latest
@@ -332,9 +329,6 @@ spec:
         envFrom:
         - configMapRef:
             name: pingaccess-was-admin-environment-variables
-        - secretRef:
-            name: newrelic-license-key
-            optional: false
         - secretRef:
             name: pingaccess-was-admin-p14c
             optional: false

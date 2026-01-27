@@ -10,10 +10,12 @@
 - Update Security Contexts for cert-manager workloads
 - Upgrade cluster-autoscaler to version 1.34
 - Upgrade external-dns to version v0.20.0
+- Update NewRelic APM agent Java args logic
 
 _Changes:_
 
 - [X] PDO-10079 Upgrade cert-manager to version v1.19.1
+- [X] PDO-10285 - NewRelic: Update Logic for APM Agent + newrelic-tags-exporter
 - [X] PDO-10483 Update Security Contexts for ping-cloud namespace workloads - part 1
 - [X] PDO-10484 Update Security Contexts for prometheus namespace workloads
 - [X] PDO-10485 Update Security Contexts for cert-manager namespace workloads

@@ -19,7 +19,7 @@ tenacity==8.2.3
 # in PCB only
 git-remote-codecommit==1.16
 
-cryptography == 43.0.3
+cryptography == 44.0.1
 
 pydantic==2.11.7
 
