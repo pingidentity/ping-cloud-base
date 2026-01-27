@@ -223,9 +223,6 @@ spec:
         envFrom:
         - configMapRef:
             name: pingaccess-admin-environment-variables
-        - secretRef:
-            name: newrelic-license-key
-            optional: false
       containers:
       - name: pingaccess-p1as-sso
         securityContext:
@@ -350,9 +347,6 @@ spec:
         envFrom:
         - configMapRef:
             name: pingaccess-admin-environment-variables
-        - secretRef:
-            name: newrelic-license-key
-            optional: false
         - secretRef:
             name: pingaccess-passwords
             optional: false
