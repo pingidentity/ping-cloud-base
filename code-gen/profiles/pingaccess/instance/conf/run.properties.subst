@@ -89,6 +89,7 @@ clusterconfig.httptransport.maxThreadPoolSize=-1
 engine.admin.configuration.audience=PingAccessAdminServer
 engine.polling.initialdelay=500
 engine.polling.delay=2000
+engine.polling.test.delay=6000
 
 # Replica Administrative Node
 admin.polling.initialdelay=500
@@ -154,6 +155,7 @@ pa.websession.cookie.sameSiteExcludedUserAgentPatterns= ^.*\\(iP.+; CPU .*OS 12[
 
 # Request URI handling
 pa.uri.strict=false
+pa.uri.canonicalize=true
 
 #-------------------------------------------------------------------------------
 # Agent Properties
@@ -291,6 +293,9 @@ pa.oidc.post.preservation.paramsAttributeName=postParams
 derby.language.statementCacheSize=500
 derby.storage.pageCacheSize=1000
 
+# The truststore type, path and password.
+pa.trust.keystore.type=JKS
+pa.trust.keystore.path=${java.home}/lib/security/cacerts
 pa.keystore.pw=OBF:AES:ipTDrgfrAy5ZGaWGKq/1SA==:60ea7cc944b5718aee1ed36328d010e02ab063b6
 
 #-------------------------------------------------------------------------------
@@ -323,27 +328,21 @@ account.locking.max.lockout.period=1
 
 # PingFederate token cache
 pa.ehcache.PingFederateReferenceTokenCache.maxEntriesLocalHeap=10000
-pa.ehcache.PingFederateReferenceTokenCache.timeToIdleSeconds=0
-pa.ehcache.PingFederateReferenceTokenCache.timeToLiveSeconds=0
 
 # Token mediation cache
 pa.ehcache.ServiceTokenCache.maxEntriesLocalHeap=10000
-pa.ehcache.ServiceTokenCache.timeToIdleSeconds=1800
 pa.ehcache.ServiceTokenCache.timeToLiveSeconds=14400
 
 # Decryption of the PA token
 pa.ehcache.PATokenValidationCache.maxEntriesLocalHeap=10000
-pa.ehcache.PATokenValidationCache.timeToIdleSeconds=120
 pa.ehcache.PATokenValidationCache.timeToLiveSeconds=300
 
 # Session validation cache
 pa.ehcache.PFSessionValidationCache.maxEntriesLocalHeap=10000
-pa.ehcache.PFSessionValidationCache.timeToIdleSeconds=120
 pa.ehcache.PFSessionValidationCache.timeToLiveSeconds=300
 
 # WAM user attribute cache
 pa.ehcache.PAWamUserAttributesCache.maxEntriesLocalHeap=10000
-pa.ehcache.PAWamUserAttributesCache.timeToIdleSeconds=120
 pa.ehcache.PAWamUserAttributesCache.timeToLiveSeconds=300
 
 # Auth token cache
@@ -355,6 +354,8 @@ pa.ehcache.SessionStateCache.maxEntriesLocalHeap=10000
 #Azure AD group name cache
 pa.ehcache.AzureGroupNameCache.maxEntriesLocalHeap=10000
 
+pa.cluster.serverstate.staleEntryEvictionIntervalSeconds=60
+
 #-------------------------------------------------------------------------------
 # Security Headers Properties
 #-------------------------------------------------------------------------------
@@ -363,32 +364,60 @@ admin.headers=X-Frame-Options,X-XSS-Protection,X-Content-Type-Options,Strict-Tra
 admin.header.X-Frame-Options=DENY
 admin.header.X-XSS-Protection=1; mode=block
 admin.header.X-Content-Type-Options=nosniff
-admin.header.Content-Security-Policy=default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self' data:;
+admin.header.Content-Security-Policy=default-src 'self'; style-src 'self' 'unsafe-inline'; \
+  script-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; object-src 'none';
 #Enable only if the admin and engine use different host names
 #admin.header.Strict-Transport-Security=max-age=31536000; includeSubDomains
 
 agent.assets.headers=X-Frame-Options
 agent.assets.header.X-Frame-Options=DENY
 
-agent.error.headers=X-Frame-Options
+agent.error.headers=X-Frame-Options,Content-Security-Policy
 agent.error.header.X-Frame-Options=DENY
+agent.error.header.Content-Security-Policy=default-src 'self'; style-src 'self' 'unsafe-inline'; \
+  script-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none';
 
 engine.assets.headers=X-Frame-Options
 engine.assets.header.X-Frame-Options=DENY
 
-engine.error.headers=X-Frame-Options
+engine.error.headers=X-Frame-Options,Content-Security-Policy
 engine.error.header.X-Frame-Options=DENY
+engine.error.header.Content-Security-Policy=default-src 'self'; style-src 'self' 'unsafe-inline'; \
+  script-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none';
 
 sideband.assets.headers=X-Frame-Options
 sideband.assets.header.X-Frame-Options=DENY
 
-sideband.error.headers=X-Frame-Options
+sideband.error.headers=X-Frame-Options,Content-Security-Policy
 sideband.error.header.X-Frame-Options=DENY
+sideband.error.header.Content-Security-Policy=default-src 'self'; style-src 'self' 'unsafe-inline'; \
+  script-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none';
 
-pf.redirect.headers=X-Frame-Options
+pf.redirect.use.default.csp=true
+pf.redirect.headers=X-Frame-Options,Content-Security-Policy
 pf.redirect.header.X-Frame-Options=DENY
+pf.redirect.header.Content-Security-Policy=default-src 'self'; style-src 'self' 'unsafe-inline'; \
+  script-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none';
 
-rule.error.headers=
+rule.error.headers=Content-Security-Policy
+rule.error.header.Content-Security-Policy=default-src 'self'; style-src 'self' 'unsafe-inline'; \
+  script-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none';
+
+oauth.error.headers=Content-Security-Policy
+oauth.error.header.Content-Security-Policy=default-src 'self'; style-src 'self'; \
+  script-src 'self'; font-src 'self' data:; object-src 'none';
+
+
+# Comma-separated list of jdk tls disabled algorithms that will be appended to the existing list of disabled
+# algorithms in the java.security file. This property will be utilized in non-FIPs mode only.
+# Example: additional.security.jdk.tls.disabledAlgorithms=RSASSA-PSS, TLSv1.3
+additional.security.jdk.tls.disabledAlgorithms=
+
+# Bouncy Castle libraries and many Java implementations are designed to avoid using root and intermediate certificates
+# signed with SHA-1 due to security risks. SHA-1 is considered weak and susceptible to collision attacks. Setting this
+# property to true is recommended to prevent the use of SHA-1-signed certificates. Currently, it is configured to false
+# in order to allow SHA-1-signed certificates, but future releases will change it to true.
+jdk.sha1.restriction.enabled=false
 
 #-------------------------------------------------------------------------------
 # Localization Settings

@@ -198,6 +198,10 @@ spec:
           subPath: instance
         - name: license-dir
           mountPath: /opt/license
+        - name: p1as-sso-secrets
+          mountPath: /opt/sso/p1as_secrets
+        - name: p1as-sso-configs
+          mountPath: /opt/sso/p1as_configs
         ports:
         - containerPort: 9000
         - containerPort: 9090
