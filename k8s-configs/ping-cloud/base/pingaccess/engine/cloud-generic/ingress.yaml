@@ -62,7 +62,6 @@ metadata:
       proxy_cache heartbeat_cache;
       proxy_cache_valid 200 1s;
       proxy_ignore_headers Cache-Control Expires Set-Cookie;
-
 spec:
   ingressClassName: nginx-public
   tls:
