@@ -11,6 +11,7 @@
 - Upgrade cluster-autoscaler to version 1.34
 - Upgrade external-dns to version v0.20.0
 - Update NewRelic APM agent Java args logic
+- Upgrade pod-reaper to version 2.14.0
 
 _Changes:_
 
@@ -23,6 +24,7 @@ _Changes:_
 - [X] PDO-10546 NewRelic: Remove NRI Kubernetes Images from PCD
 - [X] PDO-10077 Upgrade cluster-autoscaler to version 1.34
 - [X] PDO-10816 Upgrade external-dns to version v0.20.0
+- [X] PDO-10078 Upgrade pod-reaper to version 2.14.0
 
 ### 2.2.0
 
