@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from kubernetes.client import ApiException
 import urllib3
+import boto3
 
 from k8s_utils import K8sUtils
 import pingone_ui as p1_ui
@@ -34,6 +35,7 @@ class TestTlsUI(unittest.TestCase):
             "pingdirectory",
             "pingdelegator",
         ]
+        cls.tls_prefix = os.getenv("CUSTOMER_TLS_SSM_PATH_PREFIX", "/pcpt/customer/tls")
         cls.hostname_suffix = f"tls-ui.{cls.tenant_domain}"
         cls.certname = os.getenv("TENANT_NAME")+"-cert-ui"
         cls.default_fullchain, cls.default_privkey, _ = create_self_signed_cert(
@@ -68,11 +70,49 @@ class TestTlsUI(unittest.TestCase):
         cls.wait = WebDriverWait(cls.browser, 30)
         cls.loader_locator = (By.CSS_SELECTOR, 'div[aria-label="Loading in progress"]')
 
+        # Cleanup leftover resources
+        cls.region = os.getenv("REGION", "us-west-2")
+        cls.ssm = boto3.client("ssm", region_name=cls.region)
+        cls.secrets_manager = boto3.client("secretsmanager", region_name=cls.region)
+        cls.cleanup_leftover_resources()
+
     @classmethod
     def tearDownClass(cls) -> None:
         # Cleanup dependencies
         cls.browser.quit()
-    
+
+    @classmethod
+    def cleanup_leftover_resources(cls):
+        print("Cleaning up any leftover resources")
+        # Delete AWS secret with name certname
+        secret_name = f"{cls.tls_prefix}/cert/{cls.certname}"
+        try:
+            res = cls.secrets_manager.delete_secret(SecretId=secret_name, ForceDeleteWithoutRecovery=True)
+            print(res)
+        except Exception:
+            pass
+
+        # Delete SSM parameters for each product
+        for product in cls.product_names:
+            param_name = f"{cls.tls_prefix}/ingress/{product}-{cls.hostname_suffix}"
+            try:
+                cls.ssm.delete_parameter(Name=param_name)
+            except Exception:
+                pass
+
+        # Delete K8s TLS secret named certname
+        try:
+            cls.k8s_utils.core_client.delete_namespaced_secret(name=cls.certname, namespace=cls.namespace)
+        except Exception:
+            pass
+
+        # Delete K8s ingress for each product
+        for product in cls.product_names:
+            try:
+                cls.k8s_utils.network_client.delete_namespaced_ingress(name=f"{product}-{cls.hostname_suffix}", namespace=cls.namespace)
+            except Exception:
+                pass
+
 
     def get_k8s_resource_status(self, resource):
         if not resource or not resource.metadata.annotations:
