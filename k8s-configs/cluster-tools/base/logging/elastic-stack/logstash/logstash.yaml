@@ -54,7 +54,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v2.1-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:v2.1.0
           imagePullPolicy: Always
           args:
             - create_enrichment_cache_files
@@ -90,7 +90,7 @@ spec:
               cpu: "150m"
               memory: 100Mi
         - name: logstash
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash/dev:v2.1-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash:v2.1.2-RC1
           imagePullPolicy: Always
           command:
             - "/bin/sh"
@@ -224,7 +224,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v2.1-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:v2.1.0
           imagePullPolicy: Always
           args:
             - enrichment_sidecar
