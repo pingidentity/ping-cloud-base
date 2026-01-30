@@ -16,7 +16,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingaccess-backup
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v2.2-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:v2.2.0-RC1
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
