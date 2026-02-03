@@ -7,6 +7,7 @@
 - Update Security Contexts for external-dns namespace workloads
 - Update Security Contexts for prometheus namespace workloads
 - Update Security Contexts for ping-cloud namespace deployments and cronjobs 
+- Update Security Contexts for pod-reaper namespace workloads
 - Update Security Contexts for cert-manager workloads
 - Upgrade cluster-autoscaler to version 1.34
 - Upgrade external-dns to version v0.20.0
@@ -18,6 +19,7 @@ _Changes:_
 - [X] PDO-8951 FluentBit: Remove K8s Metadata and Labels
 - [X] PDO-10079 Upgrade cert-manager to version v1.19.1
 - [X] PDO-10285 - NewRelic: Update Logic for APM Agent + newrelic-tags-exporter
+- [X] PDO-10480 Update Security Contexts for pod-reaper namespace workloads
 - [X] PDO-10483 Update Security Contexts for ping-cloud namespace workloads - part 1
 - [X] PDO-10484 Update Security Contexts for prometheus namespace workloads
 - [X] PDO-10485 Update Security Contexts for cert-manager namespace workloads

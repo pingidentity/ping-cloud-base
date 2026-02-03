@@ -15,3 +15,26 @@ resources:
 - deployment.yaml
 - namespace.yaml
 - rbac.yaml
+
+patchesStrategicMerge:
+
+# setting the securityContext for pod-reaper
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: pod-reaper
+  spec:
+    template:
+      spec:
+        securityContext:
+          runAsNonRoot: true
+        containers:
+          - name: reaper
+            securityContext:
+              runAsNonRoot: true
+              allowPrivilegeEscalation: false
+              privileged: false
+              readOnlyRootFilesystem: true
+              runAsUser: 65534
+              runAsGroup: 65534
