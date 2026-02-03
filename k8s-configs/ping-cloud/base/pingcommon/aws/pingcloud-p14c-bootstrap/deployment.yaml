@@ -20,7 +20,7 @@ spec:
         fsGroup: 9999
       containers:
       - name: p14c-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap/dev:v2.2-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap:v2.2.0-RC3
         imagePullPolicy: Always
         env:
         - name: NAMESPACE
