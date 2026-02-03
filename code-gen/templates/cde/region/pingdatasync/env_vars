@@ -1,7 +1,0 @@
-# Update this environment variable to trigger updates to the Ping Data Sync servers
-LAST_UPDATE_REASON="${LAST_UPDATE_REASON}"
-
-SERVER_PROFILE_PATH=profiles/pingdatasync
-
-# PingDirectory pod name within P1AS where PingDataSync will sync with. Default pod is pingdirectory-0.
-P1AS_PD_POD_NAME=pingdirectory-0

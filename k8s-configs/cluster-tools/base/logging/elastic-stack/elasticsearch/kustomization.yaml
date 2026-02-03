@@ -1,9 +1,0 @@
-kind: Kustomization
-apiVersion: kustomize.config.k8s.io/v1beta1
-
-resources:
-- elasticsearch-sc1.yaml
-- elasticsearch-service.yaml
-- es-cluster-hot.yaml
-- es-cluster-warm.yaml
-- es-log4j-properties.yaml
