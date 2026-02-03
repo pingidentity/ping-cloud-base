@@ -1,4 +1,0 @@
-# Update this environment variable to trigger updates to the PF servers
-LAST_UPDATE_REASON="${LAST_UPDATE_REASON}"
-
-SERVER_PROFILE_PATH=profiles/pingfederate

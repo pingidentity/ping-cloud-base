@@ -1,4 +1,0 @@
-inquirer
-oauthlib
-requests
-requests_oauthlib
