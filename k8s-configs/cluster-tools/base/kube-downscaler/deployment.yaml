@@ -32,7 +32,7 @@ spec:
           - --matching-labels=.*
           - --include-resources=deployments,statefulsets,cronjobs
           - --exclude-namespaces="""
-          - --exclude-deployments=kube-downscaler,karpenter,coredns
+          - --exclude-deployments=kube-downscaler,karpenter,coredns,cluster-autoscaler
           # Grace period in seconds for new deployments before scaling them down
           - --grace-period=120
           # Runs every 5 minute
