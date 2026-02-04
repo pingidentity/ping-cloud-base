@@ -153,13 +153,13 @@ PINGDATASYNC_IMAGE_TAG=v2.1.0
 # Ping solution image tags
 ############################################################
 BOOTSTRAP_IMAGE_TAG=v2.1.0
-P14C_INTEGRATION_IMAGE_TAG=v2.1.2-RC1
+P14C_INTEGRATION_IMAGE_TAG=v2.1.2
 
 ############################################################
 # Ping observability image tags
 ############################################################
 OS_BOOTSTRAP_IMAGE_TAG=v2.1.0
-LOGSTASH_IMAGE_TAG=v2.1.2-RC1
+LOGSTASH_IMAGE_TAG=v2.1.2
 
 ############################################################
 # Cluster name variables

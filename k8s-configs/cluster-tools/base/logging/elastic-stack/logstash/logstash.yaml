@@ -90,7 +90,7 @@ spec:
               cpu: "150m"
               memory: 100Mi
         - name: logstash
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash:v2.1.2-RC1
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash:v2.1.2
           imagePullPolicy: Always
           command:
             - "/bin/sh"
