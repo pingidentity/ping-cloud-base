@@ -46,3 +46,22 @@ patches:
     kind: Deployment
     name: kube-state-metrics
     namespace: kube-system
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: kube-state-metrics
+      namespace: kube-system
+    spec:
+      template:
+        spec:
+          securityContext:
+            runAsNonRoot: true
+          containers:
+            - name: kube-state-metrics
+              securityContext:
+                privileged: false
+  target:
+    kind: Deployment
+    name: kube-state-metrics
+    namespace: kube-system

@@ -75,3 +75,9 @@ patches:
         path: /spec/template/spec/containers/0/command/-
         value:
           "--balance-similar-node-groups=true"
+      - op: add
+        path: /spec/template/spec/containers/0/securityContext/privileged
+        value: false
+      - op: add
+        path: /spec/template/spec/containers/0/securityContext/runAsNonRoot
+        value: true
