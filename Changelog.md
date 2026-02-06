@@ -38,6 +38,7 @@
 - Update engine ingresses to cache healthcheck responses for 1s
 - Update PA 9.0 run.properties
 - Add p1as-sso-secrets to PA and PA-WAS Upgrade init container
+- Fluent-bit pipeline updated to log p14c-bootstrap logs
 
 _Changes:_
 
@@ -89,6 +90,7 @@ _Changes:_
 - [X] PDO-10823 Set Karpenter drift to false
 - [X] PDO-10895 Update PA 9.0 run.properties 
 - [X] PDO-10998 Update engine ingresses to cache healthcheck responses for 1s
+- [X] PDO-11151 Logging: Support bootstrap logging
 
 ### 2.1.2
 
