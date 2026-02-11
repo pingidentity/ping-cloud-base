@@ -21,8 +21,10 @@ spec:
         - name: p1as-bootstrap
           securityContext:
             allowPrivilegeEscalation: false
-            runAsGroup: 9999
+            privileged: false
+            readOnlyRootFilesystem: true
             runAsNonRoot: true
+            runAsGroup: 9999
             runAsUser: 9031
           image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
@@ -52,8 +54,10 @@ spec:
           imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false
-            runAsGroup: 9999
+            privileged: false
+            readOnlyRootFilesystem: true
             runAsNonRoot: true
+            runAsGroup: 9999
             runAsUser: 9031
           resources:
             requests:
@@ -110,8 +114,10 @@ spec:
             port: 8443
           timeoutSeconds: 3
         securityContext:
-          runAsNonRoot: true
           allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
         ports:
         - containerPort: 8443
           name: https
@@ -159,6 +165,9 @@ spec:
           value: "true"
         securityContext:
           allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
       nodeSelector:
         {}
       tolerations:

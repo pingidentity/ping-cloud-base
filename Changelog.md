@@ -15,6 +15,7 @@
 - Update NewRelic APM agent Java args logic
 - Upgrade pod-reaper to version 2.14.0
 - Bundle Documentation folder in profile-repo explaining all static files for all Products
+- Update Security Contexts for elastic-stack-logging workloads (pt 2)
 
 _Changes:_
 
@@ -32,6 +33,7 @@ _Changes:_
 - [X] PDO-10816 Upgrade external-dns to version v0.20.0
 - [X] PDO-10078 Upgrade pod-reaper to version 2.14.0
 - [X] PDO-10728 Bundle Documentation folder in profile-repo explaining all static files for all Products
+- [X] PDO-10748 Update Security Contexts for elastic-stack-logging workloads (pt 2)
 
 ### 2.2.0
 
