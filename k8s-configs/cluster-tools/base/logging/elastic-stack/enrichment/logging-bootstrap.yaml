@@ -11,6 +11,8 @@ spec:
   template:
     spec:
       serviceAccountName: bootstrap-serviceaccount
+      securityContext:
+        runAsNonRoot: true
       containers:
       - name: logging-bootstrap
         securityContext:
@@ -18,6 +20,8 @@ spec:
           runAsUser: 1000
           runAsGroup: 1000
           allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap/dev:v2.3-release-branch-latest
         imagePullPolicy: Always
         env:

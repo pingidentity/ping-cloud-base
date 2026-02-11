@@ -67,12 +67,15 @@ spec:
           - |
             export S3_BUCKET_NAME="${S3_BUCKET#s3://}"; \
             exec /entrypoint.sh -c /fluent-bit/etc/fluent-bit.conf
+        # NOTE: This DaemonSet has a security exception with the Ping Security team to allow it to run as root
+        # Once AWS changes this restriction, we can hopefully run it as non-root - https://github.com/aws/aws-for-fluent-bit/issues/427
         securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
           capabilities:
             drop:
               - ALL
-            add:
-              - CAP_FOWNER
         env:
             - name: S3_BUCKET
               valueFrom:
