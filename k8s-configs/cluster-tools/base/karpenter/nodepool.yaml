@@ -30,7 +30,7 @@ spec:
     consolidationPolicy: WhenEmpty
     consolidateAfter: 30s
     expireAfter: Never
-    
+
 ---
 apiVersion: karpenter.sh/v1beta1
 kind: NodePool
@@ -115,7 +115,7 @@ kind: EC2NodeClass
 metadata:
   name: default
 spec:
-  amiFamily: AL2 # Amazon Linux 2
+  amiFamily: AL2023 # Amazon Linux 2023
   detailedMonitoring: true
   metadataOptions:
     httpEndpoint: enabled
@@ -138,7 +138,7 @@ kind: EC2NodeClass
 metadata:
   name: pd-only
 spec:
-  amiFamily: AL2 # Amazon Linux 2
+  amiFamily: AL2023 # Amazon Linux 2023
   detailedMonitoring: true
   metadataOptions:
     httpEndpoint: enabled
@@ -161,7 +161,7 @@ kind: EC2NodeClass
 metadata:
   name: pgo-only
 spec:
-  amiFamily: AL2 # Amazon Linux 2
+  amiFamily: AL2023 # Amazon Linux 2023
   detailedMonitoring: true
   metadataOptions:
     httpEndpoint: enabled

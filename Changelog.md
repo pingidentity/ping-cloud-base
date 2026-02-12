@@ -8,6 +8,7 @@ _Changes:_
 
 - [X] PDO-8907 Integrate PingDirectory service with external DNS by setting its policy to sync
 - [X] PDO-10416 Restructure Backup Variables
+- [X] PDO-10801 Karpenter EKS 1.33 fix
 
 ### 2.1.1
 
