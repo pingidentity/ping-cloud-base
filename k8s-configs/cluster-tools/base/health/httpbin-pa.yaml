@@ -21,6 +21,16 @@ spec:
       - name: healthcheck-httpbin-pa
         image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/kennethreitz/httpbin
         imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsUser: 65534
+          runAsNonRoot: true
+          runAsGroup: 65534
+          privileged: false
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - name: tmp-dir
+          mountPath: /tmp
         resources:
           limits:
             memory: "60Mi"
@@ -48,6 +58,11 @@ spec:
           timeoutSeconds: 3
         ports:
         - containerPort: 80
+      volumes:
+      - name: tmp-dir
+        emptyDir: {}
+      securityContext:
+        runAsNonRoot: true
 ---
 #
 # This service exposes the httpbin-pa port to the cluster.
