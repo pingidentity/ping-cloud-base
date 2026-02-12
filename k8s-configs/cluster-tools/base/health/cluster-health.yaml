@@ -25,11 +25,16 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          privileged: false
+        volumeMounts:
+        - name: tmp-dir
+          mountPath: /tmp
         command:
           - /bin/bash
           - -c
           # Eval schedule env var to strip any extra quotes from value
-          - eval CLUSTER_HEALTHCHECK_SCHEDULE="${CLUSTER_HEALTHCHECK_SCHEDULE}" && ./robot_wrapper.py --path tests/cluster-health --include clusterHealth --output clusterHealth.xml --cron "${CLUSTER_HEALTHCHECK_SCHEDULE}"
+          - eval CLUSTER_HEALTHCHECK_SCHEDULE="${CLUSTER_HEALTHCHECK_SCHEDULE}" && ./robot_wrapper.py --path tests/cluster-health --include clusterHealth --output /tmp/clusterHealth.xml --report /tmp/report.html --cron "${CLUSTER_HEALTHCHECK_SCHEDULE}"
         envFrom:
         - configMapRef:
             name: cluster-health-environment-variables
@@ -40,3 +45,8 @@ spec:
           requests:
             memory: "400Mi"
             cpu: "200m"
+      volumes:
+      - name: tmp-dir
+        emptyDir: {}
+      securityContext:
+        runAsNonRoot: true

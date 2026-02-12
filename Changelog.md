@@ -8,6 +8,7 @@
 - Update Security Contexts for prometheus namespace workloads
 - Update Security Contexts for ping-cloud namespace deployments and cronjobs 
 - Update Security Contexts for pod-reaper namespace workloads
+- Update Security Contexts for health namespace workloads
 - Update Security Contexts for cert-manager workloads
 - Update Security Contexts for kube-system namespace workloads
 - Upgrade cluster-autoscaler to version 1.34
@@ -24,6 +25,7 @@ _Changes:_
 - [X] PDO-10285 - NewRelic: Update Logic for APM Agent + newrelic-tags-exporter
 - [X] PDO-10479 Update Security Contexts for kube-system namespace workloads
 - [X] PDO-10480 Update Security Contexts for pod-reaper namespace workloads
+- [X] PDO-10482 Update Security Contexts for health namespace workloads
 - [X] PDO-10483 Update Security Contexts for ping-cloud namespace workloads - part 1
 - [X] PDO-10484 Update Security Contexts for prometheus namespace workloads
 - [X] PDO-10485 Update Security Contexts for cert-manager namespace workloads
