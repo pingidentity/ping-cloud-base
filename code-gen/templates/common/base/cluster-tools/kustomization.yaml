@@ -12,5 +12,4 @@ resources:
 - security
 - pod-reaper
 - health
-#- karpenter
 - kube-downscaler
