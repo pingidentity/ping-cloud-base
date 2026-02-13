@@ -1,6 +1,11 @@
 # p1as-cluster-tools values
 
 global:
+  ###########################################################
+  # Instead of using the bundled crds in karpenter helm chart 
+  # we can use karpenter-crd helm chart which may make karpenter upgrades easier
+  ###########################################################
+  karpenterCrdEnabled: false
   karpenterEnabled: false
 
 # ingress-nginx-public values
@@ -26,3 +31,23 @@ ingress-nginx-private:
         minReplicas: 1
         maxReplicas: 1
         targetCPUUtilizationPercentage: 70
+
+# Karpenter configuration
+karpenterController:
+  settings:
+    clusterName: ${CLUSTER_NAME}
+    interruptionQueue: "interruption-${CLUSTER_NAME}"
+  controller:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+  serviceAccount:
+    annotations:
+      ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
+  # Ec2NodeClass definitions
+  p1asEC2NodeClass:
+    instanceProfile: "${KARPENTER_INSTANCE_PROFILE}"

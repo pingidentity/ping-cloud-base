@@ -16,6 +16,17 @@ helmCharts:
     version: v2.3-release-branch-latest
     repo: oci://${ECR_REGISTRY_NAME}/dev
 
+  # Needed to split Karpenter into its own helm chart since the upstream chart
+  # does not allow namespace override
+  - name: p1as-karpenter
+    additionalValuesFiles:
+      - ../../values-files/base/values.yaml   # base values.yaml
+      - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
+      - values.yaml   # app specific values.yaml
+    version: v2.3-release-branch-latest
+    repo: oci://${ECR_REGISTRY_NAME}/dev
+    namespace: kube-system
+
 ### This field is used to trigger a resync of the p1as-cluster-tools helm chart ###
 configMapGenerator:
   - name: cluster-tools-last-update-reason
@@ -30,10 +41,13 @@ configMapGenerator:
     namespace: ${PING_CLOUD_NAMESPACE}
 
 patches:
+  # Disabled karpenter-crd patch since Karpenter is disabled by default in values.yaml
+  # Uncomment this after enabling Karpenter in values.yaml
+  # - path: ../base/karpenter-crd.yaml
   ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
   - path: custom-patches.yaml
   - path: ../base/custom-patches.yaml
-
+  
 patchesStrategicMerge:
   ### sigsci-agent patch to substitute container environment variables
   - sigsci-agent.yaml
