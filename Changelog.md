@@ -17,6 +17,7 @@
 - Upgrade pod-reaper to version 2.14.0
 - Bundle Documentation folder in profile-repo explaining all static files for all Products
 - Update Security Contexts for elastic-stack-logging workloads (pt 2)
+- Enabled JSON for PA/PA-WAS/PF/PD
 
 _Changes:_
 
@@ -36,6 +37,7 @@ _Changes:_
 - [X] PDO-10078 Upgrade pod-reaper to version 2.14.0
 - [X] PDO-10728 Bundle Documentation folder in profile-repo explaining all static files for all Products
 - [X] PDO-10748 Update Security Contexts for elastic-stack-logging workloads (pt 2)
+- [X] PDO-10795 Enable JSON-Based Logging for PA / PF / PD / PA-WAS
 
 ### 2.2.0
 
