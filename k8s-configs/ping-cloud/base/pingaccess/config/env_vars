@@ -52,7 +52,7 @@ CONFIG_QUERY_KP_VALID_DAYS=365
 # Leave blank
 TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable
-K8S_TAIL_LOG_FILES=/opt/out/instance/log/pingaccess_engine_audit.log /opt/out/instance/log/pingaccess_api_audit.log /opt/out/instance/log/pingaccess_agent_audit.log /opt/out/instance/log/pingaccess_sideband_audit.log /opt/out/instance/log/pingaccess_sideband_client_audit.log /opt/out/instance/log/pingaccess.log /opt/out/instance/upgrade/log/upgrade.log /opt/out/instance/upgrade/log/audit.log /opt/out/instance/upgrade/log/upgrade_status.log /opt/out/instance/log/pingaccess_api_audit_har.log
+K8S_TAIL_LOG_FILES=/opt/out/instance/upgrade/log/upgrade_status.log
 
 SECRETS_DIR=/usr/local/secrets
 
@@ -75,10 +75,8 @@ PD_CLUSTER_PORT=8989
 # - 90-restore-backup-s3.sh script exit before proceeding if value is false
 RESTORE_BACKUP=true
 
-JAVA_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/in/instance/conf/jmx_export_config.yaml
-
 #System property to add in JAVA_OPTS to ensure Log4j can resolve the JSON template files via a valid file URI at runtime
-#-Dpa.log4j.json.templates.uri=file:///opt/out/instance/conf/log4j/json-templates
+JAVA_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/in/instance/conf/jmx_export_config.yaml -Dpa.log4j.json.templates.uri=file:///opt/out/instance/conf/log4j/json-templates
 
 # Set to true to skip liveness probe.
 SKIP_LIVENESS=false
