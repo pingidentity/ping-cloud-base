@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-elastic
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: opensearch-bootstrap
+          volumeMounts:
+            - name: os-notifications-channels
+              mountPath: /usr/share/opensearch/data/notifications
+            - name: os-dashboards-pd
+              mountPath: /usr/share/opensearch/data/dashboards/pd
+            - name: os-dashboards-pf
+              mountPath: /usr/share/opensearch/data/dashboards/pf
+            - name: os-dashboards-pf-threat
+              mountPath: /usr/share/opensearch/data/dashboards/pf-threat
+            - name: os-dashboards-pa
+              mountPath: /usr/share/opensearch/data/dashboards/pa
+            - name: os-dashboards-pa-was
+              mountPath: /usr/share/opensearch/data/dashboards/pa-was
+            - name: os-dashboards-pf-impossible-login
+              mountPath: /usr/share/opensearch/data/dashboards/pf-impossible-login
+            - name: os-dashboards-pf-threat-impossible-login
+              mountPath: /usr/share/opensearch/data/dashboards/pf-threat-impossible-login
+      volumes:
+        - name: os-dashboards-pf-impossible-login
+          configMap:
+            name: os-dashboards-pf-impossible-login
+        - name: os-dashboards-pf-threat-impossible-login
+          configMap:
+            name: os-dashboards-pf-threat-impossible-login

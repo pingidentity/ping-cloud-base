@@ -251,6 +251,9 @@ SLACK_CHANNEL=${SLACK_CHANNEL}
 DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
 DASH_REPO_BRANCH=v2.3-dev-branch
 
+# Set to true to enable the "Impossible Login" OpenSearch dashboard (default: false)
+ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD=false
+
 # Healthcheck variables
 CLUSTER_HEALTHCHECK_SCHEDULE="* * * * *"
 PINGACCESS_HEALTHCHECK_SCHEDULE="* * * * *"
