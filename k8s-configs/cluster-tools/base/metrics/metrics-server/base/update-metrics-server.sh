@@ -16,7 +16,8 @@ fi
 
 METRICS_SERVER_VERSION="${1}"
 
-file_names=$(curl https://github.com/kubernetes-sigs/metrics-server/tree/v${METRICS_SERVER_VERSION}/manifests/base/ | jq -r '.payload.tree.items[].name')
+file_names=$(curl -s "https://api.github.com/repos/kubernetes-sigs/metrics-server/contents/manifests/base?ref=v${METRICS_SERVER_VERSION}"| jq -r '.[].name')
+
 
 files=()
 
