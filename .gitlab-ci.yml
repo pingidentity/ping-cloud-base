@@ -183,6 +183,7 @@ pa-was-integration-tests:
   - logging
   - self-service
   - argocd
+  - system-scaling
 
 #################################################
 # All integration tests defined to run on the  #
