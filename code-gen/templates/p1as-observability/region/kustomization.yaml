@@ -1,41 +1,36 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-
 resources:
   - ../base/custom-resources
   - custom-resources
   - ../base/namespace.yaml
   - ../base/crds-annotations
-
 helmCharts:
   - name: p1as-cloudwatch
     additionalValuesFiles:
-      - ../../values-files/base/values.yaml   # base values.yaml
-      - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
-      - values.yaml   # app specific values.yaml
-    version: v2.2-release-branch-latest
+      - ../../values-files/base/values.yaml # base values.yaml
+      - ../../values-files/${REGION_NICK_NAME}/values.yaml # regional values.yaml
+      - values.yaml # app specific values.yaml
+    version: v2.2.0-RC1
     namespace: amazon-cloudwatch
-    repo: oci://${ECR_REGISTRY_NAME}/dev
-
+    repo: oci://${ECR_REGISTRY_NAME}
   - name: p1as-newrelic
     additionalValuesFiles:
-      - ../../values-files/base/values.yaml   # base values.yaml
-      - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
-      - values.yaml   # app specific values.yaml
-    version: v2.2-release-branch-latest
+      - ../../values-files/base/values.yaml # base values.yaml
+      - ../../values-files/${REGION_NICK_NAME}/values.yaml # regional values.yaml
+      - values.yaml # app specific values.yaml
+    version: v2.2.0-RC1
     namespace: newrelic
-    repo: oci://${ECR_REGISTRY_NAME}/dev
-
+    repo: oci://${ECR_REGISTRY_NAME}
   - name: p1as-grafana
     additionalValuesFiles:
-      - ../../values-files/base/values.yaml   # base values.yaml
-      - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
-      - values.yaml   # app specific values.yaml
-    version: v2.2-release-branch-latest
+      - ../../values-files/base/values.yaml # base values.yaml
+      - ../../values-files/${REGION_NICK_NAME}/values.yaml # regional values.yaml
+      - values.yaml # app specific values.yaml
+    version: v2.2.0-RC1
     namespace: prometheus
-    repo: oci://${ECR_REGISTRY_NAME}/dev
+    repo: oci://${ECR_REGISTRY_NAME}
     includeCRDs: true
-
 ### This field is used to trigger a resync of the helm chart ###
 configMapGenerator:
   - name: observability-last-update-reason
@@ -46,9 +41,8 @@ configMapGenerator:
   - name: observability-custom-placeholder
     namespace: ${PING_CLOUD_NAMESPACE}
   ### This is needed for the empty custom-patches.yaml file to work in base folder ###
-  - name: observability-custom-placeholder-base  
+  - name: observability-custom-placeholder-base
     namespace: ${PING_CLOUD_NAMESPACE}
-
 patchesStrategicMerge:
   ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
   - custom-patches.yaml
