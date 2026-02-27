@@ -15,13 +15,17 @@ class TestApplicationStatus(unittest.TestCase):
 
     def test_logstash_pods_running(self):
         pods = self.all_pods
-        logstash_running = all(pod.status.phase == 'Running' for pod in pods if pod.metadata.name.startswith == 'logstash-elastic' )
+        logstash_running = all(
+            pod.status.phase == 'Running'
+            for pod in pods
+            if pod.metadata.name.startswith('logstash-elastic')
+        )
         self.assertTrue(logstash_running, "logstash pod is not running")
 
     def test_os_bootstrap_pod_running_or_completed(self):
         pods = self.all_pods
         for pod in pods:
-            if pod.metadata.name.startswith('logstash-elastic'):
+            if pod.metadata.name.startswith('logstash-elastic') and not pod.metadata.name.startswith('logstash-elastic-s3'):
                 init_statuses = pod.status.init_container_statuses or []
                 is_running_or_completed = any(
                     init.name == 'opensearch-bootstrap' and (

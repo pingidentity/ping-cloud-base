@@ -7,3 +7,14 @@ spec:
   selector:
     matchLabels:
       app: logstash-elastic
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: logstash-s3-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: logstash-elastic-s3

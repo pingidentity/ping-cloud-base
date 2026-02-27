@@ -24,7 +24,7 @@ data:
         Name                http
         Alias               s3_app_out
         Match               *
-        Host                logstash-elastic.elastic-stack-logging
+        Host                logstash-elastic-s3.elastic-stack-logging
         Port                8081
         Format              json
         Retry_Limit         False

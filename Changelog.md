@@ -19,6 +19,7 @@
 - Update Security Contexts for elastic-stack-logging workloads (pt 2)
 - Enabled JSON for PA/PA-WAS/PF/PD
 - Add ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD feature flag to conditionally deploy PingFederate Impossible Login OpenSearch dashboards
+- Update to include dedicated pipeline for S3
 
 _Changes:_
 
@@ -40,6 +41,7 @@ _Changes:_
 - [X] PDO-10748 Update Security Contexts for elastic-stack-logging workloads (pt 2)
 - [X] PDO-10795 Enable JSON-Based Logging for PA / PF / PD / PA-WAS
 - [X] PDO-11030 OpenSearch: Enable conditional deploy of PingFederate Impossible Login Distance Map from Dashboards
+- [X] PDO-11091 Logstash: Implement  (Fluent Bit → 2x Logstash StatefulSets)
 
 ### 2.2.0
 

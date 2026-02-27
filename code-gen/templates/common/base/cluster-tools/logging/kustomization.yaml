@@ -71,6 +71,17 @@ patchesStrategicMerge:
       ${IRSA_LOGSTASH_ANNOTATION_KEY_VALUE}
 
 - |-
+  # Add IRSA role annotation to logstash-elastic-s3 service account
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: logstash-elastic-s3
+    namespace: elastic-stack-logging
+    annotations:
+      purpose: service-account-for-logstash-elastic-s3
+      ${IRSA_LOGSTASH_ANNOTATION_KEY_VALUE}
+
+- |-
   # Add IRSA role annotation to opensearch service account
   apiVersion: v1
   kind: ServiceAccount
@@ -112,4 +123,3 @@ patchesJson6902:
     - op: replace
       path: /data/newrelic_cluster_name
       value: "${NEW_RELIC_ENVIRONMENT_NAME}"
-

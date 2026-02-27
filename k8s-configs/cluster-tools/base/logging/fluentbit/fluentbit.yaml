@@ -58,7 +58,7 @@ spec:
     spec:
       containers:
       - name: fluent-bit
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-for-fluent-bit:2.31.7
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-for-fluent-bit:3.2.3
         imagePullPolicy: Always
         command:
           - /bin/sh
@@ -123,7 +123,7 @@ spec:
           initialDelaySeconds: 10
           failureThreshold: 3
           httpGet:
-            path: /
+            path: /api/v1/health
             port: 2020
           periodSeconds: 10
           successThreshold: 1
@@ -133,8 +133,8 @@ spec:
               cpu: "2"
               memory: 2Gi
             requests:
-              cpu: 200m
-              memory: 500Mi
+              cpu: "2"
+              memory: 2Gi
         ports:
           - containerPort: 2020
             name: metrics
@@ -168,7 +168,8 @@ spec:
         - name: dmesg
           mountPath: /var/log/dmesg
           readOnly: true
-      terminationGracePeriodSeconds: 10
+      # Allow outputs to flush buffered records before pod shutdown.
+      terminationGracePeriodSeconds: 60
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       volumes:
