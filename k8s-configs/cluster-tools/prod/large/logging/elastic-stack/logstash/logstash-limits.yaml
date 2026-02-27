@@ -8,16 +8,65 @@ spec:
       containers:
         - name: logstash
           resources:
+            # Guaranteed QoS (requests = limits).
+            # Ensures dedicated CPU & Mem reservation for Logstash to avoid
+            # CPU throttling &noisy-neighbor interference
             limits:
-              cpu: "4"
-              memory: 14Gi
+              cpu: "6"
+              memory: 16Gi
             requests:
-              cpu: "4"
+              cpu: "6"
+              memory: 16Gi
+          env:
+            - name: LS_JAVA_OPTS
+              # Heap/direct split sized for stable GC and IO buffer headroom.
+              value: '-Xms7g -Xmx7g -XX:MaxDirectMemorySize=3g'
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-elastic-s3
+spec:
+  template:
+    spec:
+      containers:
+        - name: logstash
+          resources:
+            # Guaranteed QoS (requests = limits).
+            # Ensures dedicated CPU & Mem reservation for Logstash to avoid
+            # CPU throttling &noisy-neighbor interference
+            limits:
+              cpu: "5"
+              memory: 10Gi
+            requests:
+              cpu: "5"
               memory: 10Gi
           env:
             - name: LS_JAVA_OPTS
-              value: '-Xms8g -Xmx8g -XX:MaxDirectMemorySize=2g'
-            - name: PIPELINE_WORKERS
-              value: "48"
-            - name: PIPELINE_BATCH_SIZE
-              value: "1000"
+              # Heap/direct split sized for stable GC and IO buffer headroom.
+              value: '-Xms4608m -Xmx4608m -XX:MaxDirectMemorySize=2g'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pipeline
+data:
+  pipelines.yml: |
+    - pipeline.id: main
+      path.config: "/usr/share/logstash/pipeline/main"
+      # Two workers increase parallelism for high-volume main ingest.
+      pipeline.workers: 2
+      # Batch 1000 maximizes throughput on large tier resources.
+      pipeline.batch.size: 1000
+    - pipeline.id: customer
+      path.config: "/usr/share/logstash/pipeline/customer"
+      # Two workers keep customer pipeline pace with large-tier load.
+      pipeline.workers: 2
+      # Batch 1000 improves bulk efficiency for customer traffic.
+      pipeline.batch.size: 1000
+    - pipeline.id: dlq
+      path.config: "/usr/share/logstash/pipeline/dlq"
+      # Single worker preserves deterministic DLQ replay.
+      pipeline.workers: 1
+      # Batch 250 prevents large replay bursts from impacting live ingest.
+      pipeline.batch.size: 250

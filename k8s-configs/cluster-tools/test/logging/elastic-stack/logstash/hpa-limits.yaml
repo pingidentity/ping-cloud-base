@@ -5,3 +5,11 @@ metadata:
 spec:
   minReplicas: 2
   maxReplicas: 4
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: logstash-elastic-s3
+spec:
+  minReplicas: 2
+  maxReplicas: 4

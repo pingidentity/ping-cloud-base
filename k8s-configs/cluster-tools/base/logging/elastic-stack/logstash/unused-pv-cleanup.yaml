@@ -15,8 +15,8 @@ data:
 
     echo "Starting to perform search and cleanup of unclaimed PVCs/PVs..."
 
-    # Parse env var for separate apps and process them one by one
-    for app in $(echo $COMMA_SEPARATED_APPS_NAMES | tr ";" "\n"); do
+    # Parse env var for separate apps (comma or semicolon separated) and process them one by one
+    for app in $(echo "$COMMA_SEPARATED_APPS_NAMES" | tr ',;' '\n' | sed '/^$/d'); do
       echo "Processing $app PVCs/PVs:"
       all_pods_pvcs_by_selector=$(kubectl get pods  -n "$NAMESPACE" --selector=app=$app --no-headers -o=jsonpath='{.items[*].spec.volumes[*].persistentVolumeClaim.claimName}')
       pvcs=$(kubectl get pvc -n "$NAMESPACE" -o custom-columns=":metadata.name" --no-headers | grep "$app")
@@ -77,9 +77,10 @@ spec:
             - /opt/delete-unused-pvs.sh
             env:
             # WARNING! All data located on PVs will be deleted - be sure it's no longer needed or properly backed up before adding any apps to this list!
-            # Specify multiple app names as comma separated value (example: "logstash-elastic,fluent-bit")
+            # Specify multiple app names as comma/semicolon separated value
+            # (example: "logstash-elastic,logstash-elastic-s3")
             - name: COMMA_SEPARATED_APPS_NAMES
-              value: "logstash-elastic"
+              value: "logstash-elastic,logstash-elastic-s3"
             - name: NAMESPACE
               valueFrom:
                 fieldRef:

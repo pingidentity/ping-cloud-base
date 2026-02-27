@@ -8,16 +8,65 @@ spec:
       containers:
         - name: logstash
           resources:
+            # Guaranteed QoS (requests = limits).
+            # Ensures dedicated CPU & Mem reservation for Logstash to avoid
+            # CPU throttling &noisy-neighbor interference
             limits:
-              cpu: "2"
-              memory: 8Gi
+              cpu: "3"
+              memory: 9Gi
             requests:
-              cpu: "2"
-              memory: 6Gi
+              cpu: "3"
+              memory: 9Gi
           env:
             - name: LS_JAVA_OPTS
+              # Heap/direct split sized for stable GC and IO buffer headroom.
               value: '-Xms4g -Xmx4g -XX:MaxDirectMemorySize=2g'
-            - name: PIPELINE_WORKERS
-              value: "24"
-            - name: PIPELINE_BATCH_SIZE
-              value: "1000"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-elastic-s3
+spec:
+  template:
+    spec:
+      containers:
+        - name: logstash
+          resources:
+            # Guaranteed QoS (requests = limits).
+            # Ensures dedicated CPU & Mem reservation for Logstash to avoid
+            # CPU throttling &noisy-neighbor interference
+            limits:
+              cpu: "1"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 4Gi
+          env:
+            - name: LS_JAVA_OPTS
+              # Heap/direct split sized for stable GC and IO buffer headroom.
+              value: '-Xms3g -Xmx3g -XX:MaxDirectMemorySize=1g'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pipeline
+data:
+  pipelines.yml: |
+    - pipeline.id: main
+      path.config: "/usr/share/logstash/pipeline/main"
+      # Keep single worker to avoid over-parallelizing at small tier.
+      pipeline.workers: 1
+      # Batch 500 balances indexing throughput and heap stability.
+      pipeline.batch.size: 500
+    - pipeline.id: customer
+      path.config: "/usr/share/logstash/pipeline/customer"
+      # Keep single worker for predictable customer pipeline latency.
+      pipeline.workers: 1
+      # Batch 500 keeps per-batch memory growth controlled.
+      pipeline.batch.size: 500
+    - pipeline.id: dlq
+      path.config: "/usr/share/logstash/pipeline/dlq"
+      # Single worker preserves DLQ replay ordering.
+      pipeline.workers: 1
+      # Smaller DLQ batch limits replay spikes.
+      pipeline.batch.size: 250
