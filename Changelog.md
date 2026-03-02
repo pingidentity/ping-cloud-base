@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.1.3
+
+- Revert ExternalDNS policy from sync to upsert-only
+
+_Changes:_
+
+- [X] PDO-11323 Revert ExternalDNS policy from sync to upsert-only
+
 ### 2.1.2
 
 - PingDirectory V2 Architecture
