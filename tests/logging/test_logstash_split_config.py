@@ -37,13 +37,13 @@ class TestLogstashSplitConfig(unittest.TestCase):
         self.assertIn("Port                8084", conf)
 
     def test_pipeline_config_presence_per_sts(self):
-        main_cm = self.core.read_namespaced_config_map(name="pipeline", namespace=self.namespace)
-        s3_cm = self.core.read_namespaced_config_map(name="pipeline-s3", namespace=self.namespace)
+        main_cm = self.core.read_namespaced_config_map(name="logstash-pipelines", namespace=self.namespace)
+        s3_cm = self.core.read_namespaced_config_map(name="logstash-pipelines-s3", namespace=self.namespace)
 
         main_pipelines = (main_cm.data or {}).get("pipelines.yml", "")
         s3_pipelines = (s3_cm.data or {}).get("pipelines.yml", "")
-        self.assertTrue(main_pipelines, "pipelines.yml missing in ConfigMap 'pipeline'")
-        self.assertTrue(s3_pipelines, "pipelines.yml missing in ConfigMap 'pipeline-s3'")
+        self.assertTrue(main_pipelines, "pipelines.yml missing in ConfigMap 'logstash-pipelines'")
+        self.assertTrue(s3_pipelines, "pipelines.yml missing in ConfigMap 'logstash-pipelines-s3'")
 
         # Validate exact pipeline IDs per STS configmap.
         main_ids = set(re.findall(r"pipeline\.id:\s*([a-zA-Z0-9_-]+)", main_pipelines))
@@ -62,8 +62,8 @@ class TestLogstashSplitConfig(unittest.TestCase):
                     return vol.config_map.name
             return None
 
-        self.assertEqual(mounted_configmap(main_sts, "logstash-pipelines"), "pipeline")
-        self.assertEqual(mounted_configmap(s3_sts, "logstash-pipelines-s3"), "pipeline-s3")
+        self.assertEqual(mounted_configmap(main_sts, "logstash-pipelines"), "logstash-pipelines")
+        self.assertEqual(mounted_configmap(s3_sts, "logstash-pipelines-s3"), "logstash-pipelines-s3")
 
     def test_no_opensearch_bootstrap_on_s3(self):
         pods = self.core.list_namespaced_pod(namespace=self.namespace).items

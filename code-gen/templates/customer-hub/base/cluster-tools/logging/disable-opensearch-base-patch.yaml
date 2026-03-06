@@ -34,9 +34,6 @@ data:
         storage.total_limit_size  3000M
 
 ---
-# original port is 8080
-# that port is turned off as the main pipeline forwards logs to opensearch
-# 8081 is used by the s3 bucket pipeline
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -49,10 +46,10 @@ spec:
       - name: logstash
         readinessProbe:
           httpGet:
-            port: 8081
+            port: 8084
         startupProbe:
           httpGet:
-            port: 8081
+            port: 8084
         volumeMounts:
         - name: logstash-pipelines
           mountPath: /usr/share/logstash/config/pipelines.yml
