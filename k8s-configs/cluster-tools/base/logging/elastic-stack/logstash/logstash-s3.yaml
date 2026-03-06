@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pipeline-s3
+  name: logstash-pipelines-s3
 data:
   pipelines.yml: |
     - pipeline.id: s3
@@ -44,6 +44,8 @@ spec:
                 topologyKey: "topology.kubernetes.io/zone"
       containers:
         - name: exporter
+          args:
+          - --logstash.endpoint=http://localhost:9600
           image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/logstash-exporter:v0.0.1
           imagePullPolicy: IfNotPresent
           ports:
@@ -174,7 +176,7 @@ spec:
       volumes:
         - name: logstash-pipelines-s3
           configMap:
-            name: pipeline-s3
+            name: logstash-pipelines-s3
             items:
               - key: pipelines.yml
                 path: pipelines.yml
@@ -202,6 +204,12 @@ metadata:
   name: logstash-elastic-s3
   labels:
     app: logstash-elastic-s3
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/scheme: "http"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "9198"
+    newrelic.io/scrape: "true"
 spec:
   selector:
     app: logstash-elastic-s3

@@ -112,12 +112,12 @@ spec:
                   name: fluent-bit-config
                   key: newrelic_cluster_name
         livenessProbe:
-          failureThreshold: 3
+          failureThreshold: 10
           httpGet:
             path: /api/v1/health
             port: 2020
-          initialDelaySeconds: 20
-          periodSeconds: 180
+          initialDelaySeconds: 120
+          periodSeconds: 120
           timeoutSeconds: 5
         readinessProbe:
           initialDelaySeconds: 10
@@ -130,10 +130,10 @@ spec:
           timeoutSeconds: 5
         resources:
             limits:
-              cpu: "2"
+              cpu: "1"
               memory: 2Gi
             requests:
-              cpu: "2"
+              cpu: "1"
               memory: 2Gi
         ports:
           - containerPort: 2020

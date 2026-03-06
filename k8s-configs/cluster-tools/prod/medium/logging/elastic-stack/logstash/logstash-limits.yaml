@@ -46,7 +46,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pipeline
+  name: logstash-pipelines
 data:
   pipelines.yml: |
     - pipeline.id: main
