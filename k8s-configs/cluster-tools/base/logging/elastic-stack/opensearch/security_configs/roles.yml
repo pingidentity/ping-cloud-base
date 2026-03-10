@@ -264,6 +264,8 @@ bootstrap:
         - 'indices:admin/settings/update'
         - "indices:admin/create"
         - 'indices:admin/delete'
+        - 'indices:admin/aliases'
+        - 'indices:admin/rollover'
         - 'indices:admin/resize'
         - 'indices:data/write/index'
         - 'indices:data/write/bulk*'

@@ -22,6 +22,7 @@
 - Add ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD feature flag to conditionally deploy PingFederate Impossible Login OpenSearch dashboards
 - Update to include dedicated pipeline for S3
 - Enable Logstash exporter scraping endpoint arg + service annotations
+- Add indices:admin/aliases and indices:admin/rollover permissions to OpenSearch bootstrap role for ISM rollover support
 
 _Changes:_
 
@@ -44,6 +45,7 @@ _Changes:_
 - [X] PDO-10795 Enable JSON-Based Logging for PA / PF / PD / PA-WAS
 - [X] PDO-10877 Update Security Contexts for ping-cloud namespace workloads - part2
 - [X] PDO-11030 OpenSearch: Enable conditional deploy of PingFederate Impossible Login Distance Map from Dashboards
+- [X] PDO-11071 OpenSearch: Implement Logstash → Write Alias + ISM Rollover (40GB or Daily), Read-Only + Delete
 - [X] PDO-11091 Logstash: Implement  (Fluent Bit → 2x Logstash StatefulSets)
 - [X] PDO-11092 Grafana: Update Dashboards for (Fluent Bit → 2x Logstash)
 
