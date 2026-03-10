@@ -142,7 +142,7 @@ spec:
           limits:
             cpu: "100m"
             memory: "64Mi"
-        command: [ "sh", "-c", "cp -a /opt/staging/. /mnt/stg/" ]
+        command: [ "sh", "-c", "cp -r /opt/staging/* /mnt/stg/" ]
         volumeMounts:
         - name: staging-dir
           mountPath: /mnt/stg
@@ -240,6 +240,9 @@ spec:
           - configMapRef:
               name: pingcommon-environment-variables
         volumeMounts:
+          - name: aws-config-dir
+            mountPath: /home/ping/.aws
+            subPath: pingdatasync-aws-config
           - name: logs-dir
             mountPath: /opt/server/logs/tools/
           - name: staging-dir
