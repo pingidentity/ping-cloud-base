@@ -16,7 +16,7 @@ fi
 
 KUBE_STATE_METRICS_VERSION="${1}"
 
-file_names=$(curl https://github.com/kubernetes/kube-state-metrics/tree/v${KUBE_STATE_METRICS_VERSION}/examples/standard/ | jq -r '.payload.tree.items[].name')
+file_names=$(curl -s "https://api.github.com/repos/kubernetes/kube-state-metrics/contents/examples/standard?ref=v${KUBE_STATE_METRICS_VERSION}"| jq -r '.[].name')
 
 files=()
 
