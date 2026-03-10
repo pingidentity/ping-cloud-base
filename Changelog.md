@@ -23,6 +23,7 @@
 - Update to include dedicated pipeline for S3
 - Enable Logstash exporter scraping endpoint arg + service annotations
 - Add indices:admin/aliases and indices:admin/rollover permissions to OpenSearch bootstrap role for ISM rollover support
+- Upgrade kube-state-metrics to version 2.18.0
 
 _Changes:_
 
@@ -43,6 +44,7 @@ _Changes:_
 - [X] PDO-10728 Bundle Documentation folder in profile-repo explaining all static files for all Products
 - [X] PDO-10748 Update Security Contexts for elastic-stack-logging workloads (pt 2)
 - [X] PDO-10795 Enable JSON-Based Logging for PA / PF / PD / PA-WAS
+- [X] PDO-10819 Upgrade kube-state-metrics to version 2.18.0
 - [X] PDO-10877 Update Security Contexts for ping-cloud namespace workloads - part2
 - [X] PDO-11030 OpenSearch: Enable conditional deploy of PingFederate Impossible Login Distance Map from Dashboards
 - [X] PDO-11071 OpenSearch: Implement Logstash → Write Alias + ISM Rollover (40GB or Daily), Read-Only + Delete
