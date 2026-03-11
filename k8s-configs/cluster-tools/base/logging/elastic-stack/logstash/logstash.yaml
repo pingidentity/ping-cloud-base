@@ -12,7 +12,6 @@ data:
     - pipeline.id: dlq
       path.config: "/usr/share/logstash/pipeline/dlq"
       pipeline.workers: 1
-
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -34,6 +33,7 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
+        runAsNonRoot: true
       serviceAccountName: logstash-elastic
       affinity:
         podAntiAffinity:
@@ -49,6 +49,29 @@ spec:
                         - logstash-elastic
                 topologyKey: "topology.kubernetes.io/zone"
       initContainers:
+        - name: seed-logstash
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash/dev:v2.3-release-branch-latest
+          command: 
+            - 'sh'
+            - '-c'
+            - |
+              # Copy the default configs into the writable volume
+              cp -r /usr/share/logstash/config/* /mnt/config/
+              cp -r /usr/share/logstash/data/* /mnt/data/
+              cp -r /tmp/* /mnt/tmp/              
+              # Create logstash tmp directory
+              mkdir -p /mnt/data/tmp
+          volumeMounts:
+            - name: logstash-config
+              mountPath: /mnt/config
+            - name: logstash-data
+              mountPath: /mnt/data
+            - name: tmp-dir
+              mountPath: /mnt/tmp
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            privileged: false
         - name: opensearch-bootstrap
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
@@ -94,6 +117,8 @@ spec:
             runAsUser: 9031
             runAsGroup: 9999
             allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
           volumeMounts:
             - name: os-notifications-channels
               mountPath: /usr/share/opensearch/data/notifications
@@ -113,6 +138,8 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
           args:
@@ -139,6 +166,13 @@ spec:
           - --logstash.endpoint=http://localhost:9600
           image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/logstash-exporter:v0.0.1
           imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
           ports:
             - containerPort: 9198
               name: metrics
@@ -163,6 +197,8 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
           env:
             - name: CONTAINER_NAME
               value: logstash
@@ -174,6 +210,11 @@ spec:
               value: 'false'
             - name: LOG_FORMAT
               value: json
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: cluster-info
+                  key: log.level
             - name: PIPELINE_BATCH_SIZE
               # Base default; overridden by per-pipeline `pipeline.batch.size` in pipeline config.
               value: '500'
@@ -194,9 +235,17 @@ spec:
               value: "true"
             - name: PATH_DEAD_LETTER_QUEUE
               value: "/usr/share/logstash/data/queue/dead_letter"
+            # Force the Ruby layer to use your writable data/tmp
+            - name: TMPDIR
+              value: "/usr/share/logstash/data/tmp"
             - name: LS_JAVA_OPTS
               # Heap/direct split sized for stable GC and IO buffer headroom.
-              value: "-Xms4g -Xmx4g -XX:MaxDirectMemorySize=2g"
+              # Point Java/JRuby to a sub-folder inside our writable volume
+              # This bypasses the world-writable /tmp logstash warning entirely
+              value: >-
+                -Xms4g -Xmx4g -XX:MaxDirectMemorySize=2g 
+                -Djava.io.tmpdir=/usr/share/logstash/data/tmp 
+                -Dlogstash.geoip.database.path=/usr/share/logstash/data/plugins/filters/geoip
             - name: XPACK_MONITORING_ENABLED
               value: "false"
             - name: OS_USER
@@ -269,6 +318,14 @@ spec:
               name: http-cw-input
               protocol: TCP
           volumeMounts:
+            - name: logstash-data
+              mountPath: /usr/share/logstash/data
+            - name: tmp-dir
+              mountPath: /tmp
+            - name: logstash-config
+              mountPath: /usr/share/logstash/config
+            - name: logstash-logs
+              mountPath: /usr/share/logstash/logs
             - name: logstash-pipelines
               mountPath: /usr/share/logstash/config/pipelines.yml
               subPath: pipelines.yml
@@ -288,6 +345,8 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
           args:
@@ -309,6 +368,8 @@ spec:
             - name: enrichment-cache-files
               mountPath: /enrichment-cache-files
               readOnly: false
+            - name: tmp-dir
+              mountPath: /tmp
           resources:
             limits:
               cpu: "500m"
@@ -318,6 +379,14 @@ spec:
               memory: 100Mi
       terminationGracePeriodSeconds: 60
       volumes:
+        - name: logstash-data
+          emptyDir: {}
+        - name: tmp-dir
+          emptyDir: {}
+        - name: logstash-config
+          emptyDir: {}
+        - name: logstash-logs
+          emptyDir: {}
         - name: logstash-pipelines
           configMap:
             name: logstash-pipelines

@@ -11,5 +11,6 @@ metadata:
 data:
   cluster.name: cluster_name
   logs.region: region_name
+  log.level: info
   tenant_domain: tenant_domain
   primary_tenant_domain: tenant_domain

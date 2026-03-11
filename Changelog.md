@@ -12,6 +12,7 @@
 - Update Security Contexts for health namespace workloads
 - Update Security Contexts for cert-manager workloads
 - Update Security Contexts for kube-system namespace workloads
+- Update Security Contexts for elastic-stack-logging namespace workloads
 - Upgrade cluster-autoscaler to version 1.34
 - Upgrade external-dns to version v0.20.0
 - Update NewRelic APM agent Java args logic
@@ -35,6 +36,7 @@ _Changes:_
 - [X] PDO-10482 Update Security Contexts for health namespace workloads
 - [X] PDO-10483 Update Security Contexts for ping-cloud namespace workloads - part 1
 - [X] PDO-10484 Update Security Contexts for prometheus namespace workloads
+- [X] PDO-10481 Update Security Contexts for elastic-stack-logging namespace workloads
 - [X] PDO-10485 Update Security Contexts for cert-manager namespace workloads
 - [X] PDO-10486 Update Security Contexts for external-dns namespace workloads
 - [X] PDO-10546 NewRelic: Remove NRI Kubernetes Images from PCD
