@@ -108,7 +108,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: perpetual-license
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v2.3-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v2.4-release-branch-latest
         imagePullPolicy: Always
         command: [ "sh", "-c", "python3 /opt/in/perpetual_license.py" ]
         env:
@@ -136,7 +136,7 @@ spec:
           mountPath: /home/ping/.aws
           subPath: perpetual-license-creds
       - name: seed-workspaces
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v2.3-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v2.4-release-branch-latest
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
@@ -160,7 +160,7 @@ spec:
           allowPrivilegeEscalation: false
           privileged: false
           readOnlyRootFilesystem: true
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v2.3-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v2.4-release-branch-latest
         imagePullPolicy: Always
         resources:
           requests:
