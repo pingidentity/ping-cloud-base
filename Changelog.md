@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.4.0
+
+- No Changes
+
+_Changes:_
+
+- None
+
 ### 2.3.0
 
 - Upgrade cert-manager to version v1.19.1
