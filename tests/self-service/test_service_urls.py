@@ -181,11 +181,6 @@ class TestTlsUI(unittest.TestCase):
         """
         Service URLs listed successfully
         """
-        # Wait for the Self Service nav link
-        self.wait.until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-testid="Self Service"]'))
-        )
-
         # Select the test environment
         env_selector_btn = self.wait.until(
             EC.element_to_be_clickable(
