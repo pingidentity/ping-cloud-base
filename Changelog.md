@@ -3,6 +3,7 @@
 ### 2.3.0
 
 - Upgrade cert-manager to version v1.19.1
+- Upgrade sealed secret controller to version 0.35.0
 - Remove nri-kubernetes image reference
 - Update Security Contexts for external-dns namespace workloads
 - Update Security Contexts for prometheus namespace workloads
@@ -30,6 +31,7 @@ _Changes:_
 
 - [X] PDO-8951 FluentBit: Remove K8s Metadata and Labels
 - [X] PDO-10079 Upgrade cert-manager to version v1.19.1
+- [X] PDO-10080 Upgrade sealed secret to version 0.35.0
 - [X] PDO-10285 - NewRelic: Update Logic for APM Agent + newrelic-tags-exporter
 - [X] PDO-10479 Update Security Contexts for kube-system namespace workloads
 - [X] PDO-10480 Update Security Contexts for pod-reaper namespace workloads

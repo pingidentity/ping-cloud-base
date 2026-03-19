@@ -12,7 +12,7 @@ patches:
       # Changing image to P1AS internal copy
       - op: replace
         path: /spec/template/spec/containers/0/image
-        value: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/sealed-secrets-controller:v0.23.1
+        value: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/sealed-secrets-controller:0.35.0
 
       # updating cpu/memory limits
       - op: replace
