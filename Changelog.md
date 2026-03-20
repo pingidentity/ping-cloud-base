@@ -26,9 +26,11 @@
 - Enable Logstash exporter scraping endpoint arg + service annotations
 - Add indices:admin/aliases and indices:admin/rollover permissions to OpenSearch bootstrap role for ISM rollover support
 - Upgrade kube-state-metrics to version 2.18.0
+- Implement KMS changes for EBS
 
 _Changes:_
 
+- [X] PDO-8391 Implement KMS changes for EBS
 - [X] PDO-8951 FluentBit: Remove K8s Metadata and Labels
 - [X] PDO-10079 Upgrade cert-manager to version v1.19.1
 - [X] PDO-10080 Upgrade sealed secret to version 0.35.0

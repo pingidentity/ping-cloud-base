@@ -1,0 +1,66 @@
+# Removes old unencrypted StorageClass and updates Logstash , opensearch and S3 Logstash StatefulSets to use KMS-encrypted gp3 storage
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: logstash-gp3
+$patch: delete
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: opensearch-gp3
+$patch: delete
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-elastic
+spec:
+  volumeClaimTemplates:
+  - metadata:
+      name: logstash-gp3
+      annotations:
+        volume.autoscaler.kubernetes.io/scale-above-percent: "85"
+        volume.autoscaler.kubernetes.io/scale-up-percent: "25"
+      labels:
+        app: logstash-elastic
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: logstash-gp3-kms  
+      resources:
+        requests:
+          storage: 50Gi
+---
+apiVersion: opensearch.opster.io/v1
+kind: OpenSearchCluster
+metadata:
+  name: opensearch-cluster
+spec:
+  nodePools:
+    - component: hot
+      persistence:
+        pvc:
+          storageClass: opensearch-gp3-kms
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-elastic-s3
+spec:
+  volumeClaimTemplates:
+  - metadata:
+      name: logstash-s3-gp3
+      annotations:
+        volume.autoscaler.kubernetes.io/scale-above-percent: "85"
+        volume.autoscaler.kubernetes.io/scale-up-percent: "25"
+      labels:
+        app: logstash-elastic-s3
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: logstash-gp3-kms
+      resources:
+        requests:
+          storage: 12Gi
+

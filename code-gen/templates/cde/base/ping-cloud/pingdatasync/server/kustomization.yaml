@@ -4,11 +4,17 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 # Apply pingdatasync deployment resources
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingdatasync/server?ref=${K8S_GIT_BRANCH}
+# This patch must be enabled manually to use KMS encryption.
+# Uncomment the KMS-related resources/patches when EBS_KMS_KEY_ARN is set.
+#- kms-storageclass.yaml
+
+
 
 images:
 - name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdatasync${ECR_ENV}
   newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdatasync${ECR_ENV}
   newTag: ${PINGDATASYNC_IMAGE_TAG}
+
 
 patchesJson6902:
 
@@ -37,3 +43,7 @@ patchesJson6902:
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingdatasync-admin.${DNS_ZONE}
 
+patchesStrategicMerge:
+# This patch must be enabled manually to use KMS encryption.
+# Uncomment the KMS-related resources/patches when EBS_KMS_KEY_ARN is set.
+#- kms-patch.yaml
