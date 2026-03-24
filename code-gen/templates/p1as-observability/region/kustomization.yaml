@@ -11,7 +11,7 @@ helmCharts:
       - ../../values-files/base/values.yaml # base values.yaml
       - ../../values-files/${REGION_NICK_NAME}/values.yaml # regional values.yaml
       - values.yaml # app specific values.yaml
-    version: v2.2.0-RC1
+    version: v2.2.0
     namespace: amazon-cloudwatch
     repo: oci://${ECR_REGISTRY_NAME}
   - name: p1as-newrelic
@@ -19,7 +19,7 @@ helmCharts:
       - ../../values-files/base/values.yaml # base values.yaml
       - ../../values-files/${REGION_NICK_NAME}/values.yaml # regional values.yaml
       - values.yaml # app specific values.yaml
-    version: v2.2.0-RC1
+    version: v2.2.0
     namespace: newrelic
     repo: oci://${ECR_REGISTRY_NAME}
   - name: p1as-grafana
@@ -27,7 +27,7 @@ helmCharts:
       - ../../values-files/base/values.yaml # base values.yaml
       - ../../values-files/${REGION_NICK_NAME}/values.yaml # regional values.yaml
       - values.yaml # app specific values.yaml
-    version: v2.2.0-RC1
+    version: v2.2.0
     namespace: prometheus
     repo: oci://${ECR_REGISTRY_NAME}
     includeCRDs: true
