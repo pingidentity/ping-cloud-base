@@ -99,6 +99,11 @@
 #                                  | URL. For AWS S3 buckets, it must be an S3 URL,     |
 #                                  | e.g. s3://backups.                                 |
 #                                  |                                                    |
+# CONFIG_DATA_BUCKET_URI           | The URL of the config data S3 bucket. Provided as  | The string "ssm://pcpt/service/storage/config-data-bucket/uri".
+#                                  | an SSM path that will contain the S3 bucket name   |
+#                                  | and be replaced by discovery-service with the      |
+#                                  | actual bucket name used by hook scripts.           |
+#                                  |                                                    |
 # CLUSTER_STATE_REPO_URL           | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
 #                                  |                                                    |
 # DEFAULT_CLUSTER_UPTIME           | The cluster default uptime used by kube-downscaler | Mon-Fri 09:00-:18:00 UTC
@@ -267,6 +272,9 @@
 #                                  | variable value if IS_GA=false. By default, set     |
 #                                  | to non-existent channel name to prevent flooding.  |
 #                                  |                                                    |
+# SELF_SERVICE_TEMPLATES_ENABLED   | Feature-flag, indicates whether self-service       | If unset, value is derived from UPGRADE
+#                                  | templates management feature is enabled.           | if UPGRADE="true", then false, else true
+#                                  |                                                    |
 # SIZE                             | Size of the environment, which pertains to the     | x-small
 #                                  | number of user identities. Legal values are        |
 #                                  | x-small, small, medium or large.                   |
@@ -377,6 +385,7 @@ ${PING_ARTIFACT_REPO_URL}
 ${PD_MONITOR_BUCKET_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
+${CONFIG_DATA_BUCKET_URI}
 ${PING_CLOUD_NAMESPACE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
@@ -461,6 +470,7 @@ ${EXTERNAL_INGRESS_ENABLED}
 ${HEALTHCHECKS_ENABLED}
 ${CUSTOMER_PINGONE_ENABLED}
 ${ARGOCD_BOOTSTRAP_ENABLED}
+${SELF_SERVICE_TEMPLATES_ENABLED}
 ${CLOUDWATCH_ENABLED}
 ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
 ${ARGOCD_CDE_URL_SSM_TEMPLATE}
@@ -804,6 +814,7 @@ echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Initial PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
+echo "Initial CONFIG_DATA_BUCKET_URI: ${CONFIG_DATA_BUCKET_URI}"
 
 echo "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Initial MYSQL_USER: ${MYSQL_USER}"
@@ -830,6 +841,8 @@ echo "Initial EXTERNAL_INGRESS_ENABLED: ${EXTERNAL_INGRESS_ENABLED}"
 echo "Initial HEALTHCHECKS_ENABLED: ${HEALTHCHECKS_ENABLED}"
 
 echo "Initial CUSTOMER_PINGONE_ENABLED: ${CUSTOMER_PINGONE_ENABLED}"
+
+echo "Initial SELF_SERVICE_TEMPLATES_ENABLED: ${SELF_SERVICE_TEMPLATES_ENABLED}"
 
 echo "Initial ARGOCD_BOOTSTRAP_ENABLED: ${ARGOCD_BOOTSTRAP_ENABLED}"
 echo "Initial ARGOCD_CDE_ROLE_SSM_TEMPLATE: ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}"
@@ -926,6 +939,7 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 export PD_MONITOR_BUCKET_URL="${PD_MONITOR_BUCKET_URL:-ssm://pcpt/service/storage/pd-monitor/uri}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
+export CONFIG_DATA_BUCKET_URI="${CONFIG_DATA_BUCKET_URI:-ssm://pcpt/service/storage/config-data-bucket/uri}"
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.${PRIMARY_TENANT_DOMAIN}"}"
 export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
@@ -993,6 +1007,18 @@ export ARGOCD_BOOTSTRAP_ENABLED="${ARGOCD_BOOTSTRAP_ENABLED:-true}"
 export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-""}"
 export HEALTHCHECKS_ENABLED="${HEALTHCHECKS_ENABLED:-false}"
 export CUSTOMER_PINGONE_ENABLED="${CUSTOMER_PINGONE_ENABLED:-false}"
+
+# For SELF_SERVICE_TEMPLATES_ENABLED, we want to default it to true for new clusters but false for upgrades,
+# since we don't want to introduce new functionality via an upgrade without explicit opt-in.
+if test -z "${SELF_SERVICE_TEMPLATES_ENABLED}"; then
+  if test "${UPGRADE:-false}" = "false"; then
+    export SELF_SERVICE_TEMPLATES_ENABLED="true"
+  else
+    export SELF_SERVICE_TEMPLATES_ENABLED="false"
+  fi
+else
+  export SELF_SERVICE_TEMPLATES_ENABLED="${SELF_SERVICE_TEMPLATES_ENABLED}"
+fi
 
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
@@ -1130,6 +1156,7 @@ echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Using PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 echo "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Using BACKUP_URL: ${BACKUP_URL}"
+echo "Using CONFIG_DATA_BUCKET_URI: ${CONFIG_DATA_BUCKET_URI}"
 
 echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Using MYSQL_USER: ${MYSQL_USER}"
@@ -1152,6 +1179,7 @@ echo "Using ARGOCD_BOOTSTRAP_ENABLED: ${ARGOCD_BOOTSTRAP_ENABLED}"
 echo "Using EXTERNAL_INGRESS_ENABLED: ${EXTERNAL_INGRESS_ENABLED}"
 echo "Using HEALTHCHECKS_ENABLED: ${HEALTHCHECKS_ENABLED}"
 echo "Using CUSTOMER_PINGONE_ENABLED: ${CUSTOMER_PINGONE_ENABLED}"
+echo "Using SELF_SERVICE_TEMPLATES_ENABLED: ${SELF_SERVICE_TEMPLATES_ENABLED}"
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 

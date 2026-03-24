@@ -55,3 +55,6 @@ customer-issuer:
   ssm_type: string
   ssm_path_prefix: SELF_SERVICE_SSM_PATH_PREFIX
   source: paramStore
+config-data:
+  kind: Other
+  source: s3
