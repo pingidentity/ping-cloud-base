@@ -24,7 +24,7 @@ patchesStrategicMerge:
         - name: volume-autoscaler
           env:
           - name: "PROMETHEUS_URL"
-            value: "http://prometheus:9090"
+            value: "http://prometheus-headless:9090"
 
 # Add wait-for-prometheus initContainer to prevent volume-autoscaler from reporting metrics if Prometheus still not ready
 - |-
@@ -48,7 +48,7 @@ patchesStrategicMerge:
             imagePullPolicy: IfNotPresent
             env:
             - name: URL
-              value: "http://prometheus:9090/-/ready"
+              value: "http://prometheus-headless:9090/-/ready"
             - name: APP_NAME
               value: "Prometheus"
             - name: RETRY_SEC

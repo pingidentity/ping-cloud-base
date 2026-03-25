@@ -755,9 +755,27 @@ organize_code_for_csr() {
           fi
           ;;
       esac
+
+      # Handle secondary/child region values overrides.
+      # secondary-values.yaml is merged into values.yaml for non-primary regions,
+      # allowing region-specific overrides (e.g. optional secrets that only exist in primary).
+      secondary_values_files=$(find "${app_target_dir}" -type f -name "secondary-values.yaml")
+      if [ -n "${secondary_values_files}" ]; then
+        if test "${REGION}" != "${PRIMARY_REGION}"; then
+          for secondary_values_file in ${secondary_values_files}; do
+            echo "Child region (${REGION}) — merging ${secondary_values_file} into values.yaml"
+            yq -i ". *= load(\"${secondary_values_file}\")" "${secondary_values_file//secondary-/}"
+            rm -f $secondary_values_file
+          done
+        else
+          # Primary region — delete secondary-values.yaml files (not needed)
+          find "${app_target_dir}" -type f -name "secondary-values.yaml" -exec rm -f {} +
+        fi
+      fi
     fi
   done
 }
+
 
 # Checking required tools and environment variables.
 check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws" "rsync" "yq"
@@ -1561,10 +1579,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
-    if test "${ENV}" != "${CUSTOMER_HUB}"; then
-      # Remove patch that deletes volumeMount from Prometheus, in primary region and non-chub envs only
-      yq 'del(.patchesJson6902)' "${PRIMARY_PING_KUST_FILE}" -i
-    fi
   else
     # Child regions
     if test "${HEALTHCHECKS_ENABLED}" != "true"; then
