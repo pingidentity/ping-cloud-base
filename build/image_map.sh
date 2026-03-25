@@ -33,4 +33,6 @@ export CHART_MAP="p1as-beluga-tools
    p1as-cloudwatch
    p1as-newrelic
    p1as-grafana
-   p1as-pingfederate"
+   p1as-pingfederate
+   p1as-prometheus
+   p1as-prometheus-agent"

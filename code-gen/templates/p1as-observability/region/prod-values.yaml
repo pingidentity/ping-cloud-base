@@ -1,0 +1,9 @@
+prometheus:
+  server:
+    resources:
+      limits:
+        cpu: 3000m
+        memory: 10Gi
+      requests:
+        cpu: 1500m
+        memory: 5Gi

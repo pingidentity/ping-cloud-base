@@ -27,9 +27,11 @@
 - Add indices:admin/aliases and indices:admin/rollover permissions to OpenSearch bootstrap role for ISM rollover support
 - Upgrade kube-state-metrics to version 2.18.0
 - Implement KMS changes for EBS
+- Add p1as-observability prometheus Helm chart to PCB
 
 _Changes:_
 
+- [X] PDO-5993 Prometheus: Add p1as-Observability to PCB
 - [X] PDO-8391 Implement KMS changes for EBS
 - [X] PDO-8951 FluentBit: Remove K8s Metadata and Labels
 - [X] PDO-10079 Upgrade cert-manager to version v1.19.1

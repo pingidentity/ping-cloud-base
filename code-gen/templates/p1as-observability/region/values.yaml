@@ -19,3 +19,103 @@ cloudwatch:
 #Newrelic related values
 global:
   cluster: ${TENANT_NAME}_${ENV}_${REGION}_k8s-cluster
+
+#######################################################
+# Prometheus Server (p1as-prometheus) settings
+#######################################################
+prometheus:
+  server:
+    # Retention time for Prometheus. Could be set in years(y), weeks(w), days(d), hours(h), minutes(m) or seconds(s)
+    retention: "15d"
+
+    persistentVolume:
+      # Storage size for prometheus data volume
+      # Adjust based on retention period and scrape volume
+      size: 30Gi
+
+    statefulSet:
+      headless:
+        annotations:
+          # Prometheus cross-region communication - DNS hostname for the headless service
+          external-dns.alpha.kubernetes.io/hostname: prometheus-central.${DNS_ZONE}
+
+    # Environment variables injected into the Prometheus container.
+    # The base chart sets external_labels with ${CLUSTER_NAME}, ${TENANT_NAME},
+    # ${REGION_NICK_NAME} placeholders and enables --enable-feature=expand-external-labels,
+    # so Prometheus expands them at runtime from these env vars.
+    env:
+      - name: CLUSTER_NAME
+        value: ${CLUSTER_NAME}
+      - name: TENANT_NAME
+        value: ${TENANT_NAME}
+      - name: REGION_NICK_NAME
+        value: ${REGION_NICK_NAME}
+
+    # Resource limits for dev/test environments (matches legacy PCB base/test size)
+    # For prod environments, these are overridden by prod-values.yaml
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 8Gi
+      requests:
+        cpu: 1000m
+        memory: 4Gi
+
+#######################################################
+# Prometheus Job Exporter settings
+#######################################################
+prometheusJobExporter:
+  image:
+    repository: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-job-exporter/dev
+    tag: v2.3-release-branch-latest
+  # Commands and schedules to obtain users count. Values should be in single quotes. 
+  promUserCount1Command: "echo 0"
+  promUserCount2Command: "echo 0"
+  promUserCount3Command: "echo 0"
+  promUserCount4Command: "echo 0"
+
+  # Schedules should be in cron format. Command should return only numeric value(int\float)
+  promUserCount1Schedule: "* * * * *"
+  promUserCount2Schedule: "* * * * *"
+  promUserCount3Schedule: "* * * * *"
+  promUserCount4Schedule: "* * * * *"
+
+  # Namespace where pingdirectory pods run (for user count commands)
+  containerNamespace: ${PING_CLOUD_NAMESPACE}
+
+#######################################################
+# Prometheus Agent resource settings
+#######################################################
+prometheus-agent:
+  server:
+    # Environment variables for expand-external-labels (same as prometheus server above)
+    env:
+      - name: CLUSTER_NAME
+        value: ${CLUSTER_NAME}
+      - name: TENANT_NAME
+        value: ${TENANT_NAME}
+      - name: REGION_NICK_NAME
+        value: ${REGION_NICK_NAME}
+
+    resources:
+      limits:
+        cpu: 500m
+        memory: 4000Mi
+      requests:
+        cpu: 100m
+        memory: 512Mi
+
+    # opensearch-grafana-credentials is created by p14c-integration (opensearch_sso_config.py)
+    # which runs as an init container on the OpenSearch operator deployment.
+    # In primary CDE regions the secret will exist — optional: false to fail fast if missing.
+    # For child/secondary CDE regions, secondary-values.yaml overrides this to optional: true
+    # (merged at code-gen time by generate-cluster-state.sh).
+    # For customer-hub, chub-values.yaml overrides this to optional: true.
+    extraVolumes:
+      - name: os-creds
+        secret:
+          secretName: opensearch-grafana-credentials
+          optional: false
+          items:
+            - key: password
+              path: os-password
