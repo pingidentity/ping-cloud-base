@@ -59,6 +59,13 @@ _Changes:_
 - [X] PDO-11091 Logstash: Implement  (Fluent Bit → 2x Logstash StatefulSets)
 - [X] PDO-11092 Grafana: Update Dashboards for (Fluent Bit → 2x Logstash)
 
+### 2.2.1
+- remove modsecurity from ingress-nginx-public and pa-was ingress
+
+_Changes:_
+
+- [X] PDO-11379 Upgrade Ingress NGINX Controller to version 1.14.4
+
 ### 2.2.0
 
 - OSD: Enable Save Query and CSV Export of Logs
