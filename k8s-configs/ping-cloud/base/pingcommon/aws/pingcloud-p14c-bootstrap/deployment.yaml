@@ -18,6 +18,31 @@ spec:
         runAsNonRoot: true
         runAsUser: 9031
         fsGroup: 9999
+      initContainers:
+      - name: bootstrap-discovery-service
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.15.36
+        imagePullPolicy: IfNotPresent
+        command:
+        - /get_ssm_env_vars.sh
+        envFrom:
+        - configMapRef:
+            name: pingcloud-p14c-bootstrap-environment-variables
+        volumeMounts:
+        - name: data-dir
+          mountPath: /config
+        - name: discovery-service
+          mountPath: /get_ssm_env_vars.sh
+          subPath: get_ssm_env_vars.sh
+        - name: aws-config-dir
+          mountPath: /.aws
+          subPath: discovery-service-aws-config
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65534
+          runAsGroup: 65534
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
       containers:
       - name: p14c-bootstrap
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap/dev:v2.3-release-branch-latest
@@ -48,7 +73,18 @@ spec:
             name: pingcloud-p14c-bootstrap-resources
             readOnly: true
             subPath: p14c-bootstrap-resources.yaml
+          - name: data-dir
+            mountPath: /opt/ds_env_vars
+            subPath: ds_env_vars
       volumes:
+        - name: discovery-service
+          configMap:
+            name: pingcommon-init
+            defaultMode: 0555
+        - name: data-dir
+          emptyDir: {}
+        - name: aws-config-dir
+          emptyDir: {}
         - name: pingcloud-p14c-bootstrap-resources
           configMap:
             name: pingcloud-p14c-bootstrap-resources

@@ -42,6 +42,7 @@ PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
 PD_MONITOR_BUCKET_URL=${PD_MONITOR_BUCKET_URL}
 LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 BACKUP_URL=${BACKUP_URL}
+CONFIG_DATA_BUCKET_URI=${CONFIG_DATA_BUCKET_URI}
 
 ############################################################
 # Platform event queue and SSM variables
@@ -226,6 +227,8 @@ EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED}"
 HEALTHCHECKS_ENABLED=${HEALTHCHECKS_ENABLED}
 
 CUSTOMER_PINGONE_ENABLED=${CUSTOMER_PINGONE_ENABLED}
+
+SELF_SERVICE_TEMPLATES_ENABLED=${SELF_SERVICE_TEMPLATES_ENABLED}
 ########################################################################################################################
 
 # For ArgoCD-status slack notifications (notifications.argoproj.io/subscribe.on-sync-failed.slack)
