@@ -17,7 +17,7 @@ class PrometheusPortForward:
         if PrometheusPortForward.process:
             PrometheusPortForward.stop()
         PrometheusPortForward.process = subprocess.Popen(
-            ["kubectl", "port-forward", "svc/prometheus", "9090:9090", "-n", "prometheus"],
+            ["kubectl", "port-forward", "svc/prometheus-headless", "9090:9090", "-n", "prometheus"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )

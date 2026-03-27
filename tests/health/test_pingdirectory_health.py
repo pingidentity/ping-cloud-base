@@ -107,7 +107,7 @@ class TestPingDirectoryHealth(TestHealthBase):
                 )
 
     def test_prometheus_url_uses_service_name_in_primary_region(self):
-        expected = f"{self.prometheus_service_name}.{self.prometheus_namespace}:{self.prometheus_port}"
+        expected = f"{self.prometheus_service_name}-headless.{self.prometheus_namespace}:{self.prometheus_port}"
 
         prometheus_service_endpoint = self.get_runtime_value_from_pod(
             self.health,

@@ -99,6 +99,11 @@
 #                                  | URL. For AWS S3 buckets, it must be an S3 URL,     |
 #                                  | e.g. s3://backups.                                 |
 #                                  |                                                    |
+# CONFIG_DATA_BUCKET_URI           | The URL of the config data S3 bucket. Provided as  | The string "ssm://pcpt/service/storage/config-data-bucket/uri".
+#                                  | an SSM path that will contain the S3 bucket name   |
+#                                  | and be replaced by discovery-service with the      |
+#                                  | actual bucket name used by hook scripts.           |
+#                                  |                                                    |
 # CLUSTER_STATE_REPO_URL           | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
 #                                  |                                                    |
 # DEFAULT_CLUSTER_UPTIME           | The cluster default uptime used by kube-downscaler | Mon-Fri 09:00-:18:00 UTC
@@ -267,6 +272,9 @@
 #                                  | variable value if IS_GA=false. By default, set     |
 #                                  | to non-existent channel name to prevent flooding.  |
 #                                  |                                                    |
+# SELF_SERVICE_TEMPLATES_ENABLED   | Feature-flag, indicates whether self-service       | If unset, value is derived from UPGRADE
+#                                  | templates management feature is enabled.           | if UPGRADE="true", then false, else true
+#                                  |                                                    |
 # SIZE                             | Size of the environment, which pertains to the     | x-small
 #                                  | number of user identities. Legal values are        |
 #                                  | x-small, small, medium or large.                   |
@@ -377,6 +385,7 @@ ${PING_ARTIFACT_REPO_URL}
 ${PD_MONITOR_BUCKET_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
+${CONFIG_DATA_BUCKET_URI}
 ${PING_CLOUD_NAMESPACE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
@@ -462,6 +471,7 @@ ${HEALTHCHECKS_ENABLED}
 ${CUSTOMER_PINGONE_ENABLED}
 ${ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD}
 ${ARGOCD_BOOTSTRAP_ENABLED}
+${SELF_SERVICE_TEMPLATES_ENABLED}
 ${CLOUDWATCH_ENABLED}
 ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
 ${ARGOCD_CDE_URL_SSM_TEMPLATE}
@@ -752,9 +762,27 @@ organize_code_for_csr() {
           fi
           ;;
       esac
+
+      # Handle secondary/child region values overrides.
+      # secondary-values.yaml is merged into values.yaml for non-primary regions,
+      # allowing region-specific overrides (e.g. optional secrets that only exist in primary).
+      secondary_values_files=$(find "${app_target_dir}" -type f -name "secondary-values.yaml")
+      if [ -n "${secondary_values_files}" ]; then
+        if test "${REGION}" != "${PRIMARY_REGION}"; then
+          for secondary_values_file in ${secondary_values_files}; do
+            echo "Child region (${REGION}) — merging ${secondary_values_file} into values.yaml"
+            yq -i ". *= load(\"${secondary_values_file}\")" "${secondary_values_file//secondary-/}"
+            rm -f $secondary_values_file
+          done
+        else
+          # Primary region — delete secondary-values.yaml files (not needed)
+          find "${app_target_dir}" -type f -name "secondary-values.yaml" -exec rm -f {} +
+        fi
+      fi
     fi
   done
 }
+
 
 # Checking required tools and environment variables.
 check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws" "rsync" "yq"
@@ -805,6 +833,7 @@ echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Initial PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
+echo "Initial CONFIG_DATA_BUCKET_URI: ${CONFIG_DATA_BUCKET_URI}"
 
 echo "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Initial MYSQL_USER: ${MYSQL_USER}"
@@ -831,6 +860,8 @@ echo "Initial EXTERNAL_INGRESS_ENABLED: ${EXTERNAL_INGRESS_ENABLED}"
 echo "Initial HEALTHCHECKS_ENABLED: ${HEALTHCHECKS_ENABLED}"
 
 echo "Initial CUSTOMER_PINGONE_ENABLED: ${CUSTOMER_PINGONE_ENABLED}"
+
+echo "Initial SELF_SERVICE_TEMPLATES_ENABLED: ${SELF_SERVICE_TEMPLATES_ENABLED}"
 
 echo "Initial ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD: ${ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD}"
 
@@ -929,6 +960,7 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 export PD_MONITOR_BUCKET_URL="${PD_MONITOR_BUCKET_URL:-ssm://pcpt/service/storage/pd-monitor/uri}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
+export CONFIG_DATA_BUCKET_URI="${CONFIG_DATA_BUCKET_URI:-ssm://pcpt/service/storage/config-data-bucket/uri}"
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.${PRIMARY_TENANT_DOMAIN}"}"
 export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
@@ -997,6 +1029,18 @@ export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-""}"
 export HEALTHCHECKS_ENABLED="${HEALTHCHECKS_ENABLED:-false}"
 export CUSTOMER_PINGONE_ENABLED="${CUSTOMER_PINGONE_ENABLED:-false}"
 export ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD="${ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD:-false}"
+
+# For SELF_SERVICE_TEMPLATES_ENABLED, we want to default it to true for new clusters but false for upgrades,
+# since we don't want to introduce new functionality via an upgrade without explicit opt-in.
+if test -z "${SELF_SERVICE_TEMPLATES_ENABLED}"; then
+  if test "${UPGRADE:-false}" = "false"; then
+    export SELF_SERVICE_TEMPLATES_ENABLED="true"
+  else
+    export SELF_SERVICE_TEMPLATES_ENABLED="false"
+  fi
+else
+  export SELF_SERVICE_TEMPLATES_ENABLED="${SELF_SERVICE_TEMPLATES_ENABLED}"
+fi
 
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
@@ -1134,6 +1178,7 @@ echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Using PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 echo "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Using BACKUP_URL: ${BACKUP_URL}"
+echo "Using CONFIG_DATA_BUCKET_URI: ${CONFIG_DATA_BUCKET_URI}"
 
 echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Using MYSQL_USER: ${MYSQL_USER}"
@@ -1156,6 +1201,7 @@ echo "Using ARGOCD_BOOTSTRAP_ENABLED: ${ARGOCD_BOOTSTRAP_ENABLED}"
 echo "Using EXTERNAL_INGRESS_ENABLED: ${EXTERNAL_INGRESS_ENABLED}"
 echo "Using HEALTHCHECKS_ENABLED: ${HEALTHCHECKS_ENABLED}"
 echo "Using CUSTOMER_PINGONE_ENABLED: ${CUSTOMER_PINGONE_ENABLED}"
+echo "Using SELF_SERVICE_TEMPLATES_ENABLED: ${SELF_SERVICE_TEMPLATES_ENABLED}"
 echo "Using ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD: ${ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD}"
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
@@ -1553,10 +1599,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
-    if test "${ENV}" != "${CUSTOMER_HUB}"; then
-      # Remove patch that deletes volumeMount from Prometheus, in primary region and non-chub envs only
-      yq 'del(.patchesJson6902)' "${PRIMARY_PING_KUST_FILE}" -i
-    fi
   else
     # Child regions
     if test "${HEALTHCHECKS_ENABLED}" != "true"; then

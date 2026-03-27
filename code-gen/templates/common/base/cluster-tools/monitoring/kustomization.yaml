@@ -2,8 +2,8 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- ${K8S_GIT_URL}/k8s-configs/cluster-tools/${KUSTOMIZE_BASE}/monitoring?ref=${K8S_GIT_BRANCH}
-- prometheus
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/monitoring?ref=${K8S_GIT_BRANCH}
+- Grafanadashboard
 
 
 patchesStrategicMerge:    
@@ -23,15 +23,3 @@ patchesStrategicMerge:
             env:
               - name: "PROMETHEUS_LABEL_MATCH"
                 value: "k8s_cluster_name=\"${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}\""
-
-patchesJson6902:
-
-# Prometheus cross-region communication
-- target:
-    kind: Service
-    name: prometheus
-    version: v1
-  patch: |-
-    - op: replace
-      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
-      value: prometheus-central.${DNS_ZONE}
