@@ -126,6 +126,10 @@ global:
   # backupUrl is the customer-specific backup URL for region
   backupUrl: "${BACKUP_URL}"
 
+  # configDataBucketUri is the SSM path that will contain the S3 bucket name and be replaced by discovery-service
+  # with the actual bucket name to be used by hook scripts for PF language-packs and templates sync
+  configDataBucketUri: "${CONFIG_DATA_BUCKET_URI}"
+
   ########################################################
   # Miscellaneous ping-cloud variables
   ########################################################
@@ -230,6 +234,8 @@ global:
 
   # Runbook: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/427688292/How+to+Enable+and+Disable+Healthchecks+-+1.19.0
   healthchecksEnabled: ${HEALTHCHECKS_ENABLED}
+
+  selfServiceTemplatesEnabled: ${SELF_SERVICE_TEMPLATES_ENABLED}
   #####################################################################################################################
 
   ########################################################
