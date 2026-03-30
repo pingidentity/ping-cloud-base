@@ -20,8 +20,6 @@ export IMAGE_MAP="pingcloud-apps/pingaccess
    pingcloud-monitoring/enrichment-bootstrap
    pingcloud-monitoring/os-bootstrap
    pingcloud-monitoring/opensearch
-   pingcloud-monitoring/prometheus-json-exporter
-   pingcloud-monitoring/prometheus-job-exporter
    pingcloud-services/robot-framework
    pingcloud-services/grp-radiusproxy"
 
