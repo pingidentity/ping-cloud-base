@@ -66,8 +66,7 @@ prometheus:
 #######################################################
 prometheusJobExporter:
   image:
-    repository: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-job-exporter/dev
-    tag: v2.3-release-branch-latest
+    tag: v3.0.0
   # Commands and schedules to obtain users count. Values should be in single quotes. 
   promUserCount1Command: "echo 0"
   promUserCount2Command: "echo 0"
