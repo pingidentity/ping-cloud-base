@@ -158,7 +158,7 @@ class TestPfTemplatesUI(unittest.TestCase):
 		cls.config = p1_ui.PingOneUITestConfig(
 			app_name="SelfServiceUI",
 			console_url=cls.self_service_url,
-			roles={"p1asSelfServiceRoles": ["all-tls-admin"]},
+			roles={"p1asSelfServiceRoles": ["all-ss-admin"]},
 			access_granted_xpaths=[],
 			access_denied_xpaths=[],
 			create_local_only=True,
