@@ -5,7 +5,7 @@
 
 ########################################################################################################################
 # pingcloud-scripts::source_script - Sources a given script and version from S3 or locally from the
-#   ping-cloud-common/pingcloud-scripts repo/directory
+#   p1as-eng-common/pingcloud-scripts repo/directory
 # Arguments:
 # $1 - name - the name of the script to source
 # $2 - version - the version of the script to source

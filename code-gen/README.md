@@ -5,7 +5,7 @@
 You should already have a file in your home directory called ~/YOUR_NAME-cluster.properties. This was created when you created your dev cluster.
 Optionally, you can re-create this file to make sure it's up-to-date by running the following:
 
-1. Go to the ping-cloud-tools repo and go to the create-cluster directory
+1. Go to the p1as-eng-tools repo and go to the create-cluster directory
 2. Run `./CreateCluster PATH_TO_YOUR_CONFIG --prop-only` - you should already have a config used for your dev cluster, use this.
 3. This will generate
 
