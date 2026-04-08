@@ -1443,8 +1443,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   #Getting Global Domain
   set_var "GLOBAL_TENANT_DOMAIN" "global.${TENANT_DOMAIN_NO_DOT_SUFFIX}" "/pcpt/global-dns/hosted-zone/zone-name" ""
 
-  set_var "EBS_KMS_KEY_ARN" "" "${ACCOUNT_BASE_PATH}" "${ENV}/customer/ebs/kms/key/arn" ""
-
 
   ######################################################################################################################
   # Enable Cloudwatch according to the account type
