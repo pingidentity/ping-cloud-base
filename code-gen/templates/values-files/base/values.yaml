@@ -14,7 +14,18 @@ global:
   # Note: NAMESPACE need to match exactly,
   #   but secret keys should follow Helm's camelCase guidance
   ############################################################
+  # Custom Secrets
+  ############################################################
+  # Defaults to null, but can be defined to inject a custom secret into
+  # a specific application container.  Expected format for each custom secret:
+  # NAMESPACE:
+  #  APP_NAME:
+  #   KEY1: VALUE1
+  #   KEY2: VALUE2
+  # Note: NAMSPACE and APP_NAME need to match exactly where
+  #       APP_NAME is the string used to address values for a chart (i.e pingfederate, newrelic, etc)
   sealedSecrets: false
+  customSecrets: null
   secrets:
     newrelic:
       newRelicLicenseKey: ${NEW_RELIC_LICENSE_KEY_BASE64}
