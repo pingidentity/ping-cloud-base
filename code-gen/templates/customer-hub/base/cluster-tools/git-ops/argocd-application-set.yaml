@@ -106,10 +106,17 @@ spec:
           kind: Job
           jsonPointers:
             - /spec/ttlSecondsAfterFinished
+        # Ignore runtime changes to maintenance-mode in ingress-nginx-public during maintenance windows
         - group: ""
           kind: ConfigMap
           name: maintenance-mode
           namespace: ingress-nginx-public
+          jsonPointers:
+            - /data
+        # Ignore runtime changes to kms-maintenance-mode(ingress-nginx-public + ingress-nginx-private)
+        - group: ""
+          kind: ConfigMap
+          name: kms-maintenance-mode
           jsonPointers:
             - /data
         - group: ""
