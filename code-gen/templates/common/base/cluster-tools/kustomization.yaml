@@ -7,7 +7,6 @@ resources:
 - cluster-autoscaler
 - service-discovery
 - logging
-- metrics
 - monitoring
 - security
 - pod-reaper
