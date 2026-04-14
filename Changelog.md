@@ -30,6 +30,7 @@
 - Add p1as-observability prometheus Helm chart to PCB
 - Update prometheus-job-exporter and prometheus-json-exporter image paths (v3.0.0) as part of migrating to ping-cloud-common repo
 - Update seal-secret-values.py to handle customSecrets entries for Helm charts
+- Remove metrics-server and kube-state-metrics from PCB
 
 _Changes:_
 
@@ -62,6 +63,7 @@ _Changes:_
 - [X] PDO-11092 Grafana: Update Dashboards for (Fluent Bit → 2x Logstash)
 - [X] PDO-11104 Update p1as-beluga-lib and seal-secret-values to handle dynamic secrets
 - [X] PDO-11307 Prometheus: Migrate job-exporter and json-exporter to ping-cloud-common repo
+- [X] PDO-11376 Remove metrics-server and kube-state-metrics from PCB
 
 ### 2.2.1
 
