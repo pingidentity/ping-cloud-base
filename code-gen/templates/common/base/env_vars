@@ -261,3 +261,6 @@ CERT_RENEW_BEFORE=${CERT_RENEW_BEFORE}
 
 # Variable to set the default cluster resource uptime/working hours
 DEFAULT_CLUSTER_UPTIME="${DEFAULT_CLUSTER_UPTIME}"
+
+# A flag indicating whether or not this is a GA.
+IS_GA=${IS_GA}
