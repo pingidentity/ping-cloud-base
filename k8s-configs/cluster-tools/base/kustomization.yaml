@@ -7,7 +7,6 @@ resources:
 - service-discovery
 - health
 - logging
-- metrics
 - monitoring
 - security
 - pod-reaper
