@@ -7,6 +7,11 @@ resources:
   - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/git-ops?ref=${K8S_GIT_BRANCH}
   - argocd-application-set.yaml
 
+images:
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-integration${ECR_ENV}
+    newName: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-integration${ECR_ENV}
+    newTag: ${P14C_INTEGRATION_IMAGE_TAG}
+
 patchesStrategicMerge:
   - argocd-strategic-patches.yaml
 
