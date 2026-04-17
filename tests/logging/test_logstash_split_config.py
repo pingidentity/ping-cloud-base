@@ -24,16 +24,17 @@ class TestLogstashSplitConfig(unittest.TestCase):
         conf = (cm.data or {}).get("pipeline-outputs.conf", "")
         self.assertTrue(conf, "pipeline-outputs.conf is missing in fluent-bit-pipeline-outputs ConfigMap")
 
-        # S3 logs should be routed to dedicated S3 endpoint.
-        self.assertIn("Alias               s3_app_out", conf)
+        # S3 logs should be routed to dedicated S3 endpoints.
+        self.assertIn("Alias               app_s3_archive_out", conf)
         self.assertIn("Host                logstash-elastic-s3.elastic-stack-logging", conf)
         self.assertIn("Port                8081", conf)
+        self.assertIn("Alias               infra_s3_archive_out", conf)
 
         # Main and customer should continue to route to existing logstash service.
-        self.assertIn("Alias               logstash_elk_out", conf)
+        self.assertIn("Alias               app_opensearch_out", conf)
         self.assertIn("Host                logstash-elastic.elastic-stack-logging", conf)
         self.assertIn("Port                8080", conf)
-        self.assertIn("Alias               logstash_customer_out", conf)
+        self.assertIn("Alias               app_customer_out", conf)
         self.assertIn("Port                8084", conf)
 
     def test_pipeline_config_presence_per_sts(self):

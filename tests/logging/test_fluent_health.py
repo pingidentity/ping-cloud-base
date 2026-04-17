@@ -89,7 +89,7 @@ class TestFluentBitMetrics(unittest.TestCase):
 
     def update_configmap(self):
         configmap_data = self.kube_utils.get_configmap_values(self.namespace, self.core_configmap_name)
-        if "[OUTPUT]\n    Name                stdout" in configmap_data.get("elk.conf", ""):           #to skip stdout update if already present
+        if "[OUTPUT]\n    Name                stdout" in configmap_data.get("pipeline-core.conf", ""):
             print("stdout already present in the ConfigMap. Skipping update.")
             return
 
@@ -155,7 +155,12 @@ class TestFluentBitMetrics(unittest.TestCase):
 
     def test_fluentbit_output_endpoint_reachability(self):
         routes = self._parse_output_routes()
-        expected_aliases = {"s3_app_out", "logstash_elk_out", "logstash_customer_out"}
+        expected_aliases = {
+            "app_s3_archive_out",
+            "infra_s3_archive_out",
+            "app_opensearch_out",
+            "app_customer_out",
+        }
         self.assertTrue(expected_aliases.issubset(set(routes.keys())), f"Missing expected output aliases: {expected_aliases - set(routes.keys())}")
 
         for alias in expected_aliases:
@@ -165,7 +170,12 @@ class TestFluentBitMetrics(unittest.TestCase):
     def test_per_output_delivery_metric(self):
         PrometheusPortForward.start()
         try:
-            expected_aliases = ["s3_app_out", "logstash_elk_out", "logstash_customer_out"]
+            expected_aliases = [
+                "app_s3_archive_out",
+                "infra_s3_archive_out",
+                "app_opensearch_out",
+                "app_customer_out",
+            ]
             for alias in expected_aliases:
                 found = False
                 # Fluent Bit metric labels vary by deployment; try several likely label keys.

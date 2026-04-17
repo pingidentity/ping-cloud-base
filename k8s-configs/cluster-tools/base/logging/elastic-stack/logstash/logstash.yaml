@@ -215,22 +215,10 @@ spec:
                 configMapKeyRef:
                   name: cluster-info
                   key: log.level
-            - name: PIPELINE_BATCH_SIZE
-              # Base default; overridden by per-pipeline `pipeline.batch.size` in pipeline config.
-              value: '500'
-            - name: PIPELINE_WORKERS
-              # Base default; overridden by per-pipeline `pipeline.workers` in pipeline config.
-              value: "3"
             - name: PIPELINE_ECS_COMPATIBILITY
               value: disabled
             - name: PIPELINE_ORDERED
               value: 'false'
-            - name: QUEUE_TYPE
-              value: persisted
-            - name: QUEUE_MAX_BYTES
-              value: 10gb
-            - name: QUEUE_DRAIN
-              value: "true"
             - name: DEAD_LETTER_QUEUE_ENABLE
               value: "true"
             - name: PATH_DEAD_LETTER_QUEUE
