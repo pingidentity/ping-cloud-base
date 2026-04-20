@@ -10,11 +10,13 @@ get_virtual_host_by_host_port() {
   password="${1}"
   endpoint="${2}"
   host_port="${3}"
+  token="${4}"
+  auth_header=$(curl_auth_header "${password}" "${token}")
 
   get_virtual_hosts_response=$(curl -k \
     -s \
     -i \
-    -u "Administrator:${password}" \
+    -H "${auth_header}" \
     -H 'X-Xsrf-Header: PingAccess' \
     "${endpoint}/virtualhosts?virtualHost=${host_port}")
 
@@ -35,11 +37,13 @@ get_agent_by_name() {
   password="${1}"
   endpoint="${2}"
   name="${3}"
+  token="${4}"
+  auth_header=$(curl_auth_header "${password}" "${token}")
 
   get_agent_response=$(curl -k \
     -s \
     -i \
-    -u "Administrator:${password}" \
+    -H "${auth_header}" \
     -H 'X-Xsrf-Header: PingAccess' \
     "${endpoint}/agents?name=${name}")
 
@@ -60,11 +64,13 @@ get_application_by_name() {
   password="${1}"
   endpoint="${2}"
   name="${3}"
+  token="${4}"
+  auth_header=$(curl_auth_header "${password}" "${token}")
 
   get_app_response=$(curl -k \
     -s \
     -i \
-    -u "Administrator:${password}" \
+    -H "${auth_header}" \
     -H 'X-Xsrf-Header: PingAccess' \
     "${endpoint}/applications?name=${name}")
 
