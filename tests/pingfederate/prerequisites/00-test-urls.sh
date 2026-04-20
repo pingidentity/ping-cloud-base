@@ -9,19 +9,27 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-# Switching to Private Ingress to test URLs given PingFederate Basic Auth is being blocked by PingAccess-WAS
-PINGFEDERATE_PRIVATE="https://pingfederate-admin-api.${DNS_ZONE}"
-PINGFEDERATE_CONSOLE="${PINGFEDERATE_PRIVATE}/pingfederate/app"
-PINGFEDERATE_API_DOCS="${PINGFEDERATE_PRIVATE}/pf-admin-api/api-docs/"
-PINGFEDERATE_API="${PINGFEDERATE_PRIVATE}/pf-admin-api/v1/version"
+oneTimeSetUp() {
+  SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
+  SCRIPT_HOME_DIRNAME=$(dirname ${SCRIPT_HOME})
+  . ${SCRIPT_HOME_DIRNAME}/util/export-oauth-token.sh
+
+  # Switching to Private Ingress to test URLs given PingFederate Basic Auth is being blocked by PingAccess-WAS
+  PINGFEDERATE_PRIVATE="https://pingfederate-admin-api.${DNS_ZONE}"
+  PINGFEDERATE_CONSOLE="${PINGFEDERATE_PRIVATE}/pingfederate/app"
+  PINGFEDERATE_API_DOCS="${PINGFEDERATE_PRIVATE}/pf-admin-api/api-docs/"
+  PINGFEDERATE_API="${PINGFEDERATE_PRIVATE}/pf-admin-api/v1/version"
+}
 
 testUrls() {
-
   exit_code=0
   for i in {1..10}
   do
-    testUrlsExpect2xx "${PINGFEDERATE_CONSOLE}" "${PINGFEDERATE_API_DOCS}" "${PINGFEDERATE_API}"
+    testUrlsExpect2xx "${PINGFEDERATE_CONSOLE}" "${PINGFEDERATE_API_DOCS}"
     exit_code=$?
+
+    testUrlsWithTokenExpect2xx "${TOKEN}" "${PINGFEDERATE_API}"
+    exit_code=$((exit_code + $?))
 
     if [[ $exit_code -ne 0 ]]; then
       log "The PingFederate endpoints are inaccessible.  This is attempt ${i} of 10.  Wait 60 seconds and then try again..."
