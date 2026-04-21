@@ -9,6 +9,7 @@ if skipTest "${0}"; then
 fi
 
 . "${PROJECT_DIR}"/tests/pingaccess/util/pa-test-utils.sh
+. "${PROJECT_DIR}"/tests/pingaccess/util/export-oauth-token.sh
 
 testDeletePaAdmin() {
 
@@ -35,7 +36,7 @@ testDeletePaAdmin() {
     response=$(curl -k \
                     -i \
                     -s \
-                    -u "Administrator:${PA_ADMIN_PASSWORD}" \
+                    -H "Authorization: Bearer ${TOKEN}" \
                     -H 'X-Xsrf-Header: PingAccess' \
                     "${PINGACCESS_API}/applications")
 
