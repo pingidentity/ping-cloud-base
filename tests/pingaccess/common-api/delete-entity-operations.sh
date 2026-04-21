@@ -10,11 +10,13 @@ delete_agent() {
   password="${1}"
   endpoint="${2}"
   agent_id="${3}"
+  token="${4}"
+  auth_header=$(curl_auth_header "${password}" "${token}")
 
   delete_agent_response=$(curl -k \
     -i \
     -s \
-    -u "Administrator:${password}" \
+    -H "${auth_header}" \
     -H 'X-Xsrf-Header: PingAccess' \
     -X DELETE \
     "${endpoint}/agents/${agent_id}")
@@ -40,11 +42,13 @@ delete_application() {
   password="${1}"
   endpoint="${2}"
   application_id="${3}"
+  token="${4}"
+  auth_header=$(curl_auth_header "${password}" "${token}")
 
   delete_application_response=$(curl -k \
     -i \
     -s \
-    -u "Administrator:${password}" \
+    -H "${auth_header}" \
     -H 'X-Xsrf-Header: PingAccess' \
     -X DELETE \
     "${endpoint}/applications/${application_id}")
@@ -70,11 +74,13 @@ delete_virtual_host() {
   password="${1}"
   endpoint="${2}"
   virtual_host_id="${3}"
+  token="${4}"
+  auth_header=$(curl_auth_header "${password}" "${token}")
 
   delete_virtual_host_response=$(curl -k \
     -i \
     -s \
-    -u "Administrator:${password}" \
+    -H "${auth_header}" \
     -H 'X-Xsrf-Header: PingAccess' \
     -X DELETE \
     "${endpoint}/virtualhosts/${virtual_host_id}")

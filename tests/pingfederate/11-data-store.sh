@@ -8,13 +8,16 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-export PF_ADMIN_USERNAME="administrator"
-export PF_ADMIN_PASSWORD="2FederateM0re"
-export LDAP_DS_ID="LDAP-FA8D375DFAC589A222E13AA059319ABF9823B552"
+oneTimeSetUp() {
+  SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
+  . ${SCRIPT_HOME}/util/export-oauth-token.sh
+
+  LDAP_DS_ID="LDAP-FA8D375DFAC589A222E13AA059319ABF9823B552"
+}
 
 function make_api_request() {
   http_code=$(curl -k -o /dev/null -w "%{http_code}" \
-        -u ${PF_ADMIN_USERNAME}:${PF_ADMIN_PASSWORD} \
+        -H "Authorization: Bearer ${TOKEN}" \
         -H "Content-Type: application/json" \
         -H 'X-Xsrf-Header: PingFederate' "$@")
   curl_result=$?

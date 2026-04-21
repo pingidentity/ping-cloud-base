@@ -44,6 +44,8 @@ _Changes:_
 - [X] PDO-5993 Prometheus: Add p1as-Observability to PCB
 - [X] PDO-8391 Implement KMS changes for EBS
 - [X] PDO-8951 FluentBit: Remove K8s Metadata and Labels
+- [X] PDO-10077 Upgrade cluster-autoscaler to version 1.34
+- [X] PDO-10078 Upgrade pod-reaper to version 2.14.0
 - [X] PDO-10079 Upgrade cert-manager to version v1.19.1
 - [X] PDO-10285 - NewRelic: Update Logic for APM Agent + newrelic-tags-exporter
 - [X] PDO-10479 Update Security Contexts for kube-system namespace workloads
@@ -55,12 +57,11 @@ _Changes:_
 - [X] PDO-10485 Update Security Contexts for cert-manager namespace workloads
 - [X] PDO-10486 Update Security Contexts for external-dns namespace workloads
 - [X] PDO-10546 NewRelic: Remove NRI Kubernetes Images from PCD
-- [X] PDO-10077 Upgrade cluster-autoscaler to version 1.34
-- [X] PDO-10816 Upgrade external-dns to version v0.20.0
-- [X] PDO-10078 Upgrade pod-reaper to version 2.14.0
+- [X] PDO-10578 Update PA/PF integration tests to use oauth tokens for admin API calls
 - [X] PDO-10728 Bundle Documentation folder in profile-repo explaining all static files for all Products
 - [X] PDO-10748 Update Security Contexts for elastic-stack-logging workloads (pt 2)
 - [X] PDO-10795 Enable JSON-Based Logging for PA / PF / PD / PA-WAS
+- [X] PDO-10816 Upgrade external-dns to version v0.20.0
 - [X] PDO-10819 Upgrade kube-state-metrics to version 2.18.0
 - [X] PDO-10877 Update Security Contexts for ping-cloud namespace workloads - part2
 - [X] PDO-11030 OpenSearch: Enable conditional deploy of PingFederate Impossible Login Distance Map from Dashboards
