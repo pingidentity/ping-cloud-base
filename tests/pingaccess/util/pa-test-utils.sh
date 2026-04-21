@@ -22,3 +22,14 @@ function strip_double_quotes() {
   temp="${temp#\"}"
   echo ${temp}
 }
+
+# PA-WAS uses this method and needs basic auth
+curl_auth_header() {
+  local password="${1}"
+  local token="${2}"
+  if [[ -n "${token}" ]]; then
+    echo "Authorization: Bearer ${token}"
+  else
+    echo "Authorization: Basic $(echo -n "Administrator:${password}" | base64)"
+  fi
+}

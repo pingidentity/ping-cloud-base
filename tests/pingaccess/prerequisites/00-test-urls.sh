@@ -9,19 +9,29 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-# Switching to Private Ingress to test URLs given PingAccess Basic Auth is being blocked by PingAccess-WAS
-PINGACCESS_PRIVATE="https://pingaccess-admin-api.${DNS_ZONE}"
-PINGACCESS_CONSOLE="${PINGACCESS_PRIVATE}"
-PINGACCESS_API="${PINGACCESS_PRIVATE}/pa-admin-api/v3"
-PINGACCESS_SWAGGER="${PINGACCESS_PRIVATE}/pa-admin-api/api-docs"
+oneTimeSetUp() {
+  SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
+  SCRIPT_HOME_DIRNAME=$(dirname ${SCRIPT_HOME})
+  . "${SCRIPT_HOME_DIRNAME}/util/export-oauth-token.sh"
+
+  # Switching to Private Ingress to test URLs given PingAccess Basic Auth is being blocked by PingAccess-WAS
+  PINGACCESS_PRIVATE="https://pingaccess-admin-api.${DNS_ZONE}"
+  PINGACCESS_CONSOLE="${PINGACCESS_PRIVATE}"
+  PINGACCESS_API="${PINGACCESS_PRIVATE}/pa-admin-api/v3"
+  PINGACCESS_SWAGGER="${PINGACCESS_PRIVATE}/pa-admin-api/api-docs"
+}
 
 testUrls() {
-
   return_code=0
   for i in {1..10}
   do
-    testUrlsExpect2xx "${PINGACCESS_CONSOLE}" "${PINGACCESS_API}/version" "${PINGACCESS_SWAGGER}"
+    # Auth is not needed to hit swagger endpoint
+    testUrlsExpect2xx "${PINGACCESS_CONSOLE}" "${PINGACCESS_SWAGGER}"
     return_code=$?
+
+    testUrlsWithTokenExpect2xx "${TOKEN}" "${PINGACCESS_API}/version"
+    return_code=$((return_code + $?))
+
     if [[ ${return_code} -ne 0 ]]; then
       log "The PingAccess endpoints are inaccessible.  This is attempt ${i} of 10.  Wait 60 seconds and then try again..."
       sleep 60

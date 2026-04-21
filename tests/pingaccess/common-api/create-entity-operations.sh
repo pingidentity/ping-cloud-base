@@ -8,15 +8,18 @@ create_shared_secret() {
   set +x
   password="${1}"
   endpoint="${2}/sharedSecrets"
+  secret="${3}"
+  token="${4}"
+  auth_header=$(curl_auth_header "${password}" "${token}")
 
   # export for envsubst
-  export AGENT_SHARED_SECRET="${3}" # shared secrets must be 22 chars
+  export AGENT_SHARED_SECRET="${secret}" # shared secrets must be 22 chars
 
   create_shared_secret_payload=$(envsubst < ${templates_dir_path}/create-shared-secret-payload.json)
   create_shared_secret_response=$(curl -k \
     -i \
     -s \
-    -u "Administrator:${password}" \
+    -H "${auth_header}" \
     -H 'X-Xsrf-Header: PingAccess' \
     -d "${create_shared_secret_payload}" \
     "${endpoint}")
@@ -41,16 +44,20 @@ create_agent() {
 
   password="${1}"
   endpoint="${2}/agents"
+  secret_id=${3}
+  pa_engine_host="${4}"
+  token="${5}"
+  auth_header=$(curl_auth_header "${password}" "${token}")
 
   # export for envsubst
-  export SHARED_SECRET_ID=${3}
-  export PA_ENGINE_HOST=${4}
+  export SHARED_SECRET_ID=${secret_id}
+  export PA_ENGINE_HOST=${pa_engine_host}
 
   create_agent_payload=$(envsubst < ${templates_dir_path}/create-agent-payload.json)
   create_agent_response=$(curl -k \
     -i \
     -s \
-    -u "Administrator:${password}" \
+    -H "${auth_header}" \
     -H 'X-Xsrf-Header: PingAccess' \
     -d "${create_agent_payload}" \
     "${endpoint}")
@@ -75,12 +82,14 @@ create_site_application() {
 
   password="${1}"
   endpoint="${2}/applications"
+  token="${3}"
+  auth_header=$(curl_auth_header "${password}" "${token}")
 
   create_application_payload=$(envsubst < ${templates_dir_path}/create-site-application-payload.json)
   create_application_response=$(curl -k \
     -i \
     -s \
-    -u "Administrator:${password}" \
+    -H "${auth_header}" \
     -H 'X-Xsrf-Header: PingAccess' \
     -d "${create_application_payload}" \
     "${endpoint}")
@@ -105,16 +114,20 @@ create_agent_application() {
 
   password="${1}"
   endpoint="${2}/applications"
+  agent_id="${3}"
+  virtual_host_id="${4}"
+  token="${5}"
+  auth_header=$(curl_auth_header "${password}" "${token}")
 
   # export for envsubst
-  export AGENT_ID=${3}
-  export VIRTUAL_HOST_ID=${4}
+  export AGENT_ID=${agent_id}
+  export VIRTUAL_HOST_ID=${virtual_host_id}
 
   create_application_payload=$(envsubst < ${templates_dir_path}/create-agent-application-payload.json)
   create_application_response=$(curl -k \
     -i \
     -s \
-    -u "Administrator:${password}" \
+    -H "${auth_header}" \
     -H 'X-Xsrf-Header: PingAccess' \
     -d "${create_application_payload}" \
     "${endpoint}")
@@ -140,12 +153,14 @@ create_virtual_host() {
 
   password="${1}"
   endpoint="${2}/virtualhosts"
+  token="${3}"
+  auth_header=$(curl_auth_header "${password}" "${token}")
 
   create_vhost_payload=$(envsubst < ${templates_dir_path}/create-vhost-payload.json)
   create_vhost_response=$(curl -k \
     -i \
     -s \
-    -u "Administrator:${password}" \
+    -H "${auth_header}" \
     -H 'X-Xsrf-Header: PingAccess' \
     -d "${create_vhost_payload}" \
     "${endpoint}")
