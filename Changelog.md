@@ -32,6 +32,7 @@
 - Update seal-secret-values.py to handle customSecrets entries for Helm charts
 - p1as-karpenter GA vs non-ga settings
 - Remove metrics-server and kube-state-metrics from PCB
+- Add support for NewRelic Prometheus to scrape OpenSearch metrics
 
 _Changes:_
 
@@ -66,6 +67,7 @@ _Changes:_
 - [X] PDO-11104 Update p1as-beluga-lib and seal-secret-values to handle dynamic secrets
 - [X] PDO-11307 Prometheus: Migrate job-exporter and json-exporter to ping-cloud-common repo
 - [X] PDO-11356 P14C_INTEGRATION_IMAGE_TAG not applied to pingaccess-p1as-sso image
+- [X] PDO-11340 Expose OpenSearch Metrics for Monitoring and Alerting on NewRelic
 - [X] PDO-11376 Remove metrics-server and kube-state-metrics from PCB
 - [X] PDO-11390 Adjust resource and config allocation for FluentBit & Logstash
 

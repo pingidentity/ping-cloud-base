@@ -1,19 +1,24 @@
 # Overrides applied to child/secondary CDE regions at code-gen time.
 # Merged into values.yaml by generate-cluster-state.sh when REGION != PRIMARY_REGION.
 #
+# ### prometheus-agent ###
 # 1. remoteWrite: In child regions p1as-prometheus (server) is removed via
 #    PRIMARY_REGION_ONLY_DEPLOY, so "prometheus-headless:9090" does not resolve.
 #    Override the URL to point to the primary region's Prometheus server via
 #    the cross-region DNS record created by external-dns on the headless service.
 #
-# 2. opensearch-grafana-credentials: The secret is created by p14c-integration
-#    which only runs in the primary region. Override optional to true so
-#    prometheus-agent can start without the secret in child regions.
+# 1. opensearch-grafana-credentials: The secret is created by p14c-integration in os-controller-manager which only 
+#    runs in the primary region. Remove volume mounts for prometheus-agent so it can start without the secret in child regions.
 #
 # 3. extraManifests: We use extraManifests because the base Prometheus Helm chart lacks a native toggle to set the service type to ExternalName.
 #    This injects a cross-region DNS alias so that the prometheus agent in child regions can send its data to the primary region,
 #    and so volume-autoscaler can source metrics from the primary Prometheus. Since p1as-prometheus is not deployed in secondary regions,
 #    this ExternalName Service is the only prometheus-headless service in the cluster.
+#
+# ### nri-bundle.newrelic-prometheus-agent ###
+# 1. opensearch-newrelic-credentials: The secret is created by p14c-integration in os-controller-manager which only 
+#    runs in the primary region. Remove volume mounts for the newrelic-prometheus-agent so it can start without the 
+#    secret in child regions.
 prometheus-agent:
   extraManifests:
     - |
@@ -30,5 +35,11 @@ prometheus-agent:
     remoteWrite:
       - url: 'http://prometheus-central.${PRIMARY_DNS_ZONE}:9090/api/v1/write'
     #Extra volumes and volume mounts are intentionally left blank to remove the opensearch-grafana-credentials secret from child regions.
+    extraVolumes: []
+    extraVolumeMounts: []
+
+nri-bundle:
+  newrelic-prometheus-agent:
+    #Extra volumes and volume mounts are intentionally left blank to remove the opensearch-newrelic-credentials secret from child regions.
     extraVolumes: []
     extraVolumeMounts: []
