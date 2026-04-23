@@ -171,6 +171,8 @@ global:
 
   isBelugaEnv: ${IS_BELUGA_ENV}
 
+  isGA: ${IS_GA}
+
   ########################################################
   # DevOps License environment variables
   ########################################################
