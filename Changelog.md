@@ -37,6 +37,7 @@ _Changes:_
 - Add p1as-observability prometheus Helm chart to PCB
 - Update prometheus-job-exporter and prometheus-json-exporter image paths (v3.0.0) as part of migrating to ping-cloud-common repo
 - Update seal-secret-values.py to handle customSecrets entries for Helm charts
+- p1as-karpenter GA vs non-ga settings
 - Remove metrics-server and kube-state-metrics from PCB
 
 _Changes:_
