@@ -67,6 +67,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             privileged: false
+            readOnlyRootFilesystem: true
       containers:
         - name: exporter
           args:
