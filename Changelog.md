@@ -33,10 +33,12 @@
 - p1as-karpenter GA vs non-ga settings
 - Remove metrics-server and kube-state-metrics from PCB
 - Add support for NewRelic Prometheus to scrape OpenSearch metrics
+- Enhance prometheus and prometheus-agent integration, system test
 
 _Changes:_
 
 - [X] PDO-5993 Prometheus: Add p1as-Observability to PCB
+- [X] PDO-6001 Enhance Prometheus tests (unit, integration, system)
 - [X] PDO-8391 Implement KMS changes for EBS
 - [X] PDO-8951 FluentBit: Remove K8s Metadata and Labels
 - [X] PDO-10077 Upgrade cluster-autoscaler to version 1.34
