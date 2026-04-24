@@ -12,6 +12,13 @@ testPrometheusAPIAccessible() {
   curl -k -s ${PROMETHEUS}/api/v1/status/runtimeinfo >> /dev/null
   assertEquals "Prometheus API is unreacheable. URL: ${PROMETHEUS}/api/v1/status/runtimeinfo" 0 $?
 }
+
+testPrometheusJobExporterRunning() {
+  POD=$(kubectl -n prometheus get pods -l app=prometheus-job-exporter -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+  test -n "$POD" && kubectl -n prometheus get pod "$POD" -o jsonpath='{.status.phase}' | grep -q "Running"
+  assertEquals "Prometheus job exporter pod not running" 0 $?
+}
+
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
 # or your script won't run.  For integration
