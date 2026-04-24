@@ -58,6 +58,7 @@ patchesStrategicMerge:
 - ../base/ping-cloud/pingcentral/server/remove-from-secondary-patch.yaml
 - ../base/cluster-tools/monitoring/remove-from-secondary-patch.yaml
 - ../base/cluster-tools/logging/remove-from-secondary-patch.yaml
+- ../base/cluster-tools/logging/disable-logstash-cust-pipeline.yaml
 
 
 configMapGenerator:
