@@ -281,6 +281,7 @@ patches:
             securityContext:
               runAsNonRoot: true
               runAsUser: 999
+              readOnlyRootFilesystem: true
             env:
               - name: HELM_CACHE_HOME
                 value: /helm-working-dir
@@ -365,7 +366,14 @@ patches:
           initContainers:
           # Installs custom tools
           - name: install-custom-tools
-            image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/python:3.9-slim-bullseye
+            image: public.ecr.aws/r2h3l6e4/pingcloud-services/argocd-init-tools:v1.0.0
+            securityContext:
+              readOnlyRootFilesystem: true
+              privileged: false
+              allowPrivilegeEscalation: false
+              runAsNonRoot: true
+              runAsUser: 65534
+              runAsGroup: 65534
             command: [ "install-custom-tools.sh" ]
             volumeMounts:
             - name: tools-dir
@@ -427,6 +435,13 @@ patches:
           - name: argocd-bootstrap
             image: public.ecr.aws/r2h3l6e4/pingcloud-services/argocd-bootstrap/dev:v2.3-release-branch-latest
             imagePullPolicy: Always
+            securityContext:
+              readOnlyRootFilesystem: true
+              privileged: false
+              allowPrivilegeEscalation: false
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
             envFrom:
               - configMapRef:
                   name: argocd-bootstrap
@@ -444,6 +459,7 @@ patches:
             image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.3-release-branch-latest
             imagePullPolicy: Always
             securityContext:
+              readOnlyRootFilesystem: true
               allowPrivilegeEscalation: false
               runAsGroup: 9999
               runAsNonRoot: true

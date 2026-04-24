@@ -32,6 +32,7 @@
 - Update seal-secret-values.py to handle customSecrets entries for Helm charts
 - p1as-karpenter GA vs non-ga settings
 - Remove metrics-server and kube-state-metrics from PCB
+- Update Security Contexts for Argocd
 - Add support for NewRelic Prometheus to scrape OpenSearch metrics
 
 _Changes:_
@@ -70,6 +71,7 @@ _Changes:_
 - [X] PDO-11340 Expose OpenSearch Metrics for Monitoring and Alerting on NewRelic
 - [X] PDO-11376 Remove metrics-server and kube-state-metrics from PCB
 - [X] PDO-11390 Adjust resource and config allocation for FluentBit & Logstash
+- [x] PDO-11586 Update Security Contexts for Argocd
 
 ### 2.2.1
 

@@ -72,6 +72,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             privileged: false
+            readOnlyRootFilesystem: true
         - name: opensearch-bootstrap
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v2.3-release-branch-latest
           imagePullPolicy: Always
