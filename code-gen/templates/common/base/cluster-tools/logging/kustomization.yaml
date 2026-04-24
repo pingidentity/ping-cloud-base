@@ -4,6 +4,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/${KUSTOMIZE_BASE}/logging?ref=${K8S_GIT_BRANCH}
 - ${DASH_REPO_URL}/os-dashboards?ref=${DASH_REPO_BRANCH}
+# This patch must be enabled manually to use KMS encryption.
+# Uncomment the KMS-related resources/patches when EBS_KMS_KEY_ARN is set.
+#- kms-storageclass.yaml
 
 images:
 - name: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/logstash${ECR_ENV}
@@ -105,6 +108,10 @@ patchesStrategicMerge:
     dashboards:
       additionalConfig:
         opensearch_security.openid.base_redirect_url: "https://logs.${DNS_ZONE}"
+
+# This patch must be enabled manually to use KMS encryption.
+# Uncomment the KMS-related resources/patches when EBS_KMS_KEY_ARN is set.
+#- kms-patch.yaml
 
 patchesJson6902:
 - target:

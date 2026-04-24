@@ -1,0 +1,17 @@
+# KMS-encrypted gp3 StorageClass for PingDataSync
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdatasync
+  name: pingdatasync-gp3-kms
+allowVolumeExpansion: true
+provisioner: ebs.csi.aws.com
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  csi.storage.k8s.io/fstype: ext4
+  encrypted: "true"
+  type: gp3
+  kmsKeyId: ${EBS_KMS_KEY_ARN}
