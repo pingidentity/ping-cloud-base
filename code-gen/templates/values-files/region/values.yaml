@@ -31,3 +31,4 @@ global:
   pdHttpPublicHostname: "pingdirectory.${VALUES_FILES_DNS_ZONE}"
   pdDelegatorPublicHostname: "pingdelegator.${VALUES_FILES_DNS_ZONE}"
   pfEnginePublicHostname: "pingfederate.${VALUES_FILES_DNS_ZONE}"
+  ebsKmsKeyArn: "${EBS_KMS_KEY_ARN}"
