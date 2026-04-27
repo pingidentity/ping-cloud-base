@@ -1,12 +1,14 @@
 # Changelog
 
-### 2.1.3
+### 2.1.5
 
+- Upgrade PingAccess and PingAccess-WAS to v8.3.3
 - Revert ExternalDNS policy from sync to upsert-only
 
 _Changes:_
 
 - [X] PDO-11323 Revert ExternalDNS policy from sync to upsert-only
+- [X] PDO-11518 Upgrade PingAccess and PingAccess-WAS to v8.3.3
 
 ### 2.1.2
 
