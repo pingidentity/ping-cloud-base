@@ -366,7 +366,7 @@ spec:
             requests:
               cpu: "150m"
               memory: 100Mi
-      terminationGracePeriodSeconds: 60
+      terminationGracePeriodSeconds: 600
       volumes:
         - name: logstash-data
           emptyDir: {}
