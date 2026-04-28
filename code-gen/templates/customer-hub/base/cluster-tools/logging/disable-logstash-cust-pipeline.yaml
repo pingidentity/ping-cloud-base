@@ -1,0 +1,101 @@
+# Applied when LOGSTASH_CHUB_CUSTOMER_PIPELINE_ENABLED=false (default for customer-hub).
+# Removes logstash-elastic and its associated resources, and reduces FluentBit to S3-only output.
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-elastic
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: logstash-elastic
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-pipelines
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-pipeline-customer
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash-elastic
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: logstash-elastic
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: logstash-elastic
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: logstash-elastic
+$patch: delete
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: logstash-pdb
+  namespace: elastic-stack-logging
+$patch: delete
+---
+# Overwrites FluentBit outputs to S3-only (removes logstash_customer_out set by disable-opensearch-base-patch.yaml).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-pipeline-outputs
+  namespace: elastic-stack-logging
+data:
+  pipeline-outputs.conf: |
+    [OUTPUT]
+        Name                http
+        Alias               app_s3_archive_out
+        Match               elk.s3.*
+        workers             1
+        Host                logstash-elastic-s3.elastic-stack-logging
+        Port                8081
+        Format              json
+        Retry_Limit         300
+        compress            gzip
+        net.keepalive_idle_timeout  10
+        net.keepalive_max_recycle   100
+        storage.total_limit_size    2000M
+
+    [OUTPUT]
+        Name                http
+        Alias               infra_s3_archive_out
+        Match               s3.kube.*
+        workers             1
+        Host                logstash-elastic-s3.elastic-stack-logging
+        Port                8081
+        Format              json
+        Retry_Limit         300
+        compress            gzip
+        net.keepalive_idle_timeout  10
+        net.keepalive_max_recycle   100
+        storage.total_limit_size    2000M
+
+
