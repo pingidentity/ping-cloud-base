@@ -6,6 +6,7 @@ metadata:
   name: pingdelegator
 spec:
   replicas: 2
+  revisionHistoryLimit: 0
   strategy:
     type: RollingUpdate
   selector:

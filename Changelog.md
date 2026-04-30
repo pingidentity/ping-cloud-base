@@ -2,11 +2,11 @@
 
 ### 2.4.0
 
-- No Changes
+- Introduce 'revisionHistoryLimit' of 0 replicas to DA deployment to avoid cluster cluttering
 
 _Changes:_
 
-- None
+- [X] PDO-9115 Introduce 'revisionHistoryLimit' to Delegated Admin deployment object to avoid cluttering
 
 ### 2.3.0
 
