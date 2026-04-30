@@ -30,6 +30,7 @@
 - Update prometheus-job-exporter and prometheus-json-exporter image paths (v3.0.0) as part of migrating to ping-cloud-common repo
 - Update seal-secret-values.py to handle customSecrets entries for Helm charts
 - p1as-karpenter GA vs non-ga settings
+- Add p1as-pingaccess/was code-gen directories to PCB
 - Remove metrics-server and kube-state-metrics from PCB
 - Update Security Contexts for Argocd
 - Add support for NewRelic Prometheus to scrape OpenSearch metrics
@@ -70,6 +71,7 @@ _Changes:_
 - [X] PDO-11091 Logstash: Implement  (Fluent Bit → 2x Logstash StatefulSets)
 - [X] PDO-11092 Grafana: Update Dashboards for (Fluent Bit → 2x Logstash)
 - [X] PDO-11104 Update p1as-beluga-lib and seal-secret-values to handle dynamic secrets
+- [X] PDO-11237 Add p1as-pingaccess/was code-gen directories to PCB
 - [X] PDO-11243 Prometheus-Adapter: Implement Logstash HPA via custom metric
 - [X] PDO-11307 Prometheus: Migrate job-exporter and json-exporter to ping-cloud-common repo
 - [X] PDO-11356 P14C_INTEGRATION_IMAGE_TAG not applied to pingaccess-p1as-sso image

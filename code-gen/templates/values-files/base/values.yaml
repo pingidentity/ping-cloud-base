@@ -50,7 +50,7 @@ global:
       pcAdminUserPassword: MkZlZGVyYXRlTTByZQ==
       # Default Admin User Password for PingAccess
       paAdminUserPassword: MkZlZGVyYXRlTTByZQ==
-      
+
       ###### PingDirectory Secrets #####
 
       # Mounted as a file on PD container and used for dsreplication commands
@@ -87,7 +87,20 @@ global:
       pfClusterAuthPassword: ""
 
       # Optional license key for PingFederate
-      # pingFederateLicense:    
+      # pingFederateLicense:
+
+      ###### PingAccess Secrets #####
+      # Optional license key for PingAccess
+      # pingAccessLicense:
+      oldPaAdminUserPassword: MkFjY2Vzcw==
+
+      #### PingAccess-WAS Secrets ####
+      # Optional license key for PingAccess-WAS
+      # pingAccessWasLicense:
+      # Default Admin User Password for PingAccess-WAS
+      oldPaWasAdminUserPassword: MkFjY2Vzcw==
+      paWasAdminUserPassword: MkZlZGVyYXRlTTByZQ==
+
   ########################################################
   # Multi-region parameters
   ########################################################
@@ -193,8 +206,8 @@ global:
   ########################################################
   # Shared Application Variables
   ########################################################
-  # Define the contents for your descriptor.json file here, in yaml. An example is provided below for syntax.  
-  # Also see the descriptor.json.readme file in p1as-pingdirectory/deploy/templates/config directory of the 
+  # Define the contents for your descriptor.json file here, in yaml. An example is provided below for syntax.
+  # Also see the descriptor.json.readme file in p1as-pingdirectory/deploy/templates/config directory of the
   # p1as-pingdirectory repo for more info
   # descriptorFile: |-
   #   us-west-2:
@@ -235,6 +248,9 @@ global:
   pdClusterPublicHostname: "pingdirectory-cluster.${PRIMARY_DNS_ZONE}"
   selfServicePublicHostname: "self-service-api.${PRIMARY_DNS_ZONE}"
   selfServiceUIPublicHostname: "self-service.${PRIMARY_TENANT_DOMAIN}"
+  paAdminPublicHostname: "pingaccess-admin.${PRIMARY_TENANT_DOMAIN}"
+  paClusterPublicHostname: "pingaccess-cluster.${PRIMARY_TENANT_DOMAIN}"
+  paEnginePublicHostname: "pingaccess.${PRIMARY_TENANT_DOMAIN}"
 
   #### FEATURE FLAGS ##################################################################################################
   # Most are disabled by default
@@ -260,6 +276,3 @@ global:
     image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.3-release-branch-latest
   grpRadiusProxy:
     image: public.ecr.aws/r2h3l6e4/pingcloud-services/grp-radiusproxy/dev:v2.3-release-branch-latest
-
-
-
