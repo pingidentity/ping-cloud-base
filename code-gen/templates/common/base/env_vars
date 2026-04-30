@@ -120,15 +120,6 @@ USER_BASE_DN_5=${USER_BASE_DN_5}
 
 ECR_ENV=/dev
 
-############################################################
-# PingAccess variables for environment
-############################################################
-PA_WAS_MIN_HEAP=${PA_WAS_MIN_HEAP}
-PA_WAS_MAX_HEAP=${PA_WAS_MAX_HEAP}
-PA_WAS_MIN_YGEN=${PA_WAS_MIN_YGEN}
-PA_WAS_MAX_YGEN=${PA_WAS_MAX_YGEN}
-PA_WAS_GCOPTION=${PA_WAS_GCOPTION}
-
 PA_MIN_HEAP=${PA_MIN_HEAP}
 PA_MAX_HEAP=${PA_MAX_HEAP}
 PA_MIN_YGEN=${PA_MIN_YGEN}
@@ -144,8 +135,6 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=v2.3-release-branch-latest
-PINGACCESS_WAS_IMAGE_TAG=v2.3-release-branch-latest
 PINGDELEGATOR_IMAGE_TAG=v2.3-release-branch-latest
 PINGCENTRAL_IMAGE_TAG=v2.3-release-branch-latest
 PINGDATASYNC_IMAGE_TAG=v2.3-release-branch-latest
@@ -219,7 +208,7 @@ PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 
 
 RADIUS_PROXY_ENABLED=${RADIUS_PROXY_ENABLED}
-# List of ping apps(pingaccess,pingaccess-was,pingdelegator) for which you can enable external ingress(the values are ping app names)Examplelist:(pingaccess pingaccess-was)
+# List of ping apps(pingdelegator) for which you can enable external ingress(the values are ping app names)Examplelist:(pingdelegator)
 # Note pingdirectory & pingfederate external ingress is now controlled through the value 'ingress.enableExternalIngress' in the 'p1as-pingdirectory/<region>/values.yaml' & 'p1as-pingfederate/<region>/values.yaml file'.
 EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED}"
 

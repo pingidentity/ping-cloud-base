@@ -1,0 +1,41 @@
+# pingaccess application settings that are shared with both pingaccess Admin and Engine
+pingaccessWas:
+
+  # Application settings that is only for pingaccess Admin
+  admin:
+    # PingAccess Heap
+    paWasMinHeap: "2048m"
+    paWasMaxHeap: "2048m"
+    paWasMinYgen: "1024m"
+    paWasMaxYgen: "1024m"
+
+    statefulSet:
+      resources:
+        limits:
+          memory: "3Gi"
+          cpu: "2"
+        requests:
+          memory: "3Gi"
+          cpu: "2"
+
+
+
+  # Application settings that is only for pingaccess Engine
+  engine:
+    # PingAccess Heap
+    paWasMinHeap: "2048m"
+    paWasMaxHeap: "2048m"
+    paWasMinYgen: "1024m"
+    paWasMaxYgen: "1024m"
+
+    statefulSet:
+      hpa:
+        minReplicas: 2
+        maxReplicas: 8
+      resources:
+        limits:
+          memory: "3Gi"
+          cpu: "2"
+        requests:
+          memory: "3Gi"
+          cpu: "2"

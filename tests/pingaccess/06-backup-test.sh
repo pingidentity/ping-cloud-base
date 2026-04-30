@@ -9,9 +9,11 @@ if skipTest "${0}"; then
   exit 0
 fi
 
+BACKUP_JOB_NAME="pingaccess-backup"
+
 get_expected_files() {
   kubectl logs -n "${PING_CLOUD_NAMESPACE}" \
-    $(kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" | grep pingaccess-backup | cut -d/ -f2) |
+    $(kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" | grep "${BACKUP_JOB_NAME}" | cut -d/ -f2) |
   tail -1 |
   tr ' ' '\n' |
   sort
@@ -32,28 +34,63 @@ get_actual_files() {
   sort
 }
 
+########################################################################################################################
+# Simulates a backup job failure for PingAccess admin
+# Arguments
+#   ${1} -> Base name of pod w/o number appended (i.e pingaccess-admin)
+#   ${2} -> The name of the Job to be created
+#   ${3} -> Number of seconds to wait before checking state of job
+#   returns 1 or 0 depending on state of job
+########################################################################################################################
+init_backup_job_failure() {
+  local pod_name="${1}"
+  local job_name="${1%-admin}-backup"
+  local upload_job="${2}"
+  local timeout="${3:-10}"
+
+  log "Deleting backup job"
+  kubectl delete job "${upload_job}" -n "${PING_CLOUD_NAMESPACE}" --ignore-not-found=true
+
+  log "Disabling upload backup hook script"
+  kubectl exec "${pod_name}-0" -c "${pod_name}" -n "${PING_CLOUD_NAMESPACE}" -- sh -c "sed -i '1i exit 1' /opt/staging/hooks/90-upload-backup-s3.sh"
+
+  log "Creating backup job"
+  kubectl create job --from=cronjob/pingaccess-periodic-backup "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
+  assertEquals "The 'kubectl create' command to create the backup job should have succeeded" 0 $?
+
+  log "Waiting for backup job to fail"
+  sleep "${timeout}"
+  verify_resource "job" "${PING_CLOUD_NAMESPACE}" "${job_name}"
+  job_succeeded=${?}
+
+  log "Re-enabling backup hook script"
+  kubectl exec "${pod_name}-0" -c "${pod_name}" -n "${PING_CLOUD_NAMESPACE}" -- sh -c "sed -i '1d' /opt/staging/hooks/90-upload-backup-s3.sh"
+
+  log "Deleting backup job"
+  kubectl delete job "${upload_job}" -n "${PING_CLOUD_NAMESPACE}" --ignore-not-found=true
+
+  return "${job_succeeded}"
+}
+
 oneTimeSetUp(){
   # Save off backup file in case test does not complete and leaves it with 1 or more 'exit 1' statements inserted into it
-  kubectl exec pingaccess-admin-0 -c pingaccess-admin -n ping-cloud -- sh -c 'cp /opt/staging/hooks/90-upload-backup-s3.sh /tmp/90-upload-backup-s3.sh'
+  kubectl exec pingaccess-admin-0 -c pingaccess-admin -n "${PING_CLOUD_NAMESPACE}" -- sh -c 'cp /opt/staging/hooks/90-upload-backup-s3.sh /tmp/90-upload-backup-s3.sh'
 }
 
 oneTimeTearDown(){
   # Revert the original file back when tests are done execting
-  kubectl exec pingaccess-admin-0 -c pingaccess-admin -n ping-cloud -- sh -c 'cp /tmp/90-upload-backup-s3.sh /opt/staging/hooks/90-upload-backup-s3.sh'
+  kubectl exec pingaccess-admin-0 -c pingaccess-admin -n "${PING_CLOUD_NAMESPACE}" -- sh -c 'cp /tmp/90-upload-backup-s3.sh /opt/staging/hooks/90-upload-backup-s3.sh'
 }
 
 testPingAccessBackup() {
-  UPLOAD_JOB="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/admin/aws/backup.yaml
-
-  log "Deleting backup job"
-  kubectl delete -f "${UPLOAD_JOB}" -n "${PING_CLOUD_NAMESPACE}"
-
   log "Applying backup job"
-  kubectl apply -f "${UPLOAD_JOB}" -n "${PING_CLOUD_NAMESPACE}"
-  assertEquals "The kubectl apply command to create the PingAccess upload job should have succeeded" 0 $?
+  kubectl delete job "${BACKUP_JOB_NAME}" -n "${PING_CLOUD_NAMESPACE}" --ignore-not-found=true > /dev/null 2>&1
+
+  kubectl create job --from=cronjob/pingaccess-periodic-backup "${BACKUP_JOB_NAME}" -n "${PING_CLOUD_NAMESPACE}"
+  assertEquals "The 'kubectl create' command to create the backup job should have succeeded" 0 $?
 
   log "Waiting for backup job to complete"
-  kubectl wait --for=condition=complete --timeout=900s job/pingaccess-backup -n "${PING_CLOUD_NAMESPACE}"
+  kubectl wait --for=condition=complete --timeout=900s job/"${BACKUP_JOB_NAME}" -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl wait command for the backup job should have succeeded" 0 $?
 
   sleep 10
@@ -70,7 +107,7 @@ testPingAccessBackup() {
 }
 
 testPingAccessBackupCapturesFailure() {
-  init_backup_job_failure "pingaccess-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/admin/aws/backup.yaml 
+  init_backup_job_failure "pingaccess-admin" "${BACKUP_JOB_NAME}"
   assertEquals "Backup job should not have succeeded" 1 $?
 }
 

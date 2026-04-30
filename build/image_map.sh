@@ -8,9 +8,7 @@
 #   instead of here in the PCB repo
 ##########################################################################################
 
-export IMAGE_MAP="pingcloud-apps/pingaccess
-   pingcloud-apps/pingaccess-was
-   pingcloud-apps/pingdelegator
+export IMAGE_MAP="pingcloud-apps/pingdelegator
    pingcloud-apps/pingcentral
    pingcloud-apps/pingdatasync
    pingcloud-services/argocd-bootstrap
@@ -32,5 +30,7 @@ export CHART_MAP="p1as-beluga-tools
    p1as-newrelic
    p1as-grafana
    p1as-pingfederate
+   p1as-pingaccess
+   p1as-pingaccess-was
    p1as-prometheus
    p1as-prometheus-agent"
