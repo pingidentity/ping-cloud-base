@@ -39,6 +39,7 @@ _Changes:_
 - Update seal-secret-values.py to handle customSecrets entries for Helm charts
 - p1as-karpenter GA vs non-ga settings
 - Remove metrics-server and kube-state-metrics from PCB
+- Update Security Contexts for Argocd
 - Enhance prometheus and prometheus-agent integration, system test
 - Add patch to conditionally deploy logstash-elastic STS (customer pipeline) in customer-hub accounts
 
@@ -77,6 +78,7 @@ _Changes:_
 - [X] PDO-11356 P14C_INTEGRATION_IMAGE_TAG not applied to pingaccess-p1as-sso image
 - [X] PDO-11365 Logstash: Update to make logstash sts (customer pipeline) optional in customer-hub
 - [X] PDO-11376 Remove metrics-server and kube-state-metrics from PCB
+- [x] PDO-11586 Update Security Contexts for Argocd
 
 ### 2.2.1
 

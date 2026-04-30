@@ -18,6 +18,7 @@ spec:
       - name: customer-p1-connection
         securityContext:
           allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
