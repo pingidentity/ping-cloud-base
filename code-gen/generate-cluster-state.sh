@@ -1623,6 +1623,11 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     log "Copying profile code from ${PROFILE_REPO_MIRROR_DIR}/${app_repo}/profiles/ to ${ENV_PROFILES_DIR}"
     cp -pr "${PROFILE_REPO_MIRROR_DIR}/${app_repo}/profiles/." "${ENV_PROFILES_DIR}"
 
+    configure_profile_repo_script="${PROFILE_REPO_MIRROR_DIR}/${app_repo}/configure-profile-repo.sh"
+    if test -f "${configure_profile_repo_script}"; then
+      /bin/bash "${configure_profile_repo_script}" "${ENV_PROFILES_DIR}"
+    fi
+
     # Remove pingdirectory-proxy profile
     # This code will be changed to utilize pingdirectory-proxy enabled variable once it is supported in P1AS full deployments
     if test "${app_repo}" = "p1as-pingdirectory"; then
