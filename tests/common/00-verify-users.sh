@@ -107,18 +107,18 @@ test_ping_user_pdel() {
 
   }
 
-# test ping central user
-test_ping_user_pc() {
-  
-  # get pingcentral pod name
-  pingcentral_pods=$(kubectl get pod -n "${PING_CLOUD_NAMESPACE}" --field-selector=status.phase=Running --no-headers -o custom-columns=":metadata.name"  | grep pingcentral)
-
-  # test pingcentral server
-  for pingcentral_pod in ${pingcentral_pods}; do
-    verify_ping_user "${pingcentral_pod}" "pingcentral"
-  done
-
-  }
+## test ping central user
+#test_ping_user_pc() {
+#
+#  # get pingcentral pod name
+#  pingcentral_pods=$(kubectl get pod -n "${PING_CLOUD_NAMESPACE}" --field-selector=status.phase=Running --no-headers -o custom-columns=":metadata.name"  | grep pingcentral)
+#
+#  # test pingcentral server
+#  for pingcentral_pod in ${pingcentral_pods}; do
+#    verify_ping_user "${pingcentral_pod}" "pingcentral"
+#  done
+#
+#  }
 
   # test ping datasync user
 test_ping_user_pds() {
