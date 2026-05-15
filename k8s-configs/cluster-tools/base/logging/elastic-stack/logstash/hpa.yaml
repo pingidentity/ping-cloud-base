@@ -12,12 +12,11 @@ spec:
       selectPolicy: Max
       stabilizationWindowSeconds: 300
     scaleUp:
+      stabilizationWindowSeconds: 120
       policies:
-        - periodSeconds: 15
-          type: Percent
-          value: 50
-      selectPolicy: Max
-      stabilizationWindowSeconds: 30
+        - type: Pods
+          value: 2
+          periodSeconds: 120
   maxReplicas: 5
   metrics:
     - type: Resource
@@ -62,12 +61,11 @@ spec:
       selectPolicy: Max
       stabilizationWindowSeconds: 300
     scaleUp:
+      stabilizationWindowSeconds: 120
       policies:
-        - periodSeconds: 15
-          type: Percent
-          value: 50
-      selectPolicy: Max
-      stabilizationWindowSeconds: 30
+        - type: Pods
+          value: 2
+          periodSeconds: 120
   maxReplicas: 5
   metrics:
     - type: Resource

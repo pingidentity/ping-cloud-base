@@ -38,6 +38,7 @@
 - Add patch to conditionally deploy logstash-elastic STS (customer pipeline) in customer-hub accounts
 - Remove cloudwatch image override to rely on p1as-observability's p1as-cloudwatch chart default to simplify future Cloudwatch agent version upgrades
 - Implement Logstash HPA via custom metric
+- Prometheus Adapter OOM fix
 
 _Changes:_
 
@@ -80,6 +81,7 @@ _Changes:_
 - [X] PDO-11376 Remove metrics-server and kube-state-metrics from PCB
 - [X] PDO-11390 Adjust resource and config allocation for FluentBit & Logstash
 - [x] PDO-11586 Update Security Contexts for Argocd
+- [X] PDO-11733 Prometheus Adapter OOM fix
 
 ### 2.2.2
 
