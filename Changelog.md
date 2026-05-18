@@ -80,6 +80,14 @@ _Changes:_
 - [X] PDO-11376 Remove metrics-server and kube-state-metrics from PCB
 - [x] PDO-11586 Update Security Contexts for Argocd
 
+### 2.2.2
+
+- Update generate-cluster-state.sh to run microservice configure-profile-repo.sh script
+
+_Changes:_
+
+- [X] PDO-10221 Create existing customer transition script - PingFederate templates and language packs
+
 ### 2.2.1
 
 - remove modsecurity from ingress-nginx-public and pa-was ingress
@@ -122,10 +130,11 @@ _Changes:_
 - Add Self-service IP allowlist vars and bootstrap config
 - Adding JSON parsing support for PingAccess and PingAccess-WAS logs
 - Add backward compatible JSON filters for customer pipelines (PD)
+- Refactor kube-state-metrics to apply HPA-related customisations via Kustomize patch
+- Update engine ingresses to cache healthcheck responses for 1s
 - Update PA 9.0 run.properties
 - Add p1as-sso-secrets to PA and PA-WAS Upgrade init container
-- Update engine ingresses to cache healthcheck responses for 1s
-- Refactor kube-state-metrics to apply HPA-related customisations via Kustomize patch
+- Fluent-bit pipeline updated to log p14c-bootstrap logs
 
 _Changes:_
 
@@ -175,9 +184,9 @@ _Changes:_
 - [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
 - [X] PDO-10789 Karpenter amiFamily update to Amazon Linux 2023
 - [X] PDO-10823 Set Karpenter drift to false
-- [X] PDO-10895 Update PA 9.0 run.properties
-- [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
+- [X] PDO-10895 Update PA 9.0 run.properties 
 - [X] PDO-10998 Update engine ingresses to cache healthcheck responses for 1s
+- [X] PDO-11151 Logging: Support bootstrap logging
 
 ### 2.1.2
 
