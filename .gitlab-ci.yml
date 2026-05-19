@@ -129,10 +129,13 @@ deploy:
   before_script:
     - mkdir -p $YAML_OUT_DIR
   script:
-    - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh
+    - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy-wrapper.sh
   artifacts:
+    when: always
+    expire_in: 7 days
     paths:
       - out/
+      - deploy-failure-logs/
   dependencies:
     - find-cluster
 
