@@ -128,8 +128,7 @@ feature_flags() {
   cd "${1}/k8s-configs"
 
   # Map with the feature flag environment variable & the term to search to find the kustomization files
-  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy
-            ${CUSTOMER_PINGONE_ENABLED}:customer-p1-connection.yaml"
+  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy"
 
   for flag in $flag_map; do
     enabled="${flag%%:*}"
