@@ -85,6 +85,14 @@ _Changes:_
 - [x] PDO-11586 Update Security Contexts for Argocd
 - [X] PDO-11733 Prometheus Adapter OOM fix
 
+### 2.2.3
+
+- Update customer-p1-connection job to perform connection deletion
+
+_Changes:_
+
+- [X] PDO-10832 Update customer-p1-connection job to perform connection deletion
+
 ### 2.2.2
 
 - Update generate-cluster-state.sh to run microservice configure-profile-repo.sh script
