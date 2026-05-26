@@ -1597,6 +1597,9 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       /bin/bash "${configure_profile_repo_script}" "${ENV_PROFILES_DIR}"
     fi
 
+    echo "Contents of ${ENV_PROFILES_DIR} after copying ${app_repo} profiles and running configure-profile-repo.sh (if it exists):"
+    ls -la "${ENV_PROFILES_DIR}"
+
     # Remove pingdirectory-proxy profile
     # This code will be changed to utilize pingdirectory-proxy enabled variable once it is supported in P1AS full deployments
     if test "${app_repo}" = "p1as-pingdirectory"; then
@@ -1623,7 +1626,8 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     echo "Not CI/CD or CHUB deploy, removing PingCentral profiles"
     rm -rf "${ENV_PROFILES_DIR}/${PING_CENTRAL}"
   fi
-
+  echo "Ending contents of ${ENV_PROFILES_DIR}:"
+  ls -la "${ENV_PROFILES_DIR}"
   echo "=====> Done creating environment '${ENV}'"
 )
 subshell_exit_code=$?

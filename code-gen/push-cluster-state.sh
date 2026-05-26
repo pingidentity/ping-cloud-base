@@ -218,6 +218,9 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     # Get all app paths
     if "${IS_PROFILE_REPO}"; then
       APP_PATHS=$(find "${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH}" -mindepth 1 -maxdepth 1 -type d)
+      echo "APP_PATHS for profile repo is ${APP_PATHS}"
+      echo "Contents of ${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH} are:"
+      ls -la "${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH}"
     else
       APP_PATHS=$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}" -mindepth 1 -maxdepth 1 -type d)
     fi
