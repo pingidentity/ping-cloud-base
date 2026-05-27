@@ -7,7 +7,6 @@ if skipTest "${0}"; then
   log "Skipping test ${0}"
   exit 0
 fi
-
 NERDGRAPH_ENDPOINT="https://api.newrelic.com/graphql"
 
 NEW_RELIC_API_KEY=$(get_ssm_val "/pcpt/sre/new-relic/api-query-key")
@@ -62,6 +61,57 @@ EOF
   log "Metrics query successful. CPU Usage: ${CPU_USAGE}, Memory Usage: ${MEMORY_USAGE}"
 }
 
+testOpenSearchMetrics(){
+    RESPONSE=$(curl -s -X POST "${NERDGRAPH_ENDPOINT}" \
+      -H "Content-Type: application/json" \
+      -H "API-Key: ${NEW_RELIC_API_KEY}" \
+      -d @- <<EOF
+  {
+    "query": "{
+      actor {
+        account(id: ${NEW_RELIC_ACCOUNT_ID}) {
+          nrql(
+          query: \\"SELECT latest(opensearch_cluster_status) FROM Metric WHERE metricName = 'opensearch_cluster_status' AND \`cluster_name\` = '${CLUSTER_NAME}' SINCE 5 minute ago\\") {
+            results
+          }
+        }
+      }
+    }"
+  }
+EOF
+  )
+    log "Full API Response: ${RESPONSE}"
+    CLUSTER_STATUS=$(echo "${RESPONSE}" | jq -r '.data.actor.account.nrql.results[0].latest')
+    assertNotNull "Metrics query returned null cluster status." "${CLUSTER_STATUS}"
+    assertTrue "Metrics query returned non-positive cluster status." "(( ${CLUSTER_STATUS} >= 0 ))"
+    log "OpenSearch cluster status metric query successful. Cluster Status: ${CLUSTER_STATUS}"  
+
+
+    RESPONSE=$(curl -s -X POST "${NERDGRAPH_ENDPOINT}" \
+      -H "Content-Type: application/json" \
+      -H "API-Key: ${NEW_RELIC_API_KEY}" \
+      -d @- <<EOF
+  {
+    "query": "{
+      actor {
+        account(id: ${NEW_RELIC_ACCOUNT_ID}) {
+          nrql(
+          query: \\"SELECT uniqueCount(pod) AS reporting_nodes FROM Metric WHERE metricName = 'opensearch_os_cpu_percent' AND \`cluster_name\` = '${CLUSTER_NAME}' AND opensearch_os_cpu_percent > 0 SINCE 5 minutes ago\\") {
+            results
+          }
+        }
+      }
+    }"
+  }
+EOF
+  )
+    log "Full API Response: ${RESPONSE}"
+    NODES_REPORTING_CPU_USAGE=$(echo "${RESPONSE}" | jq -r '.data.actor.account.nrql.results[0].reporting_nodes')
+    assertNotNull "OpenSearch metrics query returned null." "${NODES_REPORTING_CPU_USAGE}"
+    assertTrue "OpenSearch metrics query returned incorrect number of reporting nodes." "[[ ${NODES_REPORTING_CPU_USAGE} > 0 ]]"
+    log "OpenSearch metrics query successful. Nodes reporting CPU usage: ${NODES_REPORTING_CPU_USAGE}"
+
+}
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
 # or your script won't run.  For integration

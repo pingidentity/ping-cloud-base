@@ -104,12 +104,11 @@ prometheus-agent:
         cpu: 100m
         memory: 512Mi
 
-    # opensearch-grafana-credentials is created by p14c-integration (opensearch_sso_config.py)
-    # which runs as an init container on the OpenSearch operator deployment.
-    # In primary CDE regions the secret will exist — optional: false to fail fast if missing.
-    # For child/secondary CDE regions, secondary-values.yaml overrides this to optional: true
-    # (merged at code-gen time by generate-cluster-state.sh).
-    # For customer-hub, chub-values.yaml overrides this to optional: true.
+    # opensearch-grafana-credentials is created in p14c-integration container by the 
+    # OpenSearch controller manager.  In primary CDE regions the secret will exist, 
+    # for child/secondary CDE regions and customer-hub envs  OpenSearch is not deployed 
+    # and the secret will not exist.  secondary-values.yaml and chub-values.yaml override 
+    # this to remove the volume mount
     extraVolumes:
       - name: os-creds
         secret:
@@ -118,3 +117,20 @@ prometheus-agent:
           items:
             - key: password
               path: os-password
+
+# opensearch-newrelic-credentials is created in p14c-integration container by the 
+# OpenSearch controller manager.  In primary CDE regions the secret will exist, 
+# for child/secondary CDE regions and customer-hub envs  OpenSearch is not deployed 
+# and the secret will not exist.  secondary-values.yaml and chub-values.yaml override 
+# this to remove the volume mount
+nri-bundle:
+  newrelic-prometheus-agent:
+    extraVolumes:
+      - name: os-password
+        secret:
+          secretName: opensearch-newrelic-credentials
+          optional: false
+    extraVolumeMounts:
+      - name: os-password
+        mountPath: /etc/secrets
+        readOnly: true
