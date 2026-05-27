@@ -84,6 +84,14 @@ _Changes:_
 - [X] PDO-11376 Remove metrics-server and kube-state-metrics from PCB
 - [x] PDO-11586 Update Security Contexts for Argocd
 
+### 2.2.3
+
+- Update customer-p1-connection job to perform connection deletion
+
+_Changes:_
+
+- [X] PDO-10832 Update customer-p1-connection job to perform connection deletion
+
 ### 2.2.2
 
 - Update generate-cluster-state.sh to run microservice configure-profile-repo.sh script
