@@ -40,6 +40,7 @@
 - Remove cloudwatch image override to rely on p1as-observability's p1as-cloudwatch chart default to simplify future Cloudwatch agent version upgrades
 - Implement Logstash HPA via custom metric
 - Prometheus Adapter OOM fix
+- Upgrade PingCentral to v2.3.0
 - Prometheus Adapter race condition, add prometheus namespace to bootstrap process
 
 _Changes:_
@@ -83,6 +84,7 @@ _Changes:_
 - [X] PDO-11365 Logstash: Update to make logstash sts (customer pipeline) optional in customer-hub
 - [X] PDO-11376 Remove metrics-server and kube-state-metrics from PCB
 - [X] PDO-11390 Adjust resource and config allocation for FluentBit & Logstash
+- [X] PDO-11392 Upgrade PingCentral to v2.3.0
 - [x] PDO-11586 Update Security Contexts for Argocd
 - [X] PDO-11733 Prometheus Adapter OOM fix
 - [X] PDO-11745 Prometheus Adapter race condition, add prometheus namespace to bootstrap process
