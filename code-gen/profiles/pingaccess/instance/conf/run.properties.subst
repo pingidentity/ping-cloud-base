@@ -152,6 +152,9 @@ pa.websession.cookie.sameSiteExcludedUserAgentPatterns= ^.*\\(iP.+; CPU .*OS 12[
                                                         ^.*\\(Macintosh;.*Mac OS X 10_14[_\\d]*.*\\) AppleWebKit\\/[\\.\\d]+ \\(KHTML. like Gecko\\)$,\
                                                         Box.*\\/.+Darwin\\/10.14.*$,\
                                                         ^.*PAN GlobalProtect.*Mac OS X 10.*14.*$
+pa.default.session.cookie.attributes.partitioned=false
+pa.default.cookie.attributes.partitioned.excludedUserAgentPatterns=
+
 
 # Request URI handling
 pa.uri.strict=false
