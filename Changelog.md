@@ -45,6 +45,7 @@ _Changes:_
 - Enhance prometheus and prometheus-agent integration, system test
 - Add patch to conditionally deploy logstash-elastic STS (customer pipeline) in customer-hub accounts
 - Add support for NewRelic Prometheus to scrape OpenSearch metrics
+- Upgrade PingCentral to v2.3.0
 
 _Changes:_
 
@@ -82,6 +83,7 @@ _Changes:_
 - [X] PDO-11356 P14C_INTEGRATION_IMAGE_TAG not applied to pingaccess-p1as-sso image
 - [X] PDO-11365 Logstash: Update to make logstash sts (customer pipeline) optional in customer-hub
 - [X] PDO-11376 Remove metrics-server and kube-state-metrics from PCB
+- [X] PDO-11392 Upgrade PingCentral to v2.3.0
 - [x] PDO-11586 Update Security Contexts for Argocd
 
 ### 2.2.3
