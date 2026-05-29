@@ -11,18 +11,14 @@ _Changes:_
 ### 2.2.2
 
 - Update generate-cluster-state.sh to run microservice configure-profile-repo.sh script
+- Remove modsecurity from ingress-nginx-public and pa-was ingress
+- Upgrade PingAccess and PingAccess-WAS to v9.0.3
 
 _Changes:_
 
 - [X] PDO-10221 Create existing customer transition script - PingFederate templates and language packs
-
-### 2.2.1
-
-- remove modsecurity from ingress-nginx-public and pa-was ingress
-
-_Changes:_
-
 - [X] PDO-11379 Upgrade Ingress NGINX Controller to version 1.14.4
+- [X] PDO-11519 Upgrade PingAccess and PingAccess-WAS to v9.0.3
 
 ### 2.2.0
 
