@@ -4,11 +4,13 @@
 
 - Upgrade PingAccess and PingAccess-WAS to v8.3.3
 - Revert ExternalDNS policy from sync to upsert-only
+- Address ingress-nginx vulnerability K000161019 via Chainguard fork (v2.1)-CVE-2026-42945
 
 _Changes:_
 
 - [X] PDO-11323 Revert ExternalDNS policy from sync to upsert-only
 - [X] PDO-11518 Upgrade PingAccess and PingAccess-WAS to v8.3.3
+- [X] PDO-11773 Address ingress-nginx vulnerability K000161019 via Chainguard fork (v2.1)-CVE-2026-42945
 
 ### 2.1.2
 
