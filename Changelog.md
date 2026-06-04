@@ -5,9 +5,11 @@
 - Add deploy wrapper to capture deploy failure logs
 - Introduce 'revisionHistoryLimit' of 0 replicas to DA deployment to avoid cluster cluttering
 - Update pod-reaper and httpbin images
+- Add integration tests for PingDelegator JSON access log format and OpenSearch ingestion
 
 _Changes:_
 
+- [X] PDO-7316 JSON Logging: Implement JSON logging for PingDelegator logs
 - [X] PDO-8875 Add deploy wrapper to capture deploy failure logs
 - [X] PDO-9115 Introduce 'revisionHistoryLimit' to Delegated Admin deployment object to avoid cluttering
 - [X] PDO-10168 Update pod-reaper and httpbin images
