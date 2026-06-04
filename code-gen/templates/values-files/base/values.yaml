@@ -248,9 +248,9 @@ global:
   pdClusterPublicHostname: "pingdirectory-cluster.${PRIMARY_DNS_ZONE}"
   selfServicePublicHostname: "self-service-api.${PRIMARY_DNS_ZONE}"
   selfServiceUIPublicHostname: "self-service.${PRIMARY_TENANT_DOMAIN}"
-  paAdminPublicHostname: "pingaccess-admin.${PRIMARY_TENANT_DOMAIN}"
-  paClusterPublicHostname: "pingaccess-cluster.${PRIMARY_TENANT_DOMAIN}"
-  paEnginePublicHostname: "pingaccess.${PRIMARY_TENANT_DOMAIN}"
+  paAdminPublicHostname: "pingaccess-admin.${PRIMARY_DNS_ZONE}"
+  paClusterPublicHostname: "pingaccess-cluster.${PRIMARY_DNS_ZONE}"
+  paEnginePublicHostname: "pingaccess.${VALUES_FILES_DNS_ZONE}"
 
   #### FEATURE FLAGS ##################################################################################################
   # Most are disabled by default
