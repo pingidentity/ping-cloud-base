@@ -71,5 +71,59 @@ class TestOpenSearchLogs(unittest.TestCase):
             self.assertIsNotNone(match,
                 f"fluentbit_ingestion_field is not a valid timestamp: {timestamp_field}"
             )
+    def assert_index_receives_logs(self, index_pattern: str, expected_fields: list[str]):
+        query = {
+            "query": {"match_all": {}},
+            "_source": expected_fields,
+            "size": 10,
+        }
+        response = self.opensearch_client.search(index=index_pattern, body=query)
+        hits = response["hits"]["hits"]
+
+        self.assertGreater(
+            len(hits), 0,
+            f"No documents found in {index_pattern}. Logs are not reaching OpenSearch.",
+        )
+
+        for hit in hits:
+            source = hit["_source"]
+            missing = [f for f in expected_fields if f not in source]
+            self.assertEqual(
+                missing, [],
+                f"{index_pattern} document is missing expected fields {missing}. Document: {source}",
+            )
+
+    def assert_no_parse_failures(self, index_pattern: str):
+        query = {
+            "query": {
+                "terms": {
+                    "tags": ["_grokparsefailure", "_jsonparsefailure"],
+                }
+            },
+            "_source": ["tags", "log", "message"],
+            "size": 10,
+        }
+        response = self.opensearch_client.search(index=index_pattern, body=query)
+        hits = response["hits"]["hits"]
+
+        self.assertEqual(
+            len(hits), 0,
+            f"Found {len(hits)} document(s) in {index_pattern} with parse failure tags "
+            f"(_grokparsefailure or _jsonparsefailure):\n"
+            + "\n".join(str(h["_source"]) for h in hits),
+        )
+
+    def test_pdg_access_logs(self):
+        self.assert_index_receives_logs(
+            index_pattern="pdg-access-*",
+            expected_fields=[
+                "client", "method", "url", "httpVersion",
+                "responseCode", "bodySentBytes", "userAgent",
+                "app_timestamp",
+            ],
+        )
+        self.assert_no_parse_failures("pdg-access-*")
+
+
 if __name__ == '__main__':
     unittest.main()
