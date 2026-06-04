@@ -31,5 +31,8 @@ global:
   pdHttpPublicHostname: "pingdirectory.${VALUES_FILES_DNS_ZONE}"
   pdDelegatorPublicHostname: "pingdelegator.${VALUES_FILES_DNS_ZONE}"
   pfEnginePublicHostname: "pingfederate.${VALUES_FILES_DNS_ZONE}"
-  argocdPublicHostname: "argocd.${TENANT_DOMAIN}"
+  argocdPublicHostname: "argocd.${VALUES_FILES_DNS_ZONE}"
+
+  # ARN of the KMS key used to encrypt EBS volumes
   ebsKmsKeyArn: "${EBS_KMS_KEY_ARN}"
+
