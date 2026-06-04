@@ -3,10 +3,12 @@
 ### 2.4.0
 
 - Introduce 'revisionHistoryLimit' of 0 replicas to DA deployment to avoid cluster cluttering
+- Update pod-reaper and httpbin images
 
 _Changes:_
 
 - [X] PDO-9115 Introduce 'revisionHistoryLimit' to Delegated Admin deployment object to avoid cluttering
+- [X] PDO-10168 Update pod-reaper and httpbin images
 
 ### 2.3.0
 
