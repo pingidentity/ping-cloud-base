@@ -1,0 +1,94 @@
+# pingaccess application settings that are shared with both pingaccess Admin and Engine
+pingaccess:
+  irsaPaAnnotationKeyValue: "${IRSA_PA_ANNOTATION_KEY_VALUE}"
+  podReaperEnabled: true
+
+  license:
+    # Only use if you want to provide your own SSM path to perpetual license
+    # The default is that automation will determine SSM path to retrieve product license
+    overrideProductLicense: ""
+
+  admin:
+    # PingAccess Heap
+    verbose: "false"
+    paMinHeap: "1024m"
+    paMaxHeap: "1024m"
+    paMinYgen: "512m"
+    paMaxYgen: "512m"
+    paGcOption: "-XX:+UseParallelGC"
+
+    restore:
+      backupFileName: ""
+
+    statefulSet:
+      lastUpdateReason: "NA"
+      replicas: 1
+      resources:
+        limits:
+          memory: "4Gi"
+          cpu: "2"
+        requests:
+          memory: "4Gi"
+          cpu: "2"
+      upgradeResources:
+        limits:
+          memory: "8Gi"
+          cpu: "2"
+        requests:
+          memory: "8Gi"
+          cpu: "2"
+
+    ingress:
+      enableExternalIngress: false
+
+    persistentVolume:
+      size: "20Gi"
+
+
+  engine:
+    verbose: "false"
+
+    # PingAccess Heap
+    paMinHeap: "1024m"
+    paMaxHeap: "1024m"
+    paMinYgen: "512m"
+    paMaxYgen: "512m"
+    paGcOption: "-XX:+UseParallelGC"
+
+    statefulSet:
+      lastUpdateReason: "NA"
+      podDisruptionBudget:
+        minAvailable: "30%"
+      hpa:
+        minReplicas: 2
+        maxReplicas: 2
+        averageUtilization: 70
+      resources:
+        limits:
+          memory: "2Gi"
+          cpu: "1"
+        requests:
+          memory: "2Gi"
+          cpu: "1"
+
+  # Periodic CronJob settings for backing up PingAccess Admin
+  periodicBackupCronJob:
+    schedule: "30 * * * *"
+    resources:
+      limits:
+        memory: "50Mi"
+        cpu: "50m"
+      requests:
+        memory: "25Mi"
+        cpu: "25m"
+
+  heartbeatExporter:
+    # Control side-car container within PingAccess Engine statefulset
+    statefulSet:
+      resources:
+        limits:
+          memory: "300Mi"
+          cpu: "100m"
+        requests:
+          memory: "300Mi"
+          cpu: "100m"

@@ -1,0 +1,10 @@
+# pingaccess application settings that are shared with both pingaccess Admin and Engine
+pingaccess:
+
+  # Application settings that is only for pingaccess Engine
+  engine:
+    statefulSet:
+      hpa:
+        minReplicas: 3
+        maxReplicas: 8
+

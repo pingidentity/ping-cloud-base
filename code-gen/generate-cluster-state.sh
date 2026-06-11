@@ -115,12 +115,12 @@
 # ENVIRONMENTS                     | The environments the customer is entitled to. This | dev test stage prod customer-hub
 #                                  | will be a subset of SUPPORTED_ENVIRONMENT_TYPES    |
 #                                  |                                                    |
-# EXTERNAL_INGRESS_ENABLED         | List of ping apps(pingaccess pingaccess-was        | No defaults
-#                                  | pingdelegator pingfederate) for which you can      |
-#                                  | enable external ingress(the values are ping app    |
-#                                  | names)                                             |
-#                                  | Examplelist:"pingaccess pingfederate pingdelegator |
-#                                  | pingaccess-was              "                      |
+# EXTERNAL_INGRESS_ENABLED         | List of ping apps(pingdelegator)      | No defaults
+#                                  | for which you can enable external ingress (the     |
+#                                  | values are ping app names)                         |
+#                                  |                                                    |
+#                                  | Examplelist:"pingdelegator"           |
+#                                  |                                                    |
 #                                  |                                                    |
 # GLOBAL_TENANT_DOMAIN             | Region-independent URL used for DNS failover/      | Replaces the first segment of
 #                                  | routing.                                           | the TENANT_DOMAIN value with the
@@ -417,16 +417,6 @@ ${USER_BASE_DN_4}
 ${USER_BASE_DN_5}
 ${ADMIN_CONSOLE_BRANDING}
 ${ENVIRONMENT_PREFIX}
-${PA_WAS_MIN_HEAP}
-${PA_WAS_MAX_HEAP}
-${PA_WAS_MIN_YGEN}
-${PA_WAS_MAX_YGEN}
-${PA_WAS_GCOPTION}
-${PA_MIN_HEAP}
-${PA_MAX_HEAP}
-${PA_MIN_YGEN}
-${PA_MAX_YGEN}
-${PA_GCOPTION}
 ${MYSQL_SERVICE_HOST}
 ${MYSQL_USER}
 ${MYSQL_PASSWORD}
@@ -445,8 +435,6 @@ ${BOOTSTRAP_IMAGE_TAG}
 ${P14C_INTEGRATION_IMAGE_TAG}
 ${ANSIBLE_BELUGA_IMAGE_TAG}
 ${PINGCENTRAL_IMAGE_TAG}
-${PINGACCESS_IMAGE_TAG}
-${PINGACCESS_WAS_IMAGE_TAG}
 ${PINGDELEGATOR_IMAGE_TAG}
 ${OS_BOOTSTRAP_IMAGE_TAG}
 ${LOGSTASH_IMAGE_TAG}
@@ -1142,12 +1130,6 @@ export USER_BASE_DN_3="${USER_BASE_DN_3}"
 export USER_BASE_DN_4="${USER_BASE_DN_4}"
 export USER_BASE_DN_5="${USER_BASE_DN_5}"
 
-export PA_WAS_GCOPTION='-XX:+UseParallelGC'
-export PA_MIN_HEAP=${PA_MIN_HEAP:-"1024m"}
-export PA_MAX_HEAP=${PA_MAX_HEAP:-"1024m"}
-export PA_MIN_YGEN=${PA_MIN_YGEN:-"512m"}
-export PA_MAX_YGEN=${PA_MAX_YGEN:-"512m"}
-export PA_GCOPTION='-XX:+UseParallelGC'
 
 export APP_RESYNC_SECONDS="${APP_RESYNC_SECONDS:-60}"
 
@@ -1279,7 +1261,7 @@ BOOTSTRAP_DIR="${TARGET_DIR}/${BOOTSTRAP_SHORT_DIR}"
 CLUSTER_STATE_REPO_DIR="${TARGET_DIR}/cluster-state"
 PROFILE_REPO_DIR="${TARGET_DIR}/profile-repo"
 PROFILES_DIR="${PROFILE_REPO_DIR}/profiles"
-PROFILE_REPO_MIRRORS=("p1as-pingdirectory p1as-pingfederate")
+PROFILE_REPO_MIRRORS=("p1as-pingdirectory p1as-pingfederate p1as-pingaccess")
 
 
 CUSTOMER_HUB='customer-hub'
@@ -1381,26 +1363,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     export PF_PD_BIND_PROTOCOL=ldaps
     export PF_PD_BIND_USESSL=true
   fi
-
-  # Update the product specific variables based on environment.
-  case "${ENV}" in
-    dev | test)
-
-      # Set PA variables
-      export PA_WAS_MIN_HEAP=${PA_WAS_MIN_HEAP:-"1024m"}
-      export PA_WAS_MAX_HEAP=${PA_WAS_MAX_HEAP:-"1024m"}
-      export PA_WAS_MIN_YGEN=${PA_WAS_MIN_YGEN:-"512m"}
-      export PA_WAS_MAX_YGEN=${PA_WAS_MAX_YGEN:-"512m"}
-      ;;
-    stage | prod | customer-hub)
-
-      # Set PA variables
-      export PA_WAS_MIN_HEAP=${PA_WAS_MIN_HEAP:-"2048m"}
-      export PA_WAS_MAX_HEAP=${PA_WAS_MAX_HEAP:-"2048m"}
-      export PA_WAS_MIN_YGEN=${PA_WAS_MIN_YGEN:-"1024m"}
-      export PA_WAS_MAX_YGEN=${PA_WAS_MAX_YGEN:-"1024m"}
-      ;;
-  esac
 
   "${IS_BELUGA_ENV}" &&
       export CLUSTER_NAME="${TENANT_NAME}" ||
@@ -1569,32 +1531,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     export CHUB_REGION_KUST_FILE="${CHUB_TEMPLATES_DIR}/region/kustomization.yaml"
     yq eval -i '.configMapGenerator += (load(strenv(CHUB_REGION_KUST_FILE)).configMapGenerator[] | select(.name == "argocd-bootstrap"))' "${PRIMARY_PING_KUST_FILE}"
     yq eval -i '.configMapGenerator += (load(strenv(CHUB_REGION_KUST_FILE)).configMapGenerator[] | select(.name == "p14c-environment-variables"))' "${PRIMARY_PING_KUST_FILE}"
-
-    # Keep argocd-ingress for Beluga environments by replacing the delete patches
-    # shellcheck disable=SC2016
-    export argocd_ingress_patch="
-- target:
-    # Argo CD ingress via pingaccess-was for Beluga Environments
-    group: networking.k8s.io
-    version: v1
-    kind: Ingress
-    name: argocd-ingress
-  patch: |-
-    - op: replace
-      path: /metadata/annotations/self-service.metadata.pingidentity.com~1displayURL
-      value: "https://argocd.${DNS_ZONE}/"
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: argocd.${DNS_ZONE}
-    - op: replace
-      path: /spec/rules/0/host
-      value: argocd.${DNS_ZONE}
-"
-    K8S_CONFIGS_PA_WAS_ENGINE_KUSTOMIZE_FILE="${K8S_CONFIGS_DIR}/base/ping-cloud/pingaccess-was/engine/kustomization.yaml"
-    # Append patch to keep argocd-ingress for Beluga environments
-    yq eval -i '.patchesJson6902 += env(argocd_ingress_patch)' "${K8S_CONFIGS_PA_WAS_ENGINE_KUSTOMIZE_FILE}"
-    # remove delete patch for argocd-ingress
-    yq -i 'select(.metadata.name != "argocd-ingress")' "${K8S_CONFIGS_DIR}/base/ping-cloud/pingaccess-was/engine/remove-unneeded-ingresses.yaml"
 
     # Append the secrets from customer-hub to the CDE secrets, except PingCentral since that doesn't exist in the CDE
     printf "\n# %%%% NOTE: Below secrets are for the Developer CDE only (when IS_BELUGA_ENV is 'true') to make sure Argo works properly %%%%#\n" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"

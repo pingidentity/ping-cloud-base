@@ -249,7 +249,7 @@ spec:
             mountPath: /opt/staging
           - name: tmp-dir
             mountPath: /tmp
-            subPath: pingaccess-was-tmp
+            subPath: pingdatasync-tmp
           - name: pingdatasync-init 
             mountPath: /opt/staging/hooks/logger.lib.sh
             subPath: logger.lib.sh

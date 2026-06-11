@@ -1,0 +1,91 @@
+pingaccessWas:
+  podReaperEnabled: true
+  license:
+    # Only use if you want to provide your own SSM path to perpetual license
+    # The default is that automation will determine SSM path to retrieve product license
+    overrideProductLicense: ""
+  ########################################################
+  # Public Hostnames
+  ########################################################
+  paWasAdminPublicHostname: "pingaccess-was-admin.${PRIMARY_DNS_ZONE}"
+  paWasClusterPublicHostname: "pingaccess-was-cluster.${PRIMARY_DNS_ZONE}"
+  paWasEnginePublicHostname: "pingaccess-was.${PRIMARY_DNS_ZONE}"
+
+
+  admin:
+    verbose: "false"
+    # PingAccess Heap
+    paWasMinHeap: "1024m"
+    paWasMaxHeap: "1024m"
+    paWasMinYgen: "512m"
+    paWasMaxYgen: "512m"
+    paWasGcOption: "-XX:+UseParallelGC"
+
+    restore:
+      backupFileName: ""
+
+    statefulSet:
+      lastUpdateReason: "NA"
+      replicas: 1
+      resources:
+        limits:
+          memory: "2560Mi"
+          cpu: "1"
+        requests:
+          memory: "1280Mi"
+          cpu: "20m"
+      upgradeResources:
+        limits:
+          memory: "6Gi"
+          cpu: "2"
+        requests:
+          memory: "6Gi"
+          cpu: "2"
+
+    ingress:
+      enableExternalIngress: false
+
+    persistentVolume:
+      size: "20Gi"
+
+
+  engine:
+    verbose: "false"
+
+    # PingAccess Heap
+    paWasMinHeap: "1024m"
+    paWasMaxHeap: "1024m"
+    paWasMinYgen: "512m"
+    paWasMaxYgen: "512m"
+    paWasGcOption: "-XX:+UseParallelGC"
+
+    statefulSet:
+      lastUpdateReason: "NA"
+      # Number of replicas for the PingAccess-WAS engine StatefulSet in customer-hub.
+      # Replicas are set explicitly for customer-hub because there is no HPA managing scaling due to cost savings.
+      chubReplicas: 2
+      podDisruptionBudget:
+        minAvailable: "30%"
+      hpa:
+        minReplicas: 2
+        maxReplicas: 2
+        averageUtilization: 70
+      resources:
+        limits:
+          memory: "2560Mi"
+          cpu: "1"
+        requests:
+          memory: "1280Mi"
+          cpu: "100m"
+
+
+  # Periodic CronJob settings for backing up PingAccess-was Admin
+  periodicBackupCronJob:
+    schedule: "30 * * * *"
+    resources:
+      limits:
+        memory: "50Mi"
+        cpu: "50m"
+      requests:
+        memory: "25Mi"
+        cpu: "25m"

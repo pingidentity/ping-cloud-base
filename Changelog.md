@@ -30,7 +30,8 @@ _Changes:_
 - Update Security Contexts for kube-system namespace workloads
 - Update Security Contexts for elastic-stack-logging namespace workloads
 - Upgrade cluster-autoscaler to version 1.34
-- Upgrade external-dns to version v0.20.0
+- Upgrade external-dns to version v0.20.0 
+- Add p1as-pingaccess/was code-gen directories to PCB
 - Update NewRelic APM agent Java args logic
 - Upgrade pod-reaper to version 2.14.0
 - Bundle Documentation folder in profile-repo explaining all static files for all Products
@@ -71,6 +72,7 @@ _Changes:_
 - [X] PDO-10481 Update Security Contexts for elastic-stack-logging namespace workloads
 - [X] PDO-10485 Update Security Contexts for cert-manager namespace workloads
 - [X] PDO-10486 Update Security Contexts for external-dns namespace workloads
+- [X] PDO-11237 Add p1as-pingaccess/was code-gen directories to PCB
 - [X] PDO-10546 NewRelic: Remove NRI Kubernetes Images from PCD
 - [X] PDO-10578 Update PA/PF integration tests to use oauth tokens for admin API calls
 - [X] PDO-10728 Bundle Documentation folder in profile-repo explaining all static files for all Products
@@ -204,7 +206,7 @@ _Changes:_
 - [X] PDO-10621 NewRelic: Investigate HPA metrics for NewRelic and kube-state-metrics
 - [X] PDO-10789 Karpenter amiFamily update to Amazon Linux 2023
 - [X] PDO-10823 Set Karpenter drift to false
-- [X] PDO-10895 Update PA 9.0 run.properties 
+- [X] PDO-10895 Update PA 9.0 run.properties
 - [X] PDO-10998 Update engine ingresses to cache healthcheck responses for 1s
 - [X] PDO-11151 Logging: Support bootstrap logging
 

@@ -31,42 +31,6 @@ getMatchedTagCount() {
         | grep ${image_tag_name} | wc -l | awk '{ print $1 }')
 }
 
-testPingAccessImageTag() {
-  if [ "${ENV_TYPE}" == "customer-hub" ]; then
-    echo "Skipping testPingAccessImageTag as ENV_TYPE is customer-hub"
-    return
-  fi
-  $(test "${PINGACCESS_IMAGE_TAG}")
-  assertEquals "PINGACCESS_IMAGE_TAG missing from env_vars file" 0 $?
-
-  unique_count=$(echo "${RETURN_VAL}" \
-                | jq '.version | with_entries( select(.key|contains("pingaccess") ) )' \
-                | jq '. | with_entries( select(.key|contains("pingaccess-was") | not) )| .[].image' \
-                | sort -u | grep "pingaccess" | wc -l | awk '{ print $1 }')
-  assertEquals "PingAccess is using multiple image tag versions" 1 "${unique_count}"
-
-  matched_count=$(echo "${RETURN_VAL}" \
-                | jq '.version | with_entries( select(.key|contains("pingaccess") ) )' \
-                | jq '. | with_entries( select(.key|contains("pingaccess-was") | not) ) | .[].image' \
-                | sort -u | grep "pingaccess" | grep ${PINGACCESS_IMAGE_TAG} |  wc -l | awk '{ print $1 }')
-  assertEquals "PingAccess CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
-}
-
-testPingAccessWASImageTag() {
-  $(test "${PINGACCESS_WAS_IMAGE_TAG}")
-  assertEquals "PINGACCESS_WAS_IMAGE_TAG missing from env_vars file" 0 $?
-
-  unique_count=$(echo "${RETURN_VAL}" \
-                | jq '.version | with_entries( select( .key|contains("pingaccess-was") ) ) | .[].image' \
-                | sort -u | grep "pingaccess" | wc -l | awk '{ print $1 }')
-  assertEquals "PingAccess WAS is using multiple image tag versions" 1 "${unique_count}"
-
-  matched_count=$(echo "${RETURN_VAL}" \
-                | jq '.version | with_entries( select( .key|contains("pingaccess-was") ) ) | .[].image' \
-                | sort -u | grep "pingaccess" | grep ${PINGACCESS_WAS_IMAGE_TAG} | wc -l | awk '{ print $1 }')
-  assertEquals "PingAccess WAS CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
-}
-
 testPingDelegatorImageTag() {
   if [ "${ENV_TYPE}" == "customer-hub" ]; then
     echo "Skipping testPingDelegatorImageTag as ENV_TYPE is customer-hub"
