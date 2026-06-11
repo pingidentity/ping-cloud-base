@@ -3,7 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
   - ../base
-  - pingaccess
   - pingdelegator
   - custom-resources
 
@@ -26,62 +25,6 @@ configMapGenerator:
   - ../base/env_vars
   - env_vars
   - pingdatasync/env_vars
-
-# PingAccess
-# Create the config maps that hold the variable for triggering updates of PA servers
-- name: pingaccess-admin-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-  - pingaccess/admin/env_vars
-
-- name: pingaccess-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-  - pingaccess/engine/env_vars
-
-# Merge all env_vars into PingAccess environment variables configmaps
-- name: pingaccess-admin-environment-variables
-  behavior: merge
-  envs:
-  - ../base/env_vars
-  - env_vars
-  - pingaccess/admin/env_vars
-
-- name: pingaccess-environment-variables
-  behavior: merge
-  envs:
-  - ../base/env_vars
-  - env_vars
-  - pingaccess/engine/env_vars
-
-
-# PingAccess WAS
-# Create the config maps that hold the variable for triggering updates of PA WAS servers
-- name: pingaccess-was-admin-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-  - pingaccess-was/admin/env_vars
-
-- name: pingaccess-was-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-  - pingaccess-was/engine/env_vars
-
-# Merge all env_vars into PingAccess WAS environment variables configmaps
-- name: pingaccess-was-admin-environment-variables
-  behavior: merge
-  envs:
-  - ../base/env_vars
-  - env_vars
-  - pingaccess-was/admin/env_vars
-
-- name: pingaccess-was-environment-variables
-  behavior: merge
-  envs:
-  - ../base/env_vars
-  - env_vars
-  - pingaccess-was/engine/env_vars
-
 
 # PingDelegator
 # Create the config maps that hold the variable for triggering updates of DA servers
@@ -154,11 +97,6 @@ patchesStrategicMerge:
   ### Regional enablement - remove admins, backups, etc. from secondary ###
   ### The removal of these patches is handled automatically via generate-cluster-state script, manual toggling is not needed ###
 
-  - ../base/ping-cloud/pingaccess-was/admin/remove-from-secondary-patch.yaml
-  - ../base/ping-cloud/pingaccess-was/engine/remove-from-secondary-patch.yaml
-
-  - ../base/ping-cloud/pingaccess/admin/remove-from-secondary-patch.yaml
-
   - ../base/ping-cloud/pingdatasync/server/remove-from-secondary-patch.yaml
   - ../base/cluster-tools/monitoring/remove-from-secondary-patch.yaml
 
@@ -167,9 +105,4 @@ patchesStrategicMerge:
 
   ### The removal of these patches is handled automatically via git-ops-command.sh script, manual toggling is not needed ###
 
-  - pingaccess/ff-external-ingress/remove-external-ingress.yaml
   - pingdelegator/ff-external-ingress/remove-external-ingress.yaml
-
-  ### The patch is copied from pingcommon
-  - ../base/ping-cloud/pingaccess-was/ff-external-ingress/remove-external-ingress.yaml
-

@@ -5,9 +5,6 @@ resources:
 
 # PingCloud common resources and configs. These should always be included. DO NOT comment them out.
 - pingcommon
-- pingaccess-was/config
-- pingaccess-was/ff-external-ingress
-- pingaccess/config
 - pingdelegator/config
 - pingdatasync/config
 
@@ -38,16 +35,6 @@ patchesStrategicMerge:
     annotations:
       purpose: service-account-for-ping-cloud-stack
       ${IRSA_PING_ANNOTATION_KEY_VALUE}
-
-### Ping access service account ###
-- |-
-  apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    name: pingaccess-serviceaccount
-    annotations:
-      purpose: service-account-for-ping-access
-      ${IRSA_PA_ANNOTATION_KEY_VALUE}
 
 ### P14C Bootstrap service account ###
 - |-

@@ -42,9 +42,6 @@ patchesStrategicMerge:
 - ../base/cluster-tools/monitoring/remove-chub-dashboards.yaml
 - ../base/cluster-tools/logging/remove-chub-dashboards.yaml
 
-### Cost saving measures
-- ../base/ping-cloud/pingaccess-was/engine/chub-pingaccess-was-scaledown-patch.yaml
-
 ### Remove opensearch from chub
 - ../base/cluster-tools/logging/disable-opensearch-base-patch.yaml
 #- ../base/cluster-tools/logging/disable-opensearch-primary-region-patch.yaml
@@ -53,8 +50,6 @@ patchesStrategicMerge:
 - ../base/cluster-tools/logging/pipelines-config.yaml
 
 ### Regional enablement - remove admins, backups, etc. from secondary ###
-### The removal of these patches is handled automatically via generate-cluster-state script, manual toggling is not needed ###
-- ../base/ping-cloud/pingaccess-was/admin/remove-from-secondary-patch.yaml
 - ../base/ping-cloud/pingcentral/server/remove-from-secondary-patch.yaml
 - ../base/cluster-tools/monitoring/remove-from-secondary-patch.yaml
 - ../base/cluster-tools/logging/remove-from-secondary-patch.yaml
@@ -89,33 +84,6 @@ configMapGenerator:
   - ../base/env_vars
   - env_vars
   - pingcentral/env_vars
-
-# PingAccess WAS
-# Create the config maps that hold the variable for triggering updates of PA WAS servers
-- name: pingaccess-was-admin-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-    - pingaccess-was/admin/env_vars
-
-- name: pingaccess-was-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-    - pingaccess-was/engine/env_vars
-
-# Merge all env_vars into PingAccess WAS environment variables configmaps
-- name: pingaccess-was-admin-environment-variables
-  behavior: merge
-  envs:
-    - ../base/env_vars
-    - env_vars
-    - pingaccess-was/admin/env_vars
-
-- name: pingaccess-was-environment-variables
-  behavior: merge
-  envs:
-    - ../base/env_vars
-    - env_vars
-    - pingaccess-was/engine/env_vars
 
 # PingCloud P14C bootstrap
 - name: pingcloud-p14c-bootstrap-environment-variables
