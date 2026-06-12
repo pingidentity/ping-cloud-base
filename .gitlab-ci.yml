@@ -65,6 +65,50 @@ copy-images:
   only:
     - /^.*-release-branch$/
 
+kubelinter-uber-yaml:
+  stage: security
+  image: ${K8S_DEPLOY_TOOLS}
+  needs:
+    - deploy
+  dependencies:
+    - deploy
+  variables:
+    UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
+  script:
+    - |
+      export SKIP_CONFIGURE_KUBE=true
+      ${SHARED_CI_SCRIPTS_DIR}/k8s/security/security-context-lint.sh $UBER_YAML
+  tags:
+    - default-gitlab-runner-ping-cloud
+
+## Run kube-linter against these microservices as well to validate their security 
+## context configurations as they would appear when deployed within the broader project.
+kube-linter:
+  stage: security
+  tags:
+    - default-gitlab-runner-ping-cloud
+  image: ${K8S_DEPLOY_TOOLS}
+  needs:
+    - deploy
+  dependencies:
+    - deploy
+  parallel:
+    matrix:
+      - MICROSERVICE:
+          - p1as-beluga-tools
+          - p1as-cluster-tools
+          - p1as-observability
+          - p1as-pingdirectory
+          - p1as-pingfederate
+          - p1as-self-service
+          - p1as-pingaccess
+  script:
+    - |
+      export SKIP_CONFIGURE_KUBE=true
+      UBER_YAML=$(find "$CI_PROJECT_DIR/out/$MICROSERVICE/" -type f -name "uber.yaml")
+      ${SHARED_CI_SCRIPTS_DIR}/k8s/security/security-context-lint.sh $UBER_YAML
+  
+
 check-ext-images:
   stage: security
   image: ${K8S_DEPLOY_TOOLS}
@@ -139,7 +183,7 @@ deploy:
   dependencies:
     - find-cluster
 
-## Integration Test stage ##
+# Integration Test stage ##
 
 # Common pre-check tests
 pre-check:
