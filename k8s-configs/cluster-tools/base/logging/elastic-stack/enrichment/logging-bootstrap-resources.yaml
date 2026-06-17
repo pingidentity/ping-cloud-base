@@ -5,3 +5,10 @@ storage/raw-logs/uri:
   values_container_key: bucketName
   ssm_type: string
   ssm_path_prefix: SERVICE_SSM_PATH_PREFIX
+storage/telemetry-bucket/name:
+  kind: ConfigMap
+  name: s3-telemetry-bucket
+  template:
+  values_container_key: bucketName
+  ssm_type: string
+  ssm_path_prefix: SERVICE_SSM_PATH_PREFIX
