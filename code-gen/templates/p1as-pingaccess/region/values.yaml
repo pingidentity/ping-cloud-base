@@ -30,13 +30,6 @@ pingaccess:
         requests:
           memory: "4Gi"
           cpu: "2"
-      upgradeResources:
-        limits:
-          memory: "8Gi"
-          cpu: "2"
-        requests:
-          memory: "8Gi"
-          cpu: "2"
 
     ingress:
       enableExternalIngress: false
