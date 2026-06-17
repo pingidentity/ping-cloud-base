@@ -7,6 +7,7 @@
 - Update pod-reaper and httpbin images
 - Add integration tests for PingDelegator JSON access log format and OpenSearch ingestion
 - Fix Fluentbit multiline filter concatenating JSON audit log lines, causing admin-event-detail entries to be dropped
+- Add resources for datalake telemetry pipeline
 
 _Changes:_
 
@@ -15,6 +16,7 @@ _Changes:_
 - [X] PDO-9115 Introduce 'revisionHistoryLimit' to Delegated Admin deployment object to avoid cluttering
 - [X] PDO-10168 Update pod-reaper and httpbin images
 - [X] PDO-11285 Fix Fluentbit multiline cont rule sweeping JSON lines into buffer, causing silent audit log loss in OpenSearch
+- [X] PDO-11651 Add resources for datalake telemetry pipeline
 
 ### 2.3.0
 

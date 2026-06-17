@@ -162,3 +162,7 @@ __pycache__
 
 # Python venv
 venv/*
+
+# AI
+.claude/
+.polaris/
