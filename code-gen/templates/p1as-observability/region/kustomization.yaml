@@ -54,6 +54,17 @@ helmCharts:
     namespace: prometheus
     repo: oci://${ECR_REGISTRY_NAME}/dev
 
+  - name: p1as-prometheus-adapter
+    additionalValuesFiles:
+      - ../../values-files/base/values.yaml   # base values.yaml
+      - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
+      - values.yaml   # app specific values.yaml
+    version: v2.4-release-branch-latest
+    namespace: prometheus
+    repo: oci://${ECR_REGISTRY_NAME}/dev
+    apiVersions:
+      - apiregistration.k8s.io/v1
+
 ### This field is used to trigger a resync of the helm chart ###
 configMapGenerator:
   - name: observability-last-update-reason
@@ -71,3 +82,4 @@ patchesStrategicMerge:
   ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
   - custom-patches.yaml
   - ../base/custom-patches.yaml
+

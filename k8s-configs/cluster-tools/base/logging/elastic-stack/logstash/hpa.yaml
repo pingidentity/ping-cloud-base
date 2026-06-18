@@ -18,14 +18,29 @@ spec:
           value: 50
       selectPolicy: Max
       stabilizationWindowSeconds: 30
-  maxReplicas: 2
+  maxReplicas: 5
   metrics:
-    - resource:
+    - type: Resource
+      resource:
         name: cpu
         target:
-          averageUtilization: 60
           type: Utilization
-      type: Resource
+          averageUtilization: 60
+    - type: Pods
+      pods:
+        metric:
+          name: logstash_queue_utilization_percent
+        target:
+          type: AverageValue
+          averageValue: "20"
+  # Rate of Events coming to Logstash  
+    - type: Pods
+      pods:
+        metric:
+          name: logstash_events_in_rate
+        target:
+          type: AverageValue
+          averageValue: "1500m"
   minReplicas: 1
   scaleTargetRef:
     apiVersion: apps/v1
@@ -53,14 +68,28 @@ spec:
           value: 50
       selectPolicy: Max
       stabilizationWindowSeconds: 30
-  maxReplicas: 2
+  maxReplicas: 5
   metrics:
-    - resource:
+    - type: Resource
+      resource:
         name: cpu
         target:
-          averageUtilization: 60
           type: Utilization
-      type: Resource
+          averageUtilization: 60
+    - type: Pods
+      pods:
+        metric:
+          name: logstash_queue_utilization_percent
+        target:
+          type: AverageValue
+          averageValue: "20"
+    - type: Pods
+      pods:
+        metric:
+          name: logstash_events_in_rate
+        target:
+          type: AverageValue
+          averageValue: "1500m"
   minReplicas: 1
   scaleTargetRef:
     apiVersion: apps/v1

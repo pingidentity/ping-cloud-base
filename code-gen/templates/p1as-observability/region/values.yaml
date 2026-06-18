@@ -134,3 +134,47 @@ nri-bundle:
       - name: os-password
         mountPath: /etc/secrets
         readOnly: true
+#######################################################
+# Prometheus Adapter settings
+#######################################################
+prometheus-adapter:
+  rules:
+    custom:
+      - seriesQuery: 'logstash_node_queue_size_bytes{kubernetes_namespace="elastic-stack-logging"}'
+        resources:
+          overrides:
+            kubernetes_namespace:
+              resource: namespace
+            instance:
+              resource: pod
+        name:
+          matches: logstash_node_queue_size_bytes
+          as: logstash_queue_utilization_percent
+        metricsQuery: >-
+          sum((
+            logstash_node_queue_size_bytes{<<.LabelMatchers>>, k8s_cluster_region="${REGION_NICK_NAME}", kubernetes_namespace="elastic-stack-logging"}
+            /
+            logstash_node_queue_max_size_bytes{<<.LabelMatchers>>, k8s_cluster_region="${REGION_NICK_NAME}", kubernetes_namespace="elastic-stack-logging"}
+          ) * 100) by (<<.GroupBy>>)
+
+      - seriesQuery: 'logstash_node_pipeline_events_in_total{kubernetes_namespace="elastic-stack-logging"}'
+        resources:
+          overrides:
+            kubernetes_namespace:
+              resource: namespace
+            instance:
+              resource: pod
+        name:
+          matches: logstash_node_pipeline_events_in_total
+          as: logstash_events_in_rate
+        metricsQuery: >-
+          sum(rate(
+            logstash_node_pipeline_events_in_total{<<.LabelMatchers>>, k8s_cluster_region="${REGION_NICK_NAME}", kubernetes_namespace="elastic-stack-logging"}[5m]
+          )) by (<<.GroupBy>>)
+          /
+          clamp_min(
+            sum(avg_over_time(
+              rate(logstash_node_pipeline_events_in_total{<<.LabelMatchers>>, k8s_cluster_region="${REGION_NICK_NAME}", kubernetes_namespace="elastic-stack-logging"}[5m])[1h:5m]
+            )) by (<<.GroupBy>>),
+            1
+          )
