@@ -34,13 +34,6 @@ pingaccessWas:
         requests:
           memory: "1280Mi"
           cpu: "20m"
-      upgradeResources:
-        limits:
-          memory: "6Gi"
-          cpu: "2"
-        requests:
-          memory: "6Gi"
-          cpu: "2"
 
     ingress:
       enableExternalIngress: false
