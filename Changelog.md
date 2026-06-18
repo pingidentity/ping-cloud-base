@@ -56,6 +56,9 @@ _Changes:_
 - Add patch to conditionally deploy logstash-elastic STS (customer pipeline) in customer-hub accounts
 - Add support for NewRelic Prometheus to scrape OpenSearch metrics
 - Upgrade PingCentral to v2.3.0
+- Implement Logstash HPA via custom metric
+- Prometheus Adapter OOM fix
+- Prometheus Adapter race condition, add prometheus namespace to bootstrap process
 
 _Changes:_
 
@@ -90,6 +93,7 @@ _Changes:_
 - [X] PDO-11092 Grafana: Update Dashboards for (Fluent Bit → 2x Logstash)
 - [X] PDO-11104 Update p1as-beluga-lib and seal-secret-values to handle dynamic secrets
 - [X] PDO-11181 Add priorityclass to PD microservice and remove from PCB
+- [X] PDO-11243 Prometheus-Adapter: Implement Logstash HPA via custom metric
 - [X] PDO-11307 Prometheus: Migrate job-exporter and json-exporter to ping-cloud-common repo
 - [X] PDO-11340 Expose OpenSearch Metrics for Monitoring and Alerting on NewRelic
 - [X] PDO-11356 P14C_INTEGRATION_IMAGE_TAG not applied to pingaccess-p1as-sso image
@@ -97,6 +101,8 @@ _Changes:_
 - [X] PDO-11376 Remove metrics-server and kube-state-metrics from PCB
 - [X] PDO-11392 Upgrade PingCentral to v2.3.0
 - [x] PDO-11586 Update Security Contexts for Argocd
+- [X] PDO-11733 Prometheus Adapter OOM fix
+- [X] PDO-11745 Prometheus Adapter race condition, add prometheus namespace to bootstrap process
 
 ### 2.2.3
 
