@@ -42,6 +42,7 @@
 - Prometheus Adapter OOM fix
 - Upgrade PingCentral to v2.3.0
 - Prometheus Adapter race condition, add prometheus namespace to bootstrap process
+- Teleport: figure out a longer-term fix for auto-upgrade
 
 _Changes:_
 
@@ -49,6 +50,7 @@ _Changes:_
 - [X] PDO-6001 Enhance Prometheus tests (unit, integration, system)
 - [X] PDO-8391 Implement KMS changes for EBS
 - [X] PDO-8951 FluentBit: Remove K8s Metadata and Labels
+- [X] PDO-9915 Teleport: figure out a longer-term fix for auto-upgrade
 - [X] PDO-10077 Upgrade cluster-autoscaler to version 1.34
 - [X] PDO-10078 Upgrade pod-reaper to version 2.14.0
 - [X] PDO-10079 Upgrade cert-manager to version v1.19.1
