@@ -57,6 +57,9 @@ spec:
     spec:
       backoffLimit: 0
       template:
+        metadata:
+          annotations:
+            karpenter.sh/do-not-disrupt: "true"
         spec:
           serviceAccount: delete-unused-pvs
           restartPolicy: OnFailure
