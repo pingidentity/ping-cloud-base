@@ -8,6 +8,7 @@
 - Add integration tests for PingDelegator JSON access log format and OpenSearch ingestion
 - Fix Fluentbit multiline filter concatenating JSON audit log lines, causing admin-event-detail entries to be dropped
 - Add resources for datalake telemetry pipeline
+- Add karpenter.sh/do-not-disrupt annotation to Jobs and CronJobs
 
 _Changes:_
 
@@ -17,6 +18,7 @@ _Changes:_
 - [X] PDO-10168 Update pod-reaper and httpbin images
 - [X] PDO-11285 Fix Fluentbit multiline cont rule sweeping JSON lines into buffer, causing silent audit log loss in OpenSearch
 - [X] PDO-11651 Add resources for datalake telemetry pipeline
+- [X] PDO-11804 - Add karpenter.sh/do-not-disrupt annotation to Jobs and CronJobs
 
 ### 2.3.0
 
