@@ -120,12 +120,6 @@ USER_BASE_DN_5=${USER_BASE_DN_5}
 
 ECR_ENV=/dev
 
-PA_MIN_HEAP=${PA_MIN_HEAP}
-PA_MAX_HEAP=${PA_MAX_HEAP}
-PA_MIN_YGEN=${PA_MIN_YGEN}
-PA_MAX_YGEN=${PA_MAX_YGEN}
-PA_GCOPTION=${PA_GCOPTION}
-
 ############################################################
 # DevOps License environment variables
 ############################################################
