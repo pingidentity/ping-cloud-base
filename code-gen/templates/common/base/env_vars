@@ -147,13 +147,13 @@ PINGACCESS_IMAGE_TAG=v2.1.5
 PINGACCESS_WAS_IMAGE_TAG=v2.1.5
 PINGDELEGATOR_IMAGE_TAG=v2.1.0
 PINGCENTRAL_IMAGE_TAG=v2.1.0
-PINGDATASYNC_IMAGE_TAG=v2.1.1-RC1
+PINGDATASYNC_IMAGE_TAG=v2.1.1
 
 ############################################################
 # Ping solution image tags
 ############################################################
 BOOTSTRAP_IMAGE_TAG=v2.1.0
-P14C_INTEGRATION_IMAGE_TAG=v2.1.4-RC1
+P14C_INTEGRATION_IMAGE_TAG=v2.1.4
 
 ############################################################
 # Ping observability image tags
