@@ -12,13 +12,17 @@ _Changes:_
 
 - Update generate-cluster-state.sh to run microservice configure-profile-repo.sh script
 - Remove modsecurity from ingress-nginx-public and pa-was ingress
+- Upgrade kube-state-metrics to version 2.18.0
 - Upgrade PingAccess and PingAccess-WAS to v9.0.3
+- Update descriptorFile in values-files/base/values.yaml from YAML block content to JSON block content
 
 _Changes:_
 
 - [X] PDO-10221 Create existing customer transition script - PingFederate templates and language packs
+- [X] PDO-10819 Upgrade kube-state-metrics to version 2.18.0
 - [X] PDO-11379 Upgrade Ingress NGINX Controller to version 1.14.4
 - [X] PDO-11519 Upgrade PingAccess and PingAccess-WAS to v9.0.3
+- [X] PDO-11892 Update descriptorFile in values-files/base/values.yaml from YAML block content to JSON block content
 
 ### 2.2.0
 
