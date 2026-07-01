@@ -180,17 +180,11 @@ global:
   ########################################################
   # Shared Application Variables
   ########################################################
-  # Define the contents for your descriptor.json file here, in yaml. An example is provided below for syntax.  
-  # Also see the descriptor.json.readme file in p1as-pingdirectory/deploy/templates/config directory of the 
-  # p1as-pingdirectory repo for more info
+  # Define the contents for your descriptor.json file here, in yaml. An example is provided below for syntax.
+  # Also see the descriptor.json.MD file in base of this chart for more info
+  # IMPORTANT: Preserve the order of region entries in descriptorFile; the region keys are interpreted in the order they appear.
   # descriptorFile: |-
-  #   us-west-2:
-  #     hostname: abc
-  #     replicas: 1
-  #   us-east-2:
-  #     hostname: def
-  #     replicas: 2
-  # WARNING: You need to remove any trailing whitespace from all lines in this value, as well as any quotes
+  #    { "us-west-2": { "hostname": "abc", "replicas": 1 }, "us-east-2": { "hostname": "def", "replicas": 2 } }
   descriptorFile: ""
   # PingDirectory base DN
   userBaseDn: "${USER_BASE_DN}"
