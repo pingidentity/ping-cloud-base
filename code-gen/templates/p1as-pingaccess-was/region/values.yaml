@@ -10,7 +10,6 @@ pingaccessWas:
   paWasAdminPublicHostname: "pingaccess-was-admin.${PRIMARY_DNS_ZONE}"
   paWasClusterPublicHostname: "pingaccess-was-cluster.${PRIMARY_DNS_ZONE}"
   paWasEnginePublicHostname: "pingaccess-was.${VALUES_FILES_DNS_ZONE}"
-  pcAdminPublicHostname: "pingcentral-admin.${PRIMARY_DNS_ZONE}"
   prometheusPublicHostname: "prometheus.${VALUES_FILES_DNS_ZONE}"
   grafanaPublicHostname: "monitoring.${VALUES_FILES_DNS_ZONE}"
   OSDPublicHostname: "logs.${VALUES_FILES_DNS_ZONE}"
