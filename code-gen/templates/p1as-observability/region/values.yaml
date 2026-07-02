@@ -37,7 +37,7 @@ prometheus:
       headless:
         annotations:
           # Prometheus cross-region communication - DNS hostname for the headless service
-          external-dns.alpha.kubernetes.io/hostname: prometheus-central.${DNS_ZONE}
+          external-dns.alpha.kubernetes.io/hostname: prometheus-central.${VALUES_FILES_DNS_ZONE}
 
     # Environment variables injected into the Prometheus container.
     # The base chart sets external_labels with ${CLUSTER_NAME}, ${TENANT_NAME},
