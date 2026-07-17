@@ -222,10 +222,9 @@ DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
 DASH_REPO_BRANCH=v2.3-dev-branch
 
 # Logging tier applied by generated logging kustomizations.
-# Defaults to tier1 for dev/test and tier2 for other environments unless overridden.
+# Defaults to tier1 for all environments unless overridden.
 # tier1 is the minimum profile needed to run the logging pipeline.
-# Customer environments should use at least tier2, and higher tiers are recommended
-# as log event volume and pipeline capacity needs increase.
+# Higher tiers are recommended as log event volume and pipeline capacity needs increase.
 # Changing tiers triggers a redeploy and rolling restart of some observability pods.
 LOGGING_TIER=${LOGGING_TIER}
 

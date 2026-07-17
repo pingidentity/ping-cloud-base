@@ -1324,16 +1324,17 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
   echo "-----> Starting to create environment '${ENV}'"
 
+  # Default all environments to tier1 unless explicitly overridden.
+  export LOGGING_TIER="${LOGGING_TIER:-tier1}"
+
   # The base URL for kustomization files and environment will be different for each CDE.
   # On migrated customers, we must preserve the size of the customers.
   case "${ENV}" in
     dev | test)
       export KUSTOMIZE_BASE="${KUSTOMIZE_BASE:-test}"
-      export LOGGING_TIER="${LOGGING_TIER:-tier1}"
       ;;
     stage | prod | customer-hub)
       export KUSTOMIZE_BASE="${KUSTOMIZE_BASE:-prod/${SIZE}}"
-      export LOGGING_TIER="${LOGGING_TIER:-tier2}"
       ;;
   esac
 

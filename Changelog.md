@@ -44,6 +44,7 @@
 - Prometheus Adapter race condition, add prometheus namespace to bootstrap process
 - Teleport: figure out a longer-term fix for auto-upgrade
 - Do not schedule fluentbit daemonset on Fargate
+- Default all env to logging tier1
 
 _Changes:_
 
@@ -92,6 +93,7 @@ _Changes:_
 - [X] PDO-11733 Prometheus Adapter OOM fix
 - [X] PDO-11745 Prometheus Adapter race condition, add prometheus namespace to bootstrap process
 - [X] PDO-12011: Add Fargate nodeAfinity exclusion to fluentbit daemonset
+- [X] PDO-12049 Default All Environments to Logging Tier 1
 
 ### 2.2.3
 
