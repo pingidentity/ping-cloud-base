@@ -9,6 +9,9 @@ resources:
 helmCharts:
   - name: p1as-cluster-tools
     releaseName: p1as-cluster-tools
+    # Emit CRDs from sub-charts (bitnami sealed-secrets ships its CRD under crds/,
+    # which helm template skips by default).
+    includeCRDs: true
     additionalValuesFiles:
       - ../../values-files/base/values.yaml   # base values.yaml
       - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml

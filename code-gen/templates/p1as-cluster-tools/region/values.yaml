@@ -1,8 +1,9 @@
 # p1as-cluster-tools values
 
 global:
+  sealedSecretsEnabled: true
   ###########################################################
-  # Instead of using the bundled crds in karpenter helm chart 
+  # Instead of using the bundled crds in karpenter helm chart
   # we can use karpenter-crd helm chart which may make karpenter upgrades easier
   ###########################################################
   karpenterCrdEnabled: false
@@ -31,6 +32,17 @@ ingress-nginx-private:
         minReplicas: 1
         maxReplicas: 1
         targetCPUUtilizationPercentage: 70
+
+# sealed-secrets subchart values
+sealed-secrets:
+  sealed-secrets:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 100Mi
+      requests:
+        cpu: 500m
+        memory: 100Mi
 
 # Karpenter configuration
 karpenterController:
