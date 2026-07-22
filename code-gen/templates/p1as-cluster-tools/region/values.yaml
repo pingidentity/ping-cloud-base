@@ -8,6 +8,7 @@ global:
   ###########################################################
   karpenterCrdEnabled: false
   karpenterEnabled: false
+  sealedSecretsEnabled: false
 
 # ingress-nginx-public values
 ingress-nginx-public:

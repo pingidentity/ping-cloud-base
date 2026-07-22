@@ -9,6 +9,7 @@
 - Fix Fluentbit multiline filter concatenating JSON audit log lines, causing admin-event-detail entries to be dropped
 - Add resources for datalake telemetry pipeline
 - Add karpenter.sh/do-not-disrupt annotation to Jobs and CronJobs
+- Added Testcase to validate JSON nginx ingress logs
 
 _Changes:_
 
@@ -19,6 +20,7 @@ _Changes:_
 - [X] PDO-11285 Fix Fluentbit multiline cont rule sweeping JSON lines into buffer, causing silent audit log loss in OpenSearch
 - [X] PDO-11651 Add resources for datalake telemetry pipeline
 - [X] PDO-11804 - Add karpenter.sh/do-not-disrupt annotation to Jobs and CronJobs
+- [X] PDO-10226 Implement JSON logging for Ingress logs
 
 ### 2.3.0
 
