@@ -245,7 +245,6 @@ global:
   selfServiceUIPublicHostname: "self-service.${PRIMARY_TENANT_DOMAIN}"
   paAdminPublicHostname: "pingaccess-admin.${PRIMARY_DNS_ZONE}"
   paClusterPublicHostname: "pingaccess-cluster.${PRIMARY_DNS_ZONE}"
-  paEnginePublicHostname: "pingaccess.${VALUES_FILES_DNS_ZONE}"
 
   #### FEATURE FLAGS ##################################################################################################
   # Most are disabled by default

@@ -5,6 +5,7 @@ pingaccess:
   # Public Hostnames
   ########################################################
   healthcheckHttpbinPaPublicHostname: "healthcheck-httpbin-pa.${PRIMARY_DNS_ZONE}"
+  paEnginePublicHostname: "pingaccess.${VALUES_FILES_DNS_ZONE}"
 
   irsaPaAnnotationKeyValue: "${IRSA_PA_ANNOTATION_KEY_VALUE}"
   podReaperEnabled: true
