@@ -33,4 +33,5 @@ export CHART_MAP="p1as-beluga-tools
    p1as-pingaccess
    p1as-pingaccess-was
    p1as-prometheus
-   p1as-prometheus-agent"
+   p1as-prometheus-agent
+   p1as-prometheus-adapter"
