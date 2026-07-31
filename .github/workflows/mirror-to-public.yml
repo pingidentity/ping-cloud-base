@@ -1,0 +1,22 @@
+# Mirrors this private repository to the public pingidentity/ping-cloud-base repository.
+name: Mirror to pingidentity/ping-cloud-base
+
+on:
+  push:
+    branches:
+      - 'v*-release-branch'
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  mirror-to-ping-cloud-base:
+    uses: ping-internal/p1as-eng-tools/.github/workflows/mirror-repository-ssh.yml@master
+    with:
+      github-ref: ${{ github.ref }}
+      target-repo-ssh-url: "git@github.com:pingidentity/ping-cloud-base.git"
+    secrets:
+      mirror-deploy-ssh-key: ${{ secrets.MIRROR_DEPLOY_SSH_KEY }}

@@ -136,7 +136,7 @@ global:
   # pingCloudNamespace is the namespace where Ping apps are deployed
   pingCloudNamespace: "${PING_CLOUD_NAMESPACE}"
 
-  # k8sGitBranch is the ping-cloud-base git branch for base Kubernetes manifests
+  # k8sGitBranch is the p1as-eng-base git branch for base Kubernetes manifests
   k8sGitBranch: "${K8S_GIT_BRANCH}"
 
   # ecrRegistryName is the name of the Docker image registry

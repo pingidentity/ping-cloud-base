@@ -1,0 +1,570 @@
+name: ci-cd
+
+on:
+  push:
+    branches-ignore:
+      - master
+      - main
+    tags-ignore:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      k8sDeployToolsImage:
+        description: "K8S_DEPLOY_TOOLS image & tag to use for the build jobs"
+        required: false
+        type: string
+
+# Wait on in-progress runs for the same branch/ref when a new push arrives so it doesn't fill up all the clusters.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
+  CLUSTER_POSTFIXES: '_9 _10'
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+  AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+  AWS_SSH_KEY_ID: ${{ vars.AWS_SSH_KEY_ID }}
+  NEW_RELIC_LICENSE_KEY: ${{ vars.NEW_RELIC_LICENSE_KEY }}
+  # 01-test-ocsp-stapling.sh causes other failures due to NGINX restart - ticket to fix is PDO-8100
+  BRANCH_SKIP_TESTS: >-
+    pingaccess/08-artifact-test.sh
+    pingdelegator/01-admin-user-login.sh
+    ingress-nginx/01-test-ocsp-stapling.sh
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  compile:
+    name: compile
+    runs-on: ping-internal-x86-k8s-p1as
+    container: &k8s_deploy_tools
+      image: ${{ inputs.k8sDeployToolsImage || 'docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v2.2-release-branch' }}
+    steps:
+      - name: Repository Setup
+        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+        with:
+          setup-github-app-configuration: true
+          github-app-client-id: ${{ vars.GH_CLIENT_ID }}
+          github-app-private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - name: Run compile
+        run: |
+          ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
+          echo "COMPILE_RESULT=$?" >> compile.env
+
+      - name: Upload compile-env
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: compile-env
+          path: ${{ github.workspace }}/compile.env
+          retention-days: 1
+
+  ## Find cluster stage - runs in parallel with compile ##
+  find-cluster:
+    name: find-cluster
+    runs-on: ping-internal-x86-k8s-p1as
+    container: *k8s_deploy_tools
+    steps:
+      - name: Repository Setup
+        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+
+      - name: Find cluster
+        run: "${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/find_cluster.sh"
+
+      - name: Upload cluster-env artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: cluster-env
+          path: ${{ github.workspace }}/cluster.env
+          if-no-files-found: warn
+
+  ## Deploy stage ##
+  deploy:
+    name: deploy
+    needs: [find-cluster]
+    runs-on: ping-internal-x86-k8s-p1as
+    container: *k8s_deploy_tools
+    env:
+      YAML_OUT_DIR: ${{ github.workspace }}/out
+    steps:
+      - name: Repository Setup
+        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+        with:
+          setup-github-app-configuration: true
+          github-app-client-id: ${{ vars.GH_CLIENT_ID }}
+          github-app-private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - name: Download cluster-env artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: cluster-env
+          path: ${{ github.workspace }}
+
+      - name: Deploy
+        run: |
+          git config --global --add safe.directory "*"
+          mkdir -p "$YAML_OUT_DIR"
+          set -a
+          [ -f "${GITHUB_WORKSPACE}/cluster.env" ] && source "${GITHUB_WORKSPACE}/cluster.env"
+          set +a
+          ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh
+
+      - name: Upload out/
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: out
+          path: ${{ github.workspace }}/out/
+          retention-days: 1
+
+    ## start security stage ##
+  # These only need `deploy`, so they run right after
+  # deploy rather than waiting for the rest of the pipeline to reach the security stage.
+  #TODO: re-enable once https://pingidentity.atlassian.net/browse/DEVHELP-45825 is resolved
+  #  copy-images:
+  #    name: copy-images
+  #    needs: [deploy]
+  #    if: ${{ endsWith(github.ref_name, '-release-branch') }}
+  #    continue-on-error: true
+  #    runs-on: ping-internal-x86-dind-p1as
+  #    container: *k8s_deploy_tools
+  #    env:
+  #      BELUGA_VERSION: ${{ github.ref_name }}
+  #      ARTIFACTORY_URL: docker.corp.pingidentity.com:5000
+  #      ARTIFACTORY_PATH: beluga-xray
+  #      ARTIFACTORY_REGISTRY_USER: ${{ vars.ARTIFACTORY_REGISTRY_USER }}
+  #      ARTIFACTORY_REGISTRY_PW: ${{ secrets.ARTIFACTORY_REGISTRY_PW }}
+  #      UBER_YAML: ${{ github.workspace }}/out/___w_p1as-eng-base_p1as-eng-base.yaml
+  #    steps:
+  #      - name: Repository Setup
+  #        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+  #
+  #      - name: Download out/ artifact
+  #        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+  #        with:
+  #          name: out
+  #          path: ${{ github.workspace }}/out
+  #
+  #      - name: Run copy-images
+  #        run: |
+  #          echo "running AWS command"
+  #          aws ecr get-login-password --region "$AWS_DEFAULT_REGION" | HOME=/tmp docker login --username AWS --password-stdin "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+  #          echo "running deploy tools script"
+  #          ${SHARED_CI_SCRIPTS_DIR}/k8s/security/copy-images.sh
+
+  check-ext-images:
+    name: check-ext-images
+    needs: [deploy]
+    runs-on: ping-internal-x86-k8s-p1as
+    container: *k8s_deploy_tools
+    env:
+      UBER_YAML: ${{ github.workspace }}/out/___w_p1as-eng-base_p1as-eng-base.yaml
+    steps:
+      - name: Repository Setup
+        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+
+      - name: Download out/ artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: out
+          path: ${{ github.workspace }}/out
+
+      - name: Run check-ext-images
+        run: ${SHARED_CI_SCRIPTS_DIR}/k8s/security/check_ext_images.sh "$UBER_YAML"
+
+  scan:
+    name: scan
+    needs: [deploy]
+    if: ${{ endsWith(github.ref_name, '-release-branch') }}
+    continue-on-error: true
+    runs-on: ping-internal-x86-dind-p1as
+    container: *k8s_deploy_tools
+    env:
+      UBER_YAML: ${{ github.workspace }}/out/___w_p1as-eng-base_p1as-eng-base.yaml
+    steps:
+      - name: Download out/ artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: out
+          path: ${{ github.workspace }}/out
+
+      - name: Run kubescape scan
+        run: kubescape scan --format json --format-version v2 --verbose --output report.json framework all "$UBER_YAML"
+
+      - name: Upload report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: report
+          path: report.json
+          retention-days: 365
+  ## end security stage ##
+
+  # Integration Test stage ##
+
+  # Common pre-check tests.
+  pre-check:
+    name: pre-check
+    needs:
+      - compile
+      - find-cluster
+      - deploy
+    runs-on: ping-internal-x86-k8s-p1as
+    container: *k8s_deploy_tools
+    steps:
+      - name: Repository Setup
+        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+
+      - name: Download cluster-env artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: cluster-env
+          path: ${{ github.workspace }}
+
+      - name: Run pre-check tests
+        uses: ping-internal/p1as-eng-tools/.github/actions/retry@master
+        with:
+          retry-name: pre-check
+          command: |
+            set -a
+            [ -f "${GITHUB_WORKSPACE}/cluster.env" ] && source "${GITHUB_WORKSPACE}/cluster.env"
+            set +a
+            ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pre-check
+
+  ## PA-WAS stage ##
+  pa-was-integration-tests:
+    name: pa-was-integration-tests
+    needs:
+      - compile
+      - find-cluster
+      - deploy
+      - pre-check
+    runs-on: ping-internal-x86-k8s-p1as
+    container: *k8s_deploy_tools
+    steps:
+      - name: Repository Setup
+        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+
+      - name: Download cluster-env artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: cluster-env
+          path: ${{ github.workspace }}
+
+      - name: Run PA-WAS integration tests
+        uses: ping-internal/p1as-eng-tools/.github/actions/retry@master
+        with:
+          retry-name: pingaccess-was
+          command: |
+            set -a
+            [ -f "${GITHUB_WORKSPACE}/cluster.env" ] && source "${GITHUB_WORKSPACE}/cluster.env"
+            set +a
+            ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
+
+  ################################################
+  # All integration tests defined to run on the  #
+  # traditionally deployed P1AS                  #
+  ################################################
+  integration-tests:
+    name: integration-tests (${{ matrix.test }})
+    needs:
+      - compile
+      - find-cluster
+      - deploy
+      - pre-check
+      - pa-was-integration-tests
+#    if: ${{ vars.ENV_TYPE == '' && github.event_name != 'schedule' }}
+    runs-on: ping-internal-x86-k8s-p1as
+    container: *k8s_deploy_tools
+    env:
+      UBER_YAML: ${{ github.workspace }}/out/___w_p1as-eng-base_p1as-eng-base.yaml
+    strategy:
+      fail-fast: false
+      matrix:
+        test: &all-tests
+          - pingdirectory
+          - pingdelegator
+          - pingfederate
+          - pingaccess
+          - pingcloud-services
+          - pingcentral
+          - pingdatasync
+          - common
+          - monitoring
+          - health
+          - pingone
+          - ingress-nginx
+          - cert-manager
+          - logging
+          - self-service
+          - argocd
+    steps:
+      - name: Repository Setup
+        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+
+      - name: Download cluster-env artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: cluster-env
+          path: ${{ github.workspace }}
+
+      - name: Download out/ artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: out
+          path: ${{ github.workspace }}/out
+
+      - name: Run integration tests
+        uses: ping-internal/p1as-eng-tools/.github/actions/retry@master
+        with:
+          retry-name: ${{ matrix.test }}
+          command: |
+            set -a
+            [ -f "${GITHUB_WORKSPACE}/cluster.env" ] && source "${GITHUB_WORKSPACE}/cluster.env"
+            set +a
+            export SKIP_TESTS="${BRANCH_SKIP_TESTS}"
+            ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh ${{ matrix.test }}
+
+      - name: Upload integration test logs
+        if: ${{ failure() && matrix.test == 'pingone' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: integration_test_logs-${{ matrix.test }}
+          path: ${{ github.workspace }}/tests/pingone/latest_logs/
+
+### Scheduled pipeline is being reworked entirely for GitHub Actions and is intentionally left disabled here.
+#  integration-tests-scheduled-pipeline:
+#    name: integration-tests-scheduled-pipeline (${{ matrix.test }})
+#    needs: [compile, find-cluster, deploy, pre-check, pa-was-integration-tests]
+#    if: ${{ vars.ENV_TYPE != 'customer-hub' && github.event_name == 'schedule' && !contains(github.event.head_commit.message || '', '[skip pipeline]') }}
+#    runs-on: ping-internal-x86-k8s-p1as
+#    container: *k8s_deploy_tools
+#    env:
+#      UBER_YAML: ${{ github.workspace }}/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        test:
+#          - pingdirectory
+#          - pingdelegator
+#          - pingfederate
+#          - pingaccess
+#          - pingcloud-services
+#          - pingdatasync
+#          - common
+#          - monitoring
+#          - health
+#          - pingone
+#    steps:
+#      - name: Repository Setup
+#        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+#
+#      - name: Download cluster-env artifact
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: cluster-env
+#          path: ${{ github.workspace }}
+#
+#      - name: Download out/ artifact
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: out
+#          path: ${{ github.workspace }}/out
+#
+#      - name: Run integration tests
+#        run: |
+#          set -a
+#          [ -f "${GITHUB_WORKSPACE}/cluster.env" ] && source "${GITHUB_WORKSPACE}/cluster.env"
+#          set +a
+#          export SKIP_TESTS="${BRANCH_SKIP_TESTS}"
+#          ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh ${{ matrix.test }}
+#
+#      - name: Upload integration test logs
+#        if: ${{ failure() && matrix.test == 'pingone' }}
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: integration_test_logs-${{ matrix.test }}
+#          path: ${{ github.workspace }}/tests/pingone/latest_logs/
+#
+#  integration-tests-chub:
+#    name: integration-tests-chub (${{ matrix.test }})
+#    needs: [compile, find-cluster, deploy, pre-check, pa-was-integration-tests]
+#    if: ${{ vars.ENV_TYPE == 'customer-hub' && !contains(github.event.head_commit.message || '', '[skip pipeline]') }}
+#    runs-on: ping-internal-x86-k8s-p1as
+#    container: *k8s_deploy_tools
+#    env:
+#      UBER_YAML: ${{ github.workspace }}/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        test:
+#          - pingcloud-services
+#          - pingcentral
+#          - common
+#          - monitoring
+#          - health
+#    steps:
+#      - name: Repository Setup
+#        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+#
+#      - name: Download cluster-env artifact
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: cluster-env
+#          path: ${{ github.workspace }}
+#
+#      - name: Download out/ artifact
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: out
+#          path: ${{ github.workspace }}/out
+#
+#      - name: Run integration tests
+#        run: |
+#          set -a
+#          [ -f "${GITHUB_WORKSPACE}/cluster.env" ] && source "${GITHUB_WORKSPACE}/cluster.env"
+#          set +a
+#          export SKIP_TESTS="${BRANCH_SKIP_TESTS}"
+#          ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh ${{ matrix.test }}
+#
+#      - name: Upload integration test logs
+#        if: ${{ failure() && matrix.test == 'pingone' }}
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: integration_test_logs-${{ matrix.test }}
+#          path: ${{ github.workspace }}/tests/pingone/latest_logs/
+
+  ## Chaos testing stage ##
+  chaos-tests:
+    name: chaos-tests
+    needs:
+      - compile
+      - find-cluster
+      - deploy
+      - pre-check
+      - pa-was-integration-tests
+      - integration-tests
+#      - integration-tests-scheduled-pipeline
+#      - integration-tests-chub
+    runs-on: ping-internal-x86-k8s-p1as
+    container: *k8s_deploy_tools
+    steps:
+      - name: Repository Setup
+        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+
+      - name: Download cluster-env artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: cluster-env
+          path: ${{ github.workspace }}
+
+      - name: Run chaos tests
+        uses: ping-internal/p1as-eng-tools/.github/actions/retry@master
+        with:
+          retry-name: chaos
+          command: |
+            set -a
+            [ -f "${GITHUB_WORKSPACE}/cluster.env" ] && source "${GITHUB_WORKSPACE}/cluster.env"
+            set +a
+            ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh chaos
+
+  ## Cleanup stage that runs when everything has succeeded ##
+  # Also has no `needs:` override in GitLab, so (like chaos-tests) it stage-sequentially
+  # waits for the entire chain, and needs the same skip-tolerant result checks.
+  cleanup-on-success:
+    name: cleanup-on-success
+    needs:
+      - compile
+      - find-cluster
+      - deploy
+      - pre-check
+      - pa-was-integration-tests
+      - integration-tests
+#      - integration-tests-scheduled-pipeline
+#      - integration-tests-chub
+      - chaos-tests
+    runs-on: ping-internal-x86-k8s-p1as
+    container: *k8s_deploy_tools
+    steps:
+      - name: Repository Setup
+        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+
+      - name: Download cluster-env artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: cluster-env
+          path: ${{ github.workspace }}
+
+      - name: Teardown cluster
+        run: |
+          set -a
+          [ -f "${GITHUB_WORKSPACE}/cluster.env" ] && source "${GITHUB_WORKSPACE}/cluster.env"
+          set +a
+          ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
+
+  ## Cleanup stage for failed compile stage ##
+  cleanup-on-compile-failure:
+    name: cleanup-on-compile-failure
+    needs:
+      - compile
+      - find-cluster
+      - deploy
+    if: failure()
+    runs-on: ping-internal-x86-k8s-p1as
+    container: *k8s_deploy_tools
+    steps:
+      - name: Repository Setup
+        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+
+      - name: Download cluster-env artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: cluster-env
+          path: ${{ github.workspace }}
+
+      - name: Download compile-env artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: compile-env
+          path: ${{ github.workspace }}
+
+      - name: Cleanup
+        run: |
+          set -a
+          [ -f "${GITHUB_WORKSPACE}/cluster.env" ] && source "${GITHUB_WORKSPACE}/cluster.env"
+          [ -f "${GITHUB_WORKSPACE}/compile.env" ] && source "${GITHUB_WORKSPACE}/compile.env"
+          set +a
+          # Only cleanup when compile fails.
+          # If compile passes, deployment remains for troubleshooting
+          if [ "$COMPILE_RESULT" != 0 ]; then
+            ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh;
+          else
+            echo "Compile passed, deployment not torn down to allow for troubleshooting";
+          fi
+
+  ci-cd-gatekeeper:
+    name: ci-cd-gatekeeper
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - compile
+#      - copy-images
+      - check-ext-images
+      - scan
+      - find-cluster
+      - deploy
+      - pre-check
+      - pa-was-integration-tests
+      - integration-tests
+#      - integration-tests-scheduled-pipeline
+#      - integration-tests-chub
+      - chaos-tests
+      - cleanup-on-success
+      - cleanup-on-compile-failure
+    steps:
+      - uses: ping-internal/p1as-eng-tools/.github/actions/ci-cd-gatekeeper@master
+        with:
+          results: ${{ join(needs.*.result, ' ') }}
