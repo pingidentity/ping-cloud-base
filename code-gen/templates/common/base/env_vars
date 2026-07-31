@@ -72,12 +72,12 @@ CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
 APP_RESYNC_SECONDS=${APP_RESYNC_SECONDS}
 
 ############################################################
-# Miscellaneous ping-cloud-base variables
+# Miscellaneous p1as-eng-base variables
 ############################################################
 # Namespace where Ping apps are deployed
 PING_CLOUD_NAMESPACE=${PING_CLOUD_NAMESPACE}
 
-# The ping-cloud-base git URL and branch for base Kubernetes manifests
+# The p1as-eng-base git URL and branch for base Kubernetes manifests
 K8S_GIT_URL=${K8S_GIT_URL}
 K8S_GIT_BRANCH=${K8S_GIT_BRANCH}
 

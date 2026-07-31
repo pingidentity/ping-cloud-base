@@ -3,7 +3,7 @@ import subprocess
 import os
 import yaml
 
-PCB_DIR = os.getenv("PROJECT_DIR", os.getenv("PCB_PATH", "ping-cloud-base"))
+PCB_DIR = os.getenv("PROJECT_DIR", os.getenv("PCB_PATH", "p1as-eng-base"))
 SEAL_SCRIPT_PATH = os.getenv("SEAL_SCRIPT", ("%s/code-gen/seal-secret-values.py" % PCB_DIR))
 VALUES_FILE_PATH = "values-files/base"
 
