@@ -1,0 +1,14 @@
+name: Cherry-pick to next release
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  merge-branch:
+    if: github.event.pull_request.merged == true
+    uses: ping-internal/p1as-eng-tools/.github/workflows/cherry-pick.yml@master
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write

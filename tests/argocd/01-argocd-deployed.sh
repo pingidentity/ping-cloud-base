@@ -39,7 +39,7 @@ testExpectedCRDSInstalled() {
 
 testArgocdAppsCreated() {
   base_app="${CLUSTER_NAME}-${REGION}-${ENV_TYPE}"
-  app_list=($(find "${PROJECT_DIR}" -type d -name "p1as-*" -exec basename {} \;))
+  app_list=($(find "${PROJECT_DIR}" -type d -name "p1as-*" -mindepth 1 -exec basename {} \;))
 
   # currently all apps have the same prefix, adding them in
   app_list=("${app_list[@]/#/$base_app-}")
