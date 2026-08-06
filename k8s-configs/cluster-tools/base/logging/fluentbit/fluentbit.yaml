@@ -203,6 +203,15 @@ spec:
           path: /var/log/dmesg
       serviceAccountName: fluent-bit
       priorityClassName: system-node-critical
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: eks.amazonaws.com/compute-type
+                    operator: NotIn
+                    values:
+                      - fargate
       tolerations:
       - key: node-role.kubernetes.io/controlplane
         operator: Exists

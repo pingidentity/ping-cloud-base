@@ -160,7 +160,7 @@ global:
   # pingCloudNamespace is the namespace where Ping apps are deployed
   pingCloudNamespace: "${PING_CLOUD_NAMESPACE}"
 
-  # k8sGitBranch is the ping-cloud-base git branch for base Kubernetes manifests
+  # k8sGitBranch is the p1as-eng-base git branch for base Kubernetes manifests
   k8sGitBranch: "${K8S_GIT_BRANCH}"
 
   # ecrRegistryName is the name of the Docker image registry
@@ -238,13 +238,13 @@ global:
   paAdminApiPublicHostname: "pingaccess-admin-api.${PRIMARY_DNS_ZONE}"
   pfAdminPublicHostname: "pingfederate-admin.${PRIMARY_DNS_ZONE}"
   pcAdminPrivateSiteHostname: "pingcentral.${PRIMARY_TENANT_DOMAIN}"
+  pcAdminPublicHostname: "pingcentral-admin.${PRIMARY_DNS_ZONE}"
   pfClusterPublicHostname: "pingfederate-cluster.${PRIMARY_DNS_ZONE}"
   pdClusterPublicHostname: "pingdirectory-cluster.${PRIMARY_DNS_ZONE}"
   selfServicePublicHostname: "self-service-api.${PRIMARY_DNS_ZONE}"
   selfServiceUIPublicHostname: "self-service.${PRIMARY_TENANT_DOMAIN}"
-  paAdminPublicHostname: "pingaccess-admin.${PRIMARY_TENANT_DOMAIN}"
-  paClusterPublicHostname: "pingaccess-cluster.${PRIMARY_TENANT_DOMAIN}"
-  paEnginePublicHostname: "pingaccess.${PRIMARY_TENANT_DOMAIN}"
+  paAdminPublicHostname: "pingaccess-admin.${PRIMARY_DNS_ZONE}"
+  paClusterPublicHostname: "pingaccess-cluster.${PRIMARY_DNS_ZONE}"
 
   #### FEATURE FLAGS ##################################################################################################
   # Most are disabled by default

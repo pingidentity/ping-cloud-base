@@ -11,7 +11,7 @@ To run tests in this directory locally follow the below steps:
 - `export ENV_TYPE=<your environment name (dev test stage prod customer-hub)>`
 
 - This list of tests has to be skipped for now as they require some fixes:
-- `export SKIP_TESTS=<tests set in ping-cloud-base/gitlab-ci.yml (BRANCH_SKIP_TESTS)>`
+- `export SKIP_TESTS=<tests set in p1as-eng-base/.github/workflows/ci-cd.yml (BRANCH_SKIP_TESTS)>`
 
 - run `${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh <INSERT TEST DIRECTORY> <PATH TO PROPERTIES FILE>`
 

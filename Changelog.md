@@ -63,6 +63,8 @@ _Changes:_
 - Implement Logstash HPA via custom metric
 - Prometheus Adapter OOM fix
 - Prometheus Adapter race condition, add prometheus namespace to bootstrap process
+- Teleport: figure out a longer-term fix for auto-upgrade
+- Do not schedule fluentbit daemonset on Fargate
 
 _Changes:_
 
@@ -107,6 +109,7 @@ _Changes:_
 - [x] PDO-11586 Update Security Contexts for Argocd
 - [X] PDO-11733 Prometheus Adapter OOM fix
 - [X] PDO-11745 Prometheus Adapter race condition, add prometheus namespace to bootstrap process
+- [X] PDO-12011: Add Fargate nodeAfinity exclusion to fluentbit daemonset
 
 ### 2.2.3
 

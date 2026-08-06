@@ -20,6 +20,9 @@ EXPECTED_UPSTREAM_FIELDS = {
     "upstream_response_time": str,
     "upstream_status": str,
     "req_id": str,
+    "request_time": str,
+    "proxy_upstream_name": str,
+    "proxy_alternative_upstream_name": str,
 }
 
 

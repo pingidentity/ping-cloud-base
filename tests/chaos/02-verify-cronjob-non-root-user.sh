@@ -27,13 +27,16 @@ testNonRootCronjob() {
 }
 
 testNonRootCronjobUserId() {
-  cronjobs=$(kubectl get cronjob --no-headers -o custom-columns=":metadata.name")
+  exclude_list="argocd-ecr-credentials argocd-helm-auth cleanup-nondefault-namespaces"
+  cronjobs=$(kubectl get cronjob -A --no-headers -o custom-columns=":metadata.name")
   for cronjob in ${cronjobs}; do
+    echo "${exclude_list}" | grep -qw "${cronjob}" && continue
     # Run pod long enough to be able to exec into pod and run whoami to verify user
+    ns=$(kubectl get cronjob -A --no-headers | awk -v cj="${cronjob}" '$2==cj{print $1}')
     job="${cronjob}-uid"
     kubectl create job \
       ${job} \
-      -n ${PING_CLOUD_NAMESPACE} \
+      -n ${ns} \
       --from=cronjob/${cronjob} \
       --dry-run=client \
       -o json > cronjob.json
@@ -44,14 +47,14 @@ testNonRootCronjobUserId() {
 
     kubectl apply -f cronjob.json
 
-    pod=$(kubectl get po -l job-name=${job} -o name)
-    kubectl wait --for=condition=Ready ${pod}
+    pod=$(kubectl get po -n ${ns} -l job-name=${job} -o name)
+    kubectl wait --for=condition=Ready ${pod} -n ${ns}
 
-    user=$(kubectl exec job/${job} -- whoami)
+    user=$(kubectl exec -n ${ns} job/${job} -- whoami)
     assertEquals "Cronjob: ${cronjob} - user not found" "ping" "${user}"
 
     # remove test job
-    kubectl delete job ${job}
+    kubectl delete job -n ${ns} ${job}
     rm -f cronjob.json
   done
 }

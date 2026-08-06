@@ -986,7 +986,7 @@ export SERVER_PROFILE_URL="${SERVER_PROFILE_URL:-${SERVER_PROFILE_URL_DERIVED}}"
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base.git}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 
-export MICROSERVICE_APP_REPO_URL="${MICROSERVICE_APP_REPO_URL:-git@gitlab.corp.pingidentity.com:ping-cloud-private-tenant}"
+export MICROSERVICE_APP_REPO_URL="${MICROSERVICE_APP_REPO_URL:-git@github.com:ping-internal}"
 
 export SSH_ID_PUB_FILE="${SSH_ID_PUB_FILE}"
 export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
@@ -1587,12 +1587,21 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       app_repo_branch="${app_repo_branch%-latest}"
     fi
 
+    # GitHub app repos are named p1as-eng-apps-<name> with no group prefix, while GitLab app
+    # repos are named p1as-<name> under the p1as-apps group. Detect the host from
+    # MICROSERVICE_APP_REPO_URL so the clone URL is built correctly for either.
+    if echo "${MICROSERVICE_APP_REPO_URL}" | grep -q 'github'; then
+      MICROSERVICE_APP_REPO_FULL_URL="${MICROSERVICE_APP_REPO_URL}/${app_repo/p1as-/p1as-eng-apps-}"
+    else
+      MICROSERVICE_APP_REPO_FULL_URL="${MICROSERVICE_APP_REPO_URL}/p1as-apps/${app_repo}"
+    fi
+
     # Clone microservice repo at the new version
-    log "Cloning ${app_repo}@${app_repo_branch} to '${PROFILE_REPO_MIRROR_DIR}'"
-    git clone -c advice.detachedHead=false --depth 1 --branch "${app_repo_branch}" "${MICROSERVICE_APP_REPO_URL}/p1as-apps/${app_repo}" "${PROFILE_REPO_MIRROR_DIR}/${app_repo}"
+    log "Cloning ${MICROSERVICE_APP_REPO_FULL_URL}@${app_repo_branch} to '${PROFILE_REPO_MIRROR_DIR}'"
+    git clone -c advice.detachedHead=false --depth 1 --branch "${app_repo_branch}" "${MICROSERVICE_APP_REPO_FULL_URL}" "${PROFILE_REPO_MIRROR_DIR}/${app_repo}"
 
     if test $? -ne 0; then
-      log "Unable to clone ${app_repo}@${app_repo_branch} from ${MICROSERVICE_APP_REPO_URL}/p1as-apps"
+      log "Unable to clone ${MICROSERVICE_APP_REPO_FULL_URL}@${app_repo_branch} to '${PROFILE_REPO_MIRROR_DIR}/${app_repo}'"
       exit 1
     fi
 

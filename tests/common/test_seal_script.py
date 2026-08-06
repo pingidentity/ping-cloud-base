@@ -4,7 +4,7 @@ import os
 import yaml
 import tempfile
 
-PCB_DIR = os.getenv("PROJECT_DIR", os.getenv("PCB_PATH", "ping-cloud-base"))
+PCB_DIR = os.getenv("PROJECT_DIR", os.getenv("PCB_PATH", "p1as-eng-base"))
 SEAL_SCRIPT_PATH = os.getenv(
     "SEAL_SCRIPT", ("%s/code-gen/seal-secret-values.py" % PCB_DIR)
 )
@@ -200,7 +200,7 @@ class TestSealScript(unittest.TestCase):
                     "customSecrets": {
                         "test-ns": {
                             "test-app": {
-                                "valuefour": "", 
+                                "valuefour": "",
                                 "valuefive": "  "
                             }
                         },
@@ -246,7 +246,7 @@ class TestSealScript(unittest.TestCase):
             capture_output=True,
             text=True,
         )
-        self.assertEqual(p1.stdout.strip(), "", "empty secret not still empty")        
+        self.assertEqual(p1.stdout.strip(), "", "empty secret not still empty")
 
     def test_secret_keys_missing(self):
         self.write_values_file({"global": {"sealedSecrets": False}})
