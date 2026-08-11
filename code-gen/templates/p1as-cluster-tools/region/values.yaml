@@ -59,7 +59,7 @@ karpenterController:
         memory: 512Mi
   serviceAccount:
     annotations:
-      ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
+      ${IRSA_KARPENTER_ANNOTATION_KEY_VALUE}
   # Ec2NodeClass definitions
   p1asEC2NodeClass:
     instanceProfile: "${KARPENTER_INSTANCE_PROFILE}"
