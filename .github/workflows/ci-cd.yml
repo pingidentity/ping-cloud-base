@@ -33,6 +33,7 @@ env:
     pingaccess/08-artifact-test.sh
     pingdelegator/01-admin-user-login.sh
     ingress-nginx/01-test-ocsp-stapling.sh
+    self-service/test_tls.py
 
 defaults:
   run:

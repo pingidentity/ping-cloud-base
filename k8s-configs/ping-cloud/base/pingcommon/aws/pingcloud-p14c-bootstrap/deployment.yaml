@@ -13,6 +13,7 @@ spec:
         lastUpdateReason: "NA"
     spec:
       serviceAccount: bootstrap-serviceaccount
+      terminationGracePeriodSeconds: 300
       securityContext:
         runAsGroup: 9999
         runAsNonRoot: true

@@ -15,6 +15,7 @@ _Changes:_
 - Upgrade kube-state-metrics to version 2.18.0
 - Upgrade PingAccess and PingAccess-WAS to v9.0.3
 - Update descriptorFile in values-files/base/values.yaml from YAML block content to JSON block content
+- Add logic to do bootstrap pod rollout restart when respective configmaps change
 
 _Changes:_
 
@@ -23,6 +24,7 @@ _Changes:_
 - [X] PDO-11379 Upgrade Ingress NGINX Controller to version 1.14.4
 - [X] PDO-11519 Upgrade PingAccess and PingAccess-WAS to v9.0.3
 - [X] PDO-11892 Update descriptorFile in values-files/base/values.yaml from YAML block content to JSON block content
+- [X] PDO-12108 SelfService feature flag enablement requires manual restart
 
 ### 2.2.0
 
