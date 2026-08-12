@@ -94,6 +94,7 @@ _Changes:_
 - [X] PDO-11745 Prometheus Adapter race condition, add prometheus namespace to bootstrap process
 - [X] PDO-12011: Add Fargate nodeAfinity exclusion to fluentbit daemonset
 - [X] PDO-12049 Default All Environments to Logging Tier 1
+- [X] PDO-12148 Logstash and OpenSearch 2.3-tagged build not visible
 
 ### 2.2.3
 

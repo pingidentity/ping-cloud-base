@@ -144,6 +144,11 @@ P14C_INTEGRATION_IMAGE_TAG=v2.3-release-branch-latest
 ############################################################
 OS_BOOTSTRAP_IMAGE_TAG=v2.3-release-branch-latest
 LOGSTASH_IMAGE_TAG=v2.3-release-branch-latest
+ENRICHMENT_BOOTSTRAP_IMAGE_TAG=v2.3-release-branch-latest
+OPENSEARCH_IMAGE_TAG=v2.3-release-branch-latest
+# Static third-party/tooling image pins. Not managed by release tagging.
+OPENSEARCH_DASHBOARDS_IMAGE_TAG=2.19.0
+LOGSTASH_EXPORTER_IMAGE_TAG=v0.0.1
 
 ############################################################
 # Cluster name variables

@@ -15,16 +15,27 @@ components:
 - github.com/pingidentity/ping-cloud-base-patches//components/logging/tiers/${LOGGING_TIER}/opensearch
 
 images:
-- name: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/logstash${ECR_ENV}
+# Patch image fields handled by the Kustomize images transformer.
+# name: matches the source image currently in base/tier manifests.
+# newName: rewrites to the target repo path: ECR_ENV is /dev for dev images or empty for release images.
+# newTag: applies the version from env_vars.
+# Logging tier component images; source names do not include ${ECR_ENV}.
+- name: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/logstash
   newName: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/logstash${ECR_ENV}
   newTag: ${LOGSTASH_IMAGE_TAG}
-- name: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/os-bootstrap${ECR_ENV}
+- name: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/os-bootstrap
   newName: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/os-bootstrap${ECR_ENV}
   newTag: ${OS_BOOTSTRAP_IMAGE_TAG}
+- name: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/enrichment-bootstrap
+  newName: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/enrichment-bootstrap${ECR_ENV}
+  newTag: ${ENRICHMENT_BOOTSTRAP_IMAGE_TAG}
+- name: ${ECR_REGISTRY_NAME}/pingcloud-clustertools/prom/logstash-exporter
+  newName: ${ECR_REGISTRY_NAME}/pingcloud-clustertools/prom/logstash-exporter
+  newTag: ${LOGSTASH_EXPORTER_IMAGE_TAG}
+# Base logging image; source name includes ${ECR_ENV}.
 - name: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-integration${ECR_ENV}
   newName: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-integration${ECR_ENV}
   newTag: ${P14C_INTEGRATION_IMAGE_TAG}
-
 
 generatorOptions:
   disableNameSuffixHash: true
@@ -120,6 +131,20 @@ patchesStrategicMerge:
 #- kms-patch.yaml
 
 patchesJson6902:
+- target:
+    group: opensearch.opster.io
+    version: v1
+    kind: OpenSearchCluster
+    name: opensearch-cluster
+  patch: |-
+    # Patch OpenSearchCluster image fields directly; the Kustomize images transformer does not handle CRDs.
+    - op: replace
+      path: /spec/general/image
+      value: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/opensearch${ECR_ENV}:${OPENSEARCH_IMAGE_TAG}
+    - op: replace
+      path: /spec/dashboards/image
+      value: ${ECR_REGISTRY_NAME}/pingcloud-clustertools/opensearchproject/opensearch-dashboards:${OPENSEARCH_DASHBOARDS_IMAGE_TAG}
+
 - target:
     kind: Service
     name: opensearch-ingest
