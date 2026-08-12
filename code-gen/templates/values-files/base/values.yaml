@@ -164,7 +164,7 @@ global:
   k8sGitBranch: "${K8S_GIT_BRANCH}"
 
   # ecrRegistryName is the name of the Docker image registry
-  ecrRegistryName: "${ECR_REGISTRY_NAME}/dev"
+  ecrRegistryName: "${ECR_REGISTRY_NAME}"
 
   # clusterName is the eks cluster name
   clusterName: "${CLUSTER_NAME}"
@@ -267,6 +267,6 @@ global:
 
   # pingcloud-p14c-bootstrap application settings
   p14cIntegration:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v2.3-release-branch-latest
+    image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v2.3.0-RC2
   grpRadiusProxy:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-services/grp-radiusproxy/dev:v2.3-release-branch-latest
+    image: public.ecr.aws/r2h3l6e4/pingcloud-services/grp-radiusproxy:v2.3.0-RC2
