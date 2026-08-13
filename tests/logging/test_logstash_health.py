@@ -1,23 +1,33 @@
 import unittest
 import json
 from ast import literal_eval
+import boto3
+from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError, PartialCredentialsError
 from k8s_utils import K8sUtils
+
+# Maximum number of leftover objects tolerated in the S3 logstash bucket.
+ACCEPTABLE_S3_THRESHOLD = 3000
 
 
 def parse_output(output, pod):
     try:
         return json.loads(output)
     except json.JSONDecodeError:
-        parsed_data = literal_eval(output)  
+        parsed_data = literal_eval(output)
         return json.loads(json.dumps(parsed_data))
 
 
 class TestLogstash(unittest.TestCase):
     namespace = "elastic-stack-logging"
+    LOGSTASH_LABEL = "app=logstash-elastic"
+    LOGSTASH_S3_LABEL = "app=logstash-elastic-s3"
+    MAIN_CUSTOMER_PIPELINES = ["main", "customer"]
+    S3_PIPELINE = "s3"
+    S3_BUCKET_PREFIX = "application/"
     workload_pods = {}
     workload_pipelines = {
-        "app=logstash-elastic": ["main", "customer", "dlq"],
-        "app=logstash-elastic-s3": ["s3"],
+        LOGSTASH_LABEL: ["main", "customer", "dlq"],
+        LOGSTASH_S3_LABEL: [S3_PIPELINE],
     }
     required_plugins = [
         "logstash-input-dead_letter_queue",
@@ -83,7 +93,7 @@ class TestLogstash(unittest.TestCase):
         pipeline_status = pipeline_stats.get("status", "")
 
         expected_statuses = {"green"}
-        if label == "app=logstash-elastic-s3" and pipeline_name == "s3":
+        if label == self.LOGSTASH_S3_LABEL and pipeline_name == self.S3_PIPELINE:
             # On low/no traffic, Logstash may report 'unknown' for these pipelines.
             expected_statuses.add("unknown")
         if pipeline_status:
@@ -121,29 +131,17 @@ class TestLogstash(unittest.TestCase):
             f"Missing plugins in pod {pod}: {', '.join(missing_plugins)}"
         )
 
-    def _collect_failure_counters(self, obj):
-        counters = []
-        if isinstance(obj, dict):
-            for key, value in obj.items():
-                if key in {"failures", "failure", "failed", "non_retryable_failures", "retry_failures"} and isinstance(value, (int, float)):
-                    counters.append((key, value))
-                counters.extend(self._collect_failure_counters(value))
-        elif isinstance(obj, list):
-            for item in obj:
-                counters.extend(self._collect_failure_counters(item))
-        return counters
-
     def test_s3_pipeline_stats_events_and_failures(self):
-        label = "app=logstash-elastic-s3"
+        label = self.LOGSTASH_S3_LABEL
         pods = self.workload_pods.get(label, [])
         self.assertTrue(pods, f"No Logstash pods found for label {label}")
 
         for pod in pods:
             with self.subTest(label=label, pod=pod):
-                command = ["curl", "-s", "http://localhost:9600/_node/stats/pipelines/s3?pretty"]
+                command = ["curl", "-s", f"http://localhost:9600/_node/stats/pipelines/{self.S3_PIPELINE}?pretty"]
                 output = self.exec_in_logstash_container(pod, command)
                 stats_json = parse_output(output, pod)
-                pipeline_stats = self._extract_pipeline_stats(stats_json, "s3")
+                pipeline_stats = self._extract_pipeline_stats(stats_json, self.S3_PIPELINE)
                 self.assertTrue(
                     isinstance(pipeline_stats, dict) and pipeline_stats,
                     f"No s3 pipeline stats returned for pod {pod}"
@@ -169,15 +167,129 @@ class TestLogstash(unittest.TestCase):
                 self.assertIsInstance(events["out"], (int, float), f"events.out is not numeric in pod {pod}")
                 self.assertGreaterEqual(events["in"], 0, f"events.in must be >= 0 in pod {pod}")
                 self.assertGreaterEqual(events["out"], 0, f"events.out must be >= 0 in pod {pod}")
+                self.assertEqual(
+                    events["in"],
+                    events["out"],
+                    f"s3 pipeline in pod {pod}: events_in ({events['in']}) != events_out ({events['out']}). "
+                    f"The S3 pipeline is a pass-through — all ingested events must be flushed to S3.",
+                )
 
-                # Validate failure counters when exposed by this Logstash build/plugin set.
-                failure_counters = self._collect_failure_counters(stats_json)
-                for counter_name, counter_value in failure_counters:
-                    self.assertGreaterEqual(
-                        counter_value,
-                        0,
-                        f"{counter_name} is negative for s3 pipeline in pod {pod}: {counter_value}"
+    def test_main_customer_pipeline_events_and_failures(self):
+        """
+        Validates events schema, consistency, and failure counters for the main and
+        customer pipelines running in logstash-elastic pods.
+
+        Checks:
+          - events.in and events.out keys are present.
+          - Both values are numeric (int or float).
+          - events_in >= events_out (fail if events_out exceeds events_in).
+        """
+        label = self.LOGSTASH_LABEL
+        pipelines = self.MAIN_CUSTOMER_PIPELINES
+        pods = self.workload_pods.get(label, [])
+        self.assertTrue(pods, f"No Logstash pods found for label {label}")
+
+        for pod in pods:
+            for pipeline_name in pipelines:
+                with self.subTest(label=label, pod=pod, pipeline=pipeline_name):
+                    command = [
+                        "curl", "-s",
+                        f"http://localhost:9600/_node/stats/pipelines/{pipeline_name}?pretty",
+                    ]
+                    output = self.exec_in_logstash_container(pod, command)
+                    stats_json = parse_output(output, pod)
+                    pipeline_stats = self._extract_pipeline_stats(stats_json, pipeline_name)
+
+                    events = pipeline_stats.get("events", {})
+                    if not events:
+                        # Pipeline idle but initialised - no schema to validate.
+                        continue
+
+                    self.assertIn("in", events, f"events.in missing for '{pipeline_name}' in pod {pod}")
+                    self.assertIn("out", events, f"events.out missing for '{pipeline_name}' in pod {pod}")
+                    self.assertIsInstance(
+                        events["in"], (int, float),
+                        f"events.in is not numeric for '{pipeline_name}' in pod {pod}",
                     )
+                    self.assertIsInstance(
+                        events["out"], (int, float),
+                        f"events.out is not numeric for '{pipeline_name}' in pod {pod}",
+                    )
+                    print(
+                        f"  [{pipeline_name}] pod {pod}: "
+                        f"events_in={events['in']}, events_out={events['out']}"
+                    )
+                    self.assertGreaterEqual(
+                        events["in"],
+                        events["out"],
+                        f"Pipeline '{pipeline_name}' in pod {pod}: "
+                        f"events_out ({events['out']}) exceeds events_in ({events['in']}). "
+                        "Possible pipeline misconfiguration or stats corruption.",
+                    )
+
+    def _get_pod_env_var(self, pod_name, var_name):
+        """Return the value of an environment variable from inside the logstash container."""
+        output = self.exec_in_logstash_container(
+            pod_name, ["printenv", var_name]
+        )
+        return output.strip()
+
+    def test_s3_bucket_object_count(self):
+        """
+        Validates that the S3 bucket used by logstash-elastic-s3 does not accumulate
+        leftover objects beyond ACCEPTABLE_S3_THRESHOLD.
+
+        A non-zero count indicates a previous cleanup/flush job failure and must be
+        investigated before the deployment is considered healthy.
+        """
+        label = self.LOGSTASH_S3_LABEL
+        pod = self.workload_pods[label][0]
+
+        raw_bucket = self._get_pod_env_var(pod, "S3_BUCKET")
+        self.assertTrue(
+            raw_bucket,
+            f"S3_BUCKET env var must be set in logstash-elastic-s3 pod {pod}."
+        )
+
+        bucket_uri_without_scheme = raw_bucket.removeprefix("s3://")
+        bucket_name = bucket_uri_without_scheme.split("/", 1)[0]
+        bucket_prefix = self.S3_BUCKET_PREFIX
+
+        try:
+            sts_client = boto3.client("sts")
+            identity = sts_client.get_caller_identity()
+            print(
+                f"Using local AWS identity: {identity.get('Arn', 'unknown')}"
+            )
+
+            s3_client = boto3.client("s3")
+            paginator = s3_client.get_paginator("list_objects_v2")
+            object_count = 0
+            for page in paginator.paginate(Bucket=bucket_name, Prefix=bucket_prefix):
+                object_count += len(page.get("Contents", []))
+        except (NoCredentialsError, PartialCredentialsError) as ex:
+            self.fail(
+                f"Local AWS credentials are not configured for S3 check. "
+                f"Unable to count objects in s3://{bucket_name}/{bucket_prefix}. Error: {ex}"
+            )
+        except (ClientError, BotoCoreError) as ex:
+            self.fail(
+                f"Failed to list S3 objects for s3://{bucket_name}/{bucket_prefix} using local boto3. "
+                f"Error: {ex}"
+            )
+
+        print(
+            f"S3 path 's3://{bucket_name}/{bucket_prefix}' object count: {object_count} "
+            f"(acceptable threshold: <= {ACCEPTABLE_S3_THRESHOLD})"
+        )
+
+        self.assertLessEqual(
+            object_count,
+            ACCEPTABLE_S3_THRESHOLD,
+            f"S3 bucket '{bucket_name}' contains {object_count} leftover object(s), "
+            f"exceeding the acceptable threshold of {ACCEPTABLE_S3_THRESHOLD}. "
+            "A prior cleanup job may have failed - review the bucket before proceeding.",
+        )
 
 
 if __name__ == "__main__":

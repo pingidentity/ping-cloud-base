@@ -8,6 +8,12 @@ resources:
 # Uncomment the KMS-related resources/patches when EBS_KMS_KEY_ARN is set.
 #- kms-storageclass.yaml
 
+components:
+# Logging tier patches are selected by LOGGING_TIER and split by component for independent control of Fluent Bit, Logstash, and OpenSearch.
+- github.com/pingidentity/ping-cloud-base-patches//components/logging/tiers/${LOGGING_TIER}/fluentbit
+- github.com/pingidentity/ping-cloud-base-patches//components/logging/tiers/${LOGGING_TIER}/logstash
+- github.com/pingidentity/ping-cloud-base-patches//components/logging/tiers/${LOGGING_TIER}/opensearch
+
 images:
 # Patch image fields handled by the Kustomize images transformer.
 # name: matches the source image currently in base/tier manifests.

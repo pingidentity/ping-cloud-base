@@ -142,10 +142,10 @@ P14C_INTEGRATION_IMAGE_TAG=v2.4-release-branch-latest
 ############################################################
 # Ping observability image tags
 ############################################################
-OS_BOOTSTRAP_IMAGE_TAG=v2.3-release-branch-latest
-LOGSTASH_IMAGE_TAG=v2.3-release-branch-latest
-ENRICHMENT_BOOTSTRAP_IMAGE_TAG=v2.3-release-branch-latest
-OPENSEARCH_IMAGE_TAG=v2.3-release-branch-latest
+OS_BOOTSTRAP_IMAGE_TAG=v2.4-release-branch-latest
+LOGSTASH_IMAGE_TAG=v2.4-release-branch-latest
+ENRICHMENT_BOOTSTRAP_IMAGE_TAG=v2.4-release-branch-latest
+OPENSEARCH_IMAGE_TAG=v2.4-release-branch-latest
 # Static third-party/tooling image pins. Not managed by release tagging.
 OPENSEARCH_DASHBOARDS_IMAGE_TAG=2.19.0
 LOGSTASH_EXPORTER_IMAGE_TAG=v0.0.1
@@ -228,10 +228,9 @@ DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
 DASH_REPO_BRANCH=v2.4-dev-branch
 
 # Logging tier applied by generated logging kustomizations.
-# Defaults to tier1 for dev/test and tier2 for other environments unless overridden.
+# Defaults to tier1 for all environments unless overridden.
 # tier1 is the minimum profile needed to run the logging pipeline.
-# Customer environments should use at least tier2, and higher tiers are recommended
-# as log event volume and pipeline capacity needs increase.
+# Higher tiers are recommended as log event volume and pipeline capacity needs increase.
 # Changing tiers triggers a redeploy and rolling restart of some observability pods.
 LOGGING_TIER=${LOGGING_TIER}
 

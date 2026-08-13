@@ -478,6 +478,7 @@ ${ARGOCD_SLACK_TOKEN_BASE64}
 ${SLACK_CHANNEL}
 ${DASH_REPO_URL}
 ${DASH_REPO_BRANCH}
+${LOGGING_TIER}
 ${APP_RESYNC_SECONDS}
 ${CERT_RENEW_BEFORE}
 ${TELEPORT_RESOURCE_ID}
@@ -904,6 +905,7 @@ echo "Initial SLACK_CHANNEL: ${SLACK_CHANNEL}"
 echo "Initial NON_GA_SLACK_CHANNEL: ${NON_GA_SLACK_CHANNEL}"
 
 echo "Initial APP_RESYNC_SECONDS: ${APP_RESYNC_SECONDS}"
+echo "Initial LOGGING_TIER: ${LOGGING_TIER}"
 
 echo "Initial DASHBOARD_REPO_URL: ${DASHBOARD_REPO_URL}"
 
@@ -1200,6 +1202,7 @@ echo "Using HEALTHCHECKS_ENABLED: ${HEALTHCHECKS_ENABLED}"
 echo "Using CUSTOMER_PINGONE_ENABLED: ${CUSTOMER_PINGONE_ENABLED}"
 echo "Using SELF_SERVICE_TEMPLATES_ENABLED: ${SELF_SERVICE_TEMPLATES_ENABLED}"
 echo "Using ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD: ${ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD}"
+echo "Using LOGGING_TIER: ${LOGGING_TIER}"
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 echo "Using IS_GA: ${IS_GA}"
@@ -1327,6 +1330,9 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
   echo "-----> Starting to create environment '${ENV}'"
 
+  # Default all environments to tier1 unless explicitly overridden.
+  export LOGGING_TIER="${LOGGING_TIER:-tier1}"
+
   # The base URL for kustomization files and environment will be different for each CDE.
   # On migrated customers, we must preserve the size of the customers.
   case "${ENV}" in
@@ -1436,6 +1442,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   echo "Using CLUSTER_STATE_REPO_BRANCH: ${CLUSTER_STATE_REPO_BRANCH}"
   echo "Using ENVIRONMENT_TYPE: ${ENVIRONMENT_TYPE}"
   echo "Using KUSTOMIZE_BASE: ${KUSTOMIZE_BASE}"
+  echo "Using LOGGING_TIER: ${LOGGING_TIER}"
   echo "Using ACCOUNT_TYPE: ${ACCOUNT_TYPE}"
   echo "Using LETS_ENCRYPT_SERVER: ${LETS_ENCRYPT_SERVER}"
   echo "Using CLUSTER_NAME: ${CLUSTER_NAME}"
