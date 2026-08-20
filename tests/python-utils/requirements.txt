@@ -26,6 +26,9 @@ pydantic==2.11.7
 # Client Request Library
 requests
 
+# OpenSearch Python client
+opensearch-py
+
 # Kubernetes Client Library.
 # Pinned to v31 due to AWS issue in latest version v32
 # See here: https://github.com/kubernetes-client/python/issues/2343

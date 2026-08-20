@@ -12,12 +12,14 @@
 - Added Testcase to validate JSON nginx ingress logs
 - Get Karpenter IRSA role arn from SSM
 - Add integration test for PingDirectory replication log ingestion into OpenSearch
+- Add OpenSearch index template field coverage test and dashboard field validation test
 
 _Changes:_
 
 - [X] PDO-7316 JSON Logging: Implement JSON logging for PingDelegator logs
 - [X] PDO-8875 Add deploy wrapper to capture deploy failure logs
 - [X] PDO-9115 Introduce 'revisionHistoryLimit' to Delegated Admin deployment object to avoid cluttering
+- [X] PDO-10598 JSON Logging: Update index templates in OpenSearch
 - [X] PDO-10168 Update pod-reaper and httpbin images
 - [X] PDO-10226 Implement JSON logging for Ingress logs
 - [X] PDO-11215 Get KarpenterController IRSA role path from SSM
