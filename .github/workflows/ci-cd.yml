@@ -400,6 +400,7 @@ jobs:
         with:
           retry-name: ${{ matrix.test }}
           command: |
+            git config --global --add safe.directory "*"
             set -a
             [ -f "${GITHUB_WORKSPACE}/cluster.env" ] && source "${GITHUB_WORKSPACE}/cluster.env"
             set +a
