@@ -13,10 +13,12 @@
 - Get Karpenter IRSA role arn from SSM
 - Add integration test for PingDirectory replication log ingestion into OpenSearch
 - Add OpenSearch index template field coverage test and dashboard field validation test
+- JSON Logging: Implement JSON logging for PingCentral
 
 _Changes:_
 
 - [X] PDO-7316 JSON Logging: Implement JSON logging for PingDelegator logs
+- [X] PDO-7374 JSON Logging: Implement JSON logging for PingCentral
 - [X] PDO-8875 Add deploy wrapper to capture deploy failure logs
 - [X] PDO-9115 Introduce 'revisionHistoryLimit' to Delegated Admin deployment object to avoid cluttering
 - [X] PDO-10598 JSON Logging: Update index templates in OpenSearch
