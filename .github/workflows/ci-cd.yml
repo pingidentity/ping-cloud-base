@@ -13,10 +13,17 @@ on:
         description: "K8S_DEPLOY_TOOLS image & tag to use for the build jobs"
         required: false
         type: string
+      runName:
+        description: "Custom name for this workflow run to show up in the Actions UI"
+        required: false
+        type: string
+
+# Only set run name if being triggered by workflow_dispatch and param is set
+run-name: ${{ inputs.runName }}
 
 # Wait on in-progress runs for the same branch/ref when a new push arrives so it doesn't fill up all the clusters.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}${{ inputs.runName }}
   cancel-in-progress: false
 
 env:
@@ -40,11 +47,24 @@ defaults:
     shell: bash
 
 jobs:
+  resolve-image-sha:
+    name: resolve-image-sha
+    runs-on: ping-internal-x86-dind
+    outputs:
+      image: ${{ steps.resolve.outputs.image }}
+    steps:
+      - name: Resolve k8sDeployToolsImage digest
+        id: resolve
+        uses: ping-internal/p1as-eng-tools/.github/actions/get-image-sha@master
+        with:
+          image: ${{ inputs.k8sDeployToolsImage || 'docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v2.3-release-branch' }}
+
   compile:
     name: compile
     runs-on: ping-internal-x86-k8s-p1as
+    needs: [resolve-image-sha]
     container: &k8s_deploy_tools
-      image: ${{ inputs.k8sDeployToolsImage || 'docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v2.3-release-branch' }}
+      image: ${{ needs.resolve-image-sha.outputs.image }}
     steps:
       - name: Repository Setup
         uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
@@ -70,6 +90,7 @@ jobs:
     name: find-cluster
     runs-on: ping-internal-x86-k8s-p1as
     container: *k8s_deploy_tools
+    needs: [resolve-image-sha]
     steps:
       - name: Repository Setup
         uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
@@ -87,7 +108,9 @@ jobs:
   ## Deploy stage ##
   deploy:
     name: deploy
-    needs: [find-cluster]
+    needs:
+      - resolve-image-sha
+      - find-cluster
     runs-on: ping-internal-x86-k8s-p1as
     container: *k8s_deploy_tools
     env:
@@ -122,44 +145,47 @@ jobs:
           path: ${{ github.workspace }}/out/
           retention-days: 1
 
-    ## start security stage ##
-  # These only need `deploy`, so they run right after
-  # deploy rather than waiting for the rest of the pipeline to reach the security stage.
-  #TODO: re-enable once https://pingidentity.atlassian.net/browse/DEVHELP-45825 is resolved
-  #  copy-images:
-  #    name: copy-images
-  #    needs: [deploy]
-  #    if: ${{ endsWith(github.ref_name, '-release-branch') }}
-  #    continue-on-error: true
-  #    runs-on: ping-internal-x86-dind-p1as
-  #    container: *k8s_deploy_tools
-  #    env:
-  #      BELUGA_VERSION: ${{ github.ref_name }}
-  #      ARTIFACTORY_URL: docker.corp.pingidentity.com:5000
-  #      ARTIFACTORY_PATH: beluga-xray
-  #      ARTIFACTORY_REGISTRY_USER: ${{ vars.ARTIFACTORY_REGISTRY_USER }}
-  #      ARTIFACTORY_REGISTRY_PW: ${{ secrets.ARTIFACTORY_REGISTRY_PW }}
-  #      UBER_YAML: ${{ github.workspace }}/out/___w_p1as-eng-base_p1as-eng-base.yaml
-  #    steps:
-  #      - name: Repository Setup
-  #        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
-  #
-  #      - name: Download out/ artifact
-  #        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-  #        with:
-  #          name: out
-  #          path: ${{ github.workspace }}/out
-  #
-  #      - name: Run copy-images
-  #        run: |
-  #          echo "running AWS command"
-  #          aws ecr get-login-password --region "$AWS_DEFAULT_REGION" | HOME=/tmp docker login --username AWS --password-stdin "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
-  #          echo "running deploy tools script"
-  #          ${SHARED_CI_SCRIPTS_DIR}/k8s/security/copy-images.sh
+  ## start security stage ##
+  # These only need `compile`, so they run right after
+  # compile rather than waiting for the rest of the pipeline to reach the security stage.
+  copy-images:
+    name: copy-images
+    needs:
+      - resolve-image-sha
+      - deploy
+    if: ${{ startsWith(github.ref_name, 'v') && endsWith(github.ref_name, '-release-branch') }}
+    continue-on-error: true
+    runs-on: ping-internal-x86-dind-p1as
+    container: *k8s_deploy_tools
+    env:
+      BELUGA_VERSION: ${{ github.ref_name }}
+      ARTIFACTORY_URL: docker.corp.pingidentity.com:5900
+      ARTIFACTORY_PATH: beluga-xray
+      ARTIFACTORY_REGISTRY_USER: ${{ vars.ARTIFACTORY_REGISTRY_USER }}
+      ARTIFACTORY_REGISTRY_PW: ${{ secrets.ARTIFACTORY_REGISTRY_PW }}
+      UBER_YAML: ${{ github.workspace }}/out/___w_p1as-eng-base_p1as-eng-base.yaml
+    steps:
+      - name: Repository Setup
+        uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master
+
+      - name: Download out/ artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: out
+          path: ${{ github.workspace }}/out
+
+      - name: Run copy-images
+        run: |
+          echo "running AWS command"
+          aws ecr get-login-password --region "$AWS_DEFAULT_REGION" | HOME=/tmp docker login --username AWS --password-stdin "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+          echo "running deploy tools script"
+          ${SHARED_CI_SCRIPTS_DIR}/k8s/security/copy-images.sh
 
   kubelinter-uber-yaml:
     name: kubelinter-uber-yaml
-    needs: [ deploy ]
+    needs:
+      - resolve-image-sha
+      - deploy
     runs-on: ping-internal-x86-k8s-p1as
     container: *k8s_deploy_tools
     env:
@@ -183,7 +209,9 @@ jobs:
   ## context configurations as they would appear when deployed within the broader project.
   kube-linter:
     name: kube-linter (${{ matrix.microservice }})
-    needs: [deploy]
+    needs:
+      - resolve-image-sha
+      - deploy
     runs-on: ping-internal-x86-k8s-p1as
     container: *k8s_deploy_tools
     env:
@@ -217,7 +245,9 @@ jobs:
 
   check-ext-images:
     name: check-ext-images
-    needs: [deploy]
+    needs:
+      - resolve-image-sha
+      - deploy
     runs-on: ping-internal-x86-k8s-p1as
     container: *k8s_deploy_tools
     env:
@@ -237,8 +267,10 @@ jobs:
 
   scan:
     name: scan
-    needs: [deploy]
-    if: ${{ endsWith(github.ref_name, '-release-branch') }}
+    needs:
+      - resolve-image-sha
+      - deploy
+    if: ${{ startsWith(github.ref_name, 'v') && endsWith(github.ref_name, '-release-branch') }}
     continue-on-error: true
     runs-on: ping-internal-x86-dind-p1as
     container: *k8s_deploy_tools
@@ -268,6 +300,7 @@ jobs:
   pre-check:
     name: pre-check
     needs:
+      - resolve-image-sha
       - compile
       - find-cluster
       - deploy
@@ -297,6 +330,7 @@ jobs:
   pa-was-integration-tests:
     name: pa-was-integration-tests
     needs:
+      - resolve-image-sha
       - compile
       - find-cluster
       - deploy
@@ -330,6 +364,7 @@ jobs:
   integration-tests:
     name: integration-tests (${{ matrix.test }})
     needs:
+      - resolve-image-sha
       - compile
       - find-cluster
       - deploy
@@ -501,6 +536,7 @@ jobs:
   chaos-tests:
     name: chaos-tests
     needs:
+      - resolve-image-sha
       - compile
       - find-cluster
       - deploy
@@ -537,6 +573,7 @@ jobs:
   cleanup-on-success:
     name: cleanup-on-success
     needs:
+      - resolve-image-sha
       - compile
       - find-cluster
       - deploy
@@ -569,6 +606,7 @@ jobs:
   cleanup-on-compile-failure:
     name: cleanup-on-compile-failure
     needs:
+      - resolve-image-sha
       - compile
       - find-cluster
       - deploy
@@ -611,7 +649,7 @@ jobs:
     if: always()
     needs:
       - compile
-#      - copy-images
+      - copy-images
       - kubelinter-uber-yaml
       - kube-linter
       - check-ext-images
@@ -630,3 +668,4 @@ jobs:
       - uses: ping-internal/p1as-eng-tools/.github/actions/ci-cd-gatekeeper@master
         with:
           results: ${{ join(needs.*.result, ' ') }}
+          excluded_jobs: resolve-image-sha
