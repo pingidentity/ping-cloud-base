@@ -42,7 +42,7 @@
 # operator on how to complete the migration and test the new cluster state.
 
 ### Global variables and utility functions ###
-P1AS_UPGRADES='p1as-upgrades'
+P1AS_UPGRADES='p1as-eng-upgrades'
 UPGRADE_SCRIPT_NAME='upgrade-cluster-state-repo.sh'
 UPGRADE_DIR_NAME='upgrade-scripts'
 ALL_APPS='all'
@@ -90,7 +90,7 @@ PING_CLOUD_BASE_REPO_URL="${PING_CLOUD_BASE_REPO_URL:-https://github.com/pingide
 # Clone the upgrade script from p1as-upgrades repo, if necessary.
 if ! test "${P1AS_UPGRADES_REPO}"; then
   REPO_CLONE_BASE_DIR="$(mktemp -d)"
-  P1AS_UPGRADES_REPO_URL="https://gitlab.corp.pingidentity.com/ping-cloud-private-tenant/${P1AS_UPGRADES}"
+  P1AS_UPGRADES_REPO_URL="git@github.com:ping-internal/${P1AS_UPGRADES}"
 
   # Set the upgrade script version
   if test -z "${UPGRADE_SCRIPT_VERSION}"; then
