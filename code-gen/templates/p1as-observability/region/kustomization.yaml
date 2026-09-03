@@ -7,6 +7,9 @@ resources:
   - ../base/namespace.yaml
   - ../base/crds-annotations
 
+transformers:
+  - ../base/namespace-transformer.yaml
+
 helmCharts:
   - name: p1as-cloudwatch
     additionalValuesFiles:
@@ -64,6 +67,16 @@ helmCharts:
     repo: oci://${ECR_REGISTRY_NAME}/dev
     apiVersions:
       - apiregistration.k8s.io/v1
+
+  - name: p1as-opensearch
+    additionalValuesFiles:
+      - ../../values-files/base/values.yaml   # base values.yaml
+      - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
+      - values.yaml   # app specific values.yaml
+    version: v2.4-release-branch-latest
+    namespace: elastic-stack-logging
+    repo: oci://${ECR_REGISTRY_NAME}/dev
+    includeCRDs: true
 
 ### This field is used to trigger a resync of the helm chart ###
 configMapGenerator:

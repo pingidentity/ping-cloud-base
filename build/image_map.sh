@@ -17,7 +17,6 @@ export IMAGE_MAP="pingcloud-apps/pingdelegator
    pingcloud-monitoring/logstash
    pingcloud-monitoring/enrichment-bootstrap
    pingcloud-monitoring/os-bootstrap
-   pingcloud-monitoring/opensearch
    pingcloud-services/robot-framework
    pingcloud-services/grp-radiusproxy"
 
@@ -33,4 +32,5 @@ export CHART_MAP="p1as-beluga-tools
    p1as-pingaccess
    p1as-pingaccess-was
    p1as-prometheus
-   p1as-prometheus-agent"
+   p1as-prometheus-agent
+   p1as-opensearch"

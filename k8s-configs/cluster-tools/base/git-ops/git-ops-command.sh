@@ -163,16 +163,6 @@ enable_external_ingress() {
   done
 }
 
-########################################################################################################################
-# Disable grafana operator CRDs if not argo environment.
-########################################################################################################################
-disable_os_operator_crds() {
-  cd "${TMP_DIR}"
-  search_term="opensearch-operator\/crd"
-  for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
-      comment_lines_in_file "${kust_file}" "${search_term}"
-    done
-}
 
 ########################################################################################################################
 # Get the P1AS version from the version.txt located in the cluster-state-repo
@@ -338,10 +328,6 @@ monorepo_main() {
       enable_external_ingress
     )
     test $? -ne 0 && exit 1
-  fi
-
-  if ! command -v argocd &> /dev/null ; then
-    disable_os_operator_crds
   fi
 
   # Build the uber deploy yaml

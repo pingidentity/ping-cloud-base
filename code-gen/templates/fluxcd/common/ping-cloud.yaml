@@ -18,6 +18,13 @@ metadata:
 ---
 
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: elastic-stack-logging
+
+---
+
+apiVersion: v1
 kind: Secret
 type: Opaque
 metadata:

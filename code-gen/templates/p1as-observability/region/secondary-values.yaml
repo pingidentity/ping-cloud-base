@@ -43,3 +43,16 @@ nri-bundle:
     #Extra volumes and volume mounts are intentionally left blank to remove the opensearch-newrelic-credentials secret from child regions.
     extraVolumes: []
     extraVolumeMounts: []
+
+# OpenSearch in secondary regions:
+# - opensearch-cluster subchart is disabled — no OpenSearchCluster custom resource,
+#   dashboards, security configs, storageclass, or SSO bootstrap here.
+# - The parent-chart ingest-service.yaml (ExternalName Service) and
+#   logstash-creds.yaml still render unconditionally, providing the ingest
+#   endpoint and credentials logstash needs to route to the primary region.
+# - opensearch-operator is disabled — no OpenSearchCluster custom resource to manage here.
+opensearch-cluster:
+  enabled: false
+
+opensearch-operator:
+  enabled: false

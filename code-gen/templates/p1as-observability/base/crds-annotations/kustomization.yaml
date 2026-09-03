@@ -38,3 +38,84 @@ patchesJson6902:
       - op: add
         path: /metadata/annotations/argocd.argoproj.io~1sync-options
         value: "ServerSideApply=true"
+
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchactiongroups.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"
+
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchclusters.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"
+
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchcomponenttemplates.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"
+
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchindextemplates.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"
+
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchismpolicies.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"
+
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchroles.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"
+
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchtenants.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"
+
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchuserrolebindings.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"
+
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchusers.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"

@@ -1,0 +1,6 @@
+apiVersion: builtin
+kind: NamespaceTransformer
+metadata:
+  name: p1as-observability-namespace
+  namespace: elastic-stack-logging
+unsetOnly: true

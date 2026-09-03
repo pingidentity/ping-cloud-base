@@ -12,7 +12,6 @@ components:
 # Logging tier patches are selected by LOGGING_TIER and split by component for independent control of Fluent Bit, Logstash, and OpenSearch.
 - github.com/pingidentity/ping-cloud-base-patches//components/logging/tiers/${LOGGING_TIER}/fluentbit
 - github.com/pingidentity/ping-cloud-base-patches//components/logging/tiers/${LOGGING_TIER}/logstash
-- github.com/pingidentity/ping-cloud-base-patches//components/logging/tiers/${LOGGING_TIER}/opensearch
 
 images:
 # Patch image fields handled by the Kustomize images transformer.
@@ -51,11 +50,6 @@ configMapGenerator:
   literals:
     - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
     - REGION=${REGION}
-
-- name: os-notifications-channels
-  behavior: merge
-  files:
-    - notifications/sns.json
 
 patchesStrategicMerge:
 - |-
@@ -115,57 +109,11 @@ patchesStrategicMerge:
       purpose: service-account-for-logstash-elastic-compliance
       ${IRSA_LOGSTASH_COMPLIANCE_ANNOTATION_KEY_VALUE}
 
-- |-
-  # Add IRSA role annotation to opensearch service account
-  apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    name: opensearch
-    namespace: elastic-stack-logging
-    annotations:
-      purpose: service-account-for-opensearch
-      ${IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE}
-
-- |-
-  # Add base_redirect_url to fix ui-conntect.sh script
-  apiVersion: opensearch.opster.io/v1
-  kind: OpenSearchCluster
-  metadata:
-    name: opensearch-cluster
-  spec:
-    dashboards:
-      additionalConfig:
-        opensearch_security.openid.base_redirect_url: "https://logs.${DNS_ZONE}"
-
 # This patch must be enabled manually to use KMS encryption.
 # Uncomment the KMS-related resources/patches when EBS_KMS_KEY_ARN is set.
 #- kms-patch.yaml
 
 patchesJson6902:
-- target:
-    group: opensearch.opster.io
-    version: v1
-    kind: OpenSearchCluster
-    name: opensearch-cluster
-  patch: |-
-    # Patch OpenSearchCluster image fields directly; the Kustomize images transformer does not handle CRDs.
-    - op: replace
-      path: /spec/general/image
-      value: ${ECR_REGISTRY_NAME}/pingcloud-monitoring/opensearch${ECR_ENV}:${OPENSEARCH_IMAGE_TAG}
-    - op: replace
-      path: /spec/dashboards/image
-      value: ${ECR_REGISTRY_NAME}/pingcloud-clustertools/opensearchproject/opensearch-dashboards:${OPENSEARCH_DASHBOARDS_IMAGE_TAG}
-
-- target:
-    kind: Service
-    name: opensearch-ingest
-    namespace: elastic-stack-logging
-    version: v1
-  patch: |-
-    - op: replace
-      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
-      value: opensearch.${DNS_ZONE}
-
 - target:
     group: ""
     version: v1

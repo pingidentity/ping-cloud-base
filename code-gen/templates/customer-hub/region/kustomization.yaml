@@ -42,8 +42,8 @@ patchesStrategicMerge:
 - ../base/cluster-tools/monitoring/remove-chub-dashboards.yaml
 - ../base/cluster-tools/logging/remove-chub-dashboards.yaml
 
-### Remove opensearch from chub
-- ../base/cluster-tools/logging/disable-opensearch-base-patch.yaml
+### Remove OpenSearch specific references and routing from CHUB
+- ../base/cluster-tools/logging/disable-opensearch-routing-patch.yaml
 #- ../base/cluster-tools/logging/disable-opensearch-primary-region-patch.yaml
 
 ### Remove main pipeline from chub
@@ -63,12 +63,6 @@ configMapGenerator:
   behavior: merge
   envs:
     - logging/env_vars
-
-- name: p1as-bootstrap
-  behavior: merge
-  envs:
-    - ../base/env_vars
-    - env_vars
 
 # PingCentral
 # Create the config maps that hold the variable for triggering updates of PingCentral

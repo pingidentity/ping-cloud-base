@@ -14,9 +14,11 @@
 - Add integration test for PingDirectory replication log ingestion into OpenSearch
 - Add OpenSearch index template field coverage test and dashboard field validation test
 - JSON Logging: Implement JSON logging for PingCentral
+- Add p1as-observability Opensearch Helm chart to PCB
 
 _Changes:_
 
+- [X] PDO-5990 Opensearch: Add p1as-observability to PCB
 - [X] PDO-7316 JSON Logging: Implement JSON logging for PingDelegator logs
 - [X] PDO-7374 JSON Logging: Implement JSON logging for PingCentral
 - [X] PDO-8875 Add deploy wrapper to capture deploy failure logs

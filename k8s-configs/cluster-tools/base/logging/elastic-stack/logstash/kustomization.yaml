@@ -7,7 +7,6 @@ resources:
 - logstash-s3.yaml
 - hpa.yaml
 - unused-pv-cleanup.yaml
-- secret.yaml
 - pdb.yaml
 - customer_pipelines
 

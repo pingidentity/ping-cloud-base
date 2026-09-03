@@ -1,12 +1,12 @@
 # Customer-hub overrides for p1as-observability.
 #
 # ### prometheus-agent ###
-# 1. opensearch-grafana-credentials: The secret is created by p14c-integration in os-controller-manager which only 
+# 1. opensearch-grafana-credentials: The secret is created by p14c-integration in os-controller-manager which only
 #    runs in the non-chub-envs. Remove volume mounts for prometheus-agent can start without the secret in customer-hub envs.
 #
 # ### nri-bundle.newrelic-prometheus-agent ###
-# 1. opensearch-newrelic-credentials: The secret is created by p14c-integration in os-controller-manager which only 
-#    runs in non-chub envs. Remove volume mounts for the newrelic-prometheus-agent so it can start without the 
+# 1. opensearch-newrelic-credentials: The secret is created by p14c-integration in os-controller-manager which only
+#    runs in non-chub envs. Remove volume mounts for the newrelic-prometheus-agent so it can start without the
 #    secret in customer-hub envs
 prometheus-agent:
   server:
@@ -20,4 +20,10 @@ nri-bundle:
     extraVolumes: []
     extraVolumeMounts: []
 
+# CHUB does not run OpenSearch. Disabling both subcharts prevents the operator
+# Deployment and the OpenSearchCluster custom resource from being created in the cluster.
+opensearch-cluster:
+  enabled: false
 
+opensearch-operator:
+  enabled: false

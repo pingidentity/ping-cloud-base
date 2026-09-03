@@ -1,4 +1,4 @@
-# Applied when LOGSTASH_CHUB_CUSTOMER_PIPELINE_ENABLED=false (default for customer-hub).
+# Applied by default in customer-hub to disable the logstash-elastic STS (customer pipeline).
 # Removes logstash-elastic and its associated resources, and reduces FluentBit to S3-only output.
 ---
 apiVersion: apps/v1
@@ -62,7 +62,7 @@ metadata:
   namespace: elastic-stack-logging
 $patch: delete
 ---
-# Overwrites FluentBit outputs to S3-only (removes logstash_customer_out set by disable-opensearch-base-patch.yaml).
+# Overwrites FluentBit outputs to S3-only (removes logstash_customer_out set by disable-opensearch-routing-patch.yaml).
 apiVersion: v1
 kind: ConfigMap
 metadata:
