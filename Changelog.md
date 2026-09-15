@@ -31,6 +31,7 @@ _Changes:_
 - [X] PDO-11651 Add resources for datalake telemetry pipeline
 - [X] PDO-11804 Add karpenter.sh/do-not-disrupt annotation to Jobs and CronJobs
 - [X] PDO-11929 Enable replication events in Console JSON Error Logger (PingDirectory)
+- [X] PDO-11621 Add HIPAA logging bucket bootstrap resource
 
 ### 2.3.0
 

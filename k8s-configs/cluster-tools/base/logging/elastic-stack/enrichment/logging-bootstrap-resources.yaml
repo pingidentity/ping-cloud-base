@@ -12,3 +12,10 @@ storage/telemetry-bucket/name:
   values_container_key: bucketName
   ssm_type: string
   ssm_path_prefix: SERVICE_SSM_PATH_PREFIX
+storage/compliance/hipaa-bucket/name:
+  kind: ConfigMap
+  name: s3-hipaa-bucket
+  template:
+  values_container_key: bucketName
+  ssm_type: string
+  ssm_path_prefix: SERVICE_SSM_PATH_PREFIX
