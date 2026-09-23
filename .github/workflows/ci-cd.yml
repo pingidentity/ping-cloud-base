@@ -259,7 +259,7 @@ jobs:
         run: |
           export SKIP_CONFIGURE_KUBE=true
           UBER_YAML=$(find "${UBER_YAML_DIR}/${{ matrix.microservice }}/" -type f -name "uber.yaml")
-          ${SHARED_CI_SCRIPTS_DIR}/k8s/security/security-context-lint.sh $UBER_YAML
+          ${SHARED_CI_SCRIPTS_DIR}/k8s/security/security-context-lint.sh $UBER_YAML 
 
   check-ext-images:
     name: check-ext-images
@@ -281,7 +281,11 @@ jobs:
           path: ${{ github.workspace }}/out
 
       - name: Run check-ext-images
-        run: ${SHARED_CI_SCRIPTS_DIR}/k8s/security/check_ext_images.sh "$UBER_YAML"
+        run: |
+          # uber-yaml file mode never touches the cluster (get_manifest just copies
+          # the file), so skip the kubeconfig setup common.sh would otherwise run.
+          export SKIP_CONFIGURE_KUBE=true
+          ${SHARED_CI_SCRIPTS_DIR}/k8s/security/check_ext_images.sh "$UBER_YAML"
 
   scan:
     name: scan
