@@ -45,6 +45,7 @@
 - Teleport: figure out a longer-term fix for auto-upgrade
 - Do not schedule fluentbit daemonset on Fargate
 - Default all env to logging tier1
+- Update to include kube proxy logs in main pipeline
 
 _Changes:_
 
@@ -95,6 +96,7 @@ _Changes:_
 - [X] PDO-12011: Add Fargate nodeAfinity exclusion to fluentbit daemonset
 - [X] PDO-12049 Default All Environments to Logging Tier 1
 - [X] PDO-12148 Logstash and OpenSearch 2.3-tagged build not visible
+- [X] PDO-12182 kube-proxy logs no longer ingested into OpenSearch after FluentBit pipeline reorganization
 
 ### 2.2.3
 
