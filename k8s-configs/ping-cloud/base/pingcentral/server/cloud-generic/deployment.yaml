@@ -135,22 +135,6 @@ spec:
         - name: aws-config-dir
           mountPath: /home/ping/.aws
           subPath: perpetual-license-creds
-      - name: seed-workspaces
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v2.3-release-branch-latest
-        imagePullPolicy: Always
-        securityContext:
-          runAsGroup: 9999
-          runAsNonRoot: true
-          runAsUser: 9031
-          allowPrivilegeEscalation: false
-          privileged: false
-          readOnlyRootFilesystem: true
-        command: [ "sh", "-c", "cp -a /opt/staging/. /mnt/stg/ && cp -a /opt/out/. /mnt/out/" ]
-        volumeMounts:
-        - name: staging-vol
-          mountPath: /mnt/stg
-        - name: out-vol
-          mountPath: /mnt/out
       containers:
       - name: pingcentral
         securityContext:
@@ -159,7 +143,6 @@ spec:
           runAsUser: 9031
           allowPrivilegeEscalation: false
           privileged: false
-          readOnlyRootFilesystem: true
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v2.3-release-branch-latest
         imagePullPolicy: Always
         resources:
@@ -208,10 +191,6 @@ spec:
               name: newrelic-license-key
               optional: false
         volumeMounts:
-          - name: staging-vol
-            mountPath: /opt/staging
-          - name: out-vol
-            mountPath: /opt/out
           - name: pingcentral-init 
             mountPath: /opt/staging/hooks/logger.lib.sh
             subPath: logger.lib.sh
@@ -236,8 +215,6 @@ spec:
             subPath: newrelic.jar
           - name: license-dir
             mountPath: /opt/license
-          - name: tmp-dir
-            mountPath: /tmp
           - name: aws-config-dir
             mountPath: /home/ping/.aws
             subPath: pingcentral-creds
@@ -254,12 +231,6 @@ spec:
         - name: license-dir
           emptyDir: {}
         - name: aws-config-dir
-          emptyDir: {}
-        - name: tmp-dir
-          emptyDir: {}
-        - name: staging-vol
-          emptyDir: {}
-        - name: out-vol
           emptyDir: {}
         - name: pingcentral-init
           configMap:

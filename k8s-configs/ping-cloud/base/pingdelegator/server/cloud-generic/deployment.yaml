@@ -69,22 +69,6 @@ spec:
         envFrom:
           - configMapRef:
               name: pingdelegator-environment-variables
-      - name: seed-workspaces
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdelegator/dev:v2.3-release-branch-latest
-        imagePullPolicy: Always
-        securityContext:
-          runAsGroup: 9999
-          runAsNonRoot: true
-          runAsUser: 9031
-          allowPrivilegeEscalation: false
-          privileged: false
-          readOnlyRootFilesystem: true
-        command: [ "sh", "-c", "cp -a /opt/staging/. /mnt/stg/ && cp -a /opt/out/. /mnt/out/" ]
-        volumeMounts:
-        - name: staging-vol
-          mountPath: /mnt/stg
-        - name: out-vol
-          mountPath: /mnt/out
       containers:
       - name: pingdelegator
         securityContext:
@@ -93,7 +77,6 @@ spec:
           runAsUser: 9031
           allowPrivilegeEscalation: false
           privileged: false
-          readOnlyRootFilesystem: true
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdelegator/dev:v2.3-release-branch-latest
         imagePullPolicy: Always
         resources:
@@ -104,12 +87,6 @@ spec:
             memory: "1Gi"
             cpu: "1"
         volumeMounts:
-          - name: tmp-dir
-            mountPath: /tmp
-          - name: staging-vol
-            mountPath: /opt/staging
-          - name: out-vol
-            mountPath: /opt/out
           - name: pingdelegator-init
             mountPath: /opt/staging/hooks/logger.lib.sh
             subPath: logger.lib.sh
@@ -160,12 +137,6 @@ spec:
         runAsNonRoot: true
       volumes:
         - name: aws-config-dir
-          emptyDir: {}
-        - name: tmp-dir
-          emptyDir: {}
-        - name: staging-vol
-          emptyDir: {}
-        - name: out-vol
           emptyDir: {}
         - name: ssh-dir
           emptyDir: {}

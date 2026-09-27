@@ -125,27 +125,6 @@ spec:
         - name: aws-config-dir
           mountPath: /home/ping/.aws
           subPath: perpetual-license-aws-config
-      - name: seed-pingdatasync
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync/dev:v2.3-release-branch-latest
-        imagePullPolicy: Always
-        securityContext:
-          runAsGroup: 9999
-          runAsNonRoot: true
-          runAsUser: 9031
-          allowPrivilegeEscalation: false
-          privileged: false
-          readOnlyRootFilesystem: true
-        resources:
-          requests:
-            cpu: "10m"
-            memory: "32Mi"
-          limits:
-            cpu: "100m"
-            memory: "64Mi"
-        command: [ "sh", "-c", "cp -r /opt/staging/* /mnt/stg/" ]
-        volumeMounts:
-        - name: staging-dir
-          mountPath: /mnt/stg
       containers:
       - name: pingdatasync
         securityContext:
@@ -154,7 +133,6 @@ spec:
           runAsUser: 9031
           allowPrivilegeEscalation: false
           privileged: false
-          readOnlyRootFilesystem: true
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync/dev:v2.3-release-branch-latest
         imagePullPolicy: Always
         resources:
@@ -245,11 +223,6 @@ spec:
             subPath: pingdatasync-aws-config
           - name: logs-dir
             mountPath: /opt/server/logs/tools/
-          - name: staging-dir
-            mountPath: /opt/staging
-          - name: tmp-dir
-            mountPath: /tmp
-            subPath: pingdatasync-tmp
           - name: pingdatasync-init 
             mountPath: /opt/staging/hooks/logger.lib.sh
             subPath: logger.lib.sh
@@ -279,10 +252,6 @@ spec:
         runAsNonRoot: true
       volumes:
         - name: logs-dir
-          emptyDir: {}
-        - name: tmp-dir
-          emptyDir: {}
-        - name: staging-dir
           emptyDir: {}
         - name: aws-config-dir
           emptyDir: {}
