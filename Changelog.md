@@ -8,6 +8,7 @@
 - Add integration tests for PingDelegator JSON access log format and OpenSearch ingestion
 - Fix Fluentbit multiline filter concatenating JSON audit log lines, causing admin-event-detail entries to be dropped
 - Add resources for datalake telemetry pipeline
+- Update generate-cluster-state.sh to use helm charts in bootstrap kustomization.yaml
 - Add karpenter.sh/do-not-disrupt annotation to Jobs and CronJobs
 - Added Testcase to validate JSON nginx ingress logs
 - Get Karpenter IRSA role arn from SSM
@@ -26,6 +27,7 @@ _Changes:_
 - [X] PDO-10598 JSON Logging: Update index templates in OpenSearch
 - [X] PDO-10168 Update pod-reaper and httpbin images
 - [X] PDO-10226 Implement JSON logging for Ingress logs
+- [X] PDO-10267 Update generate-cluster-state.sh to use helm charts in bootstrap kustomization.yaml
 - [X] PDO-11215 Get KarpenterController IRSA role path from SSM
 - [X] PDO-11285 Fix Fluentbit multiline cont rule sweeping JSON lines into buffer, causing silent audit log loss in OpenSearch
 - [X] PDO-11651 Add resources for datalake telemetry pipeline

@@ -1,0 +1,29 @@
+## Note: this file is not referenced by the customer-hub nor cde kustomization.yaml files.
+## These are to be used as standalone resources when bootstrapping a new environment.
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+ 
+resources: [] 
+
+helmCharts:
+  - name: p1as-karpenter
+    namespace: kube-system
+    version: v2.4-release-branch-latest
+    repo: oci://${ECR_REGISTRY_NAME}/dev
+    valuesInline:
+      global:
+        karpenterEnabled: false
+        karpenterCrdEnabled: true
+      karpenterController:
+        controller:
+          env:
+            - name: AWS_REGION
+              value: ${REGION}
+        settings:
+          clusterName: ${CLUSTER_NAME}
+          interruptionQueue: interruption-${CLUSTER_NAME}
+        serviceAccount:
+          annotations:
+            ${IRSA_KARPENTER_ANNOTATION_KEY_VALUE}
+        p1asEC2NodeClass:
+          instanceProfile: ${KARPENTER_INSTANCE_PROFILE}
