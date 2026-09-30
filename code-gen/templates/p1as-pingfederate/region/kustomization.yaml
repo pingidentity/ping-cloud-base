@@ -16,6 +16,7 @@ helmCharts:
       - values.yaml   # app specific values.yaml
     version: v2.4-release-branch-latest
     repo: oci://${ECR_REGISTRY_NAME}/dev
+    namespace: ${PING_CLOUD_NAMESPACE}
 
 ### This field is used to trigger a resync of the p1as-pingfederate helm chart ###
 configMapGenerator:
@@ -30,7 +31,7 @@ configMapGenerator:
 patchesStrategicMerge:
   ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
   - custom-patches.yaml
-  - ../base/custom-patches.yaml  
+  - ../base/custom-patches.yaml
 
 transformers:
   - ../base/namespace.yaml

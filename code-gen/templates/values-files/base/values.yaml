@@ -104,6 +104,12 @@ global:
       oldPaWasAdminUserPassword: MkFjY2Vzcw==
       paWasAdminUserPassword: MkZlZGVyYXRlTTByZQ==
 
+       #### Health Secrets ####
+      # Credentials used by the pingaccess healthcheck robot (HealthcheckVariables.py)
+      health:
+        healthcheckUserName: "aGVhbHRoY2hlY2t1c2Vy"
+        healthcheckUserPassword: "aGVhbHRoY2hlY2twYXNzd29yZA=="
+
   ########################################################
   # Multi-region parameters
   ########################################################

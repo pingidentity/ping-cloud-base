@@ -10,31 +10,6 @@ generatorOptions:
 
 patchesStrategicMerge:
 
-### MANUAL UPDATES SECTION - START
-
-## Healthchecks
-# Runbook: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/427688292/How+to+Enable+and+Disable+Healthchecks+-+1.19.0
-# To disable all healthchecks (default):
-#   - uncomment the disable-all-healthchecks.yaml patch
-#   - comment the other patches
-#   - set HEALTHCHECKS_ENABLED=false in base/env_vars
-# To enable healthchecks for products in the customer-hub primary region (cluster and pa-was health only):
-#   - uncomment chub-healthchecks-primary-region-patch.yaml patch
-#   - comment the other patches
-#   - set HEALTHCHECKS_ENABLED=true in base/env_vars
-#   - re-spin pa-was admin pod when argocd syncs these changes
-# To enable healthchecks for products in a customer-hub child region (cluster health only):
-#   - uncomment the chub-healthchecks-child-region-patch.yaml patch
-#   - comment the other patches
-#   - set HEALTHCHECKS_ENABLED=true in base/env_vars
-
-- ../base/cluster-tools/health/disable-all-healthchecks.yaml
-#- ../base/cluster-tools/health/chub-healthchecks-primary-region-patch.yaml
-#- ../base/cluster-tools/health/chub-healthchecks-child-region-patch.yaml
-
-
-### MANUAL UPDATES SECTION - END
-
 ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
 - custom-patches.yaml
 
@@ -99,14 +74,5 @@ configMapGenerator:
   namespace: argocd
   behavior: merge
   envs:
-    - ../base/env_vars
-    - env_vars
-
-# Healthcheck probes
-- name: cluster-health-environment-variables
-  namespace: health
-  behavior: merge
-  envs:
-    - ../base/cluster-tools/health/env_vars
     - ../base/env_vars
     - env_vars

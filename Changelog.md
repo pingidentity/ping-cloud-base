@@ -16,6 +16,7 @@
 - Add OpenSearch index template field coverage test and dashboard field validation test
 - JSON Logging: Implement JSON logging for PingCentral
 - Add p1as-observability Opensearch Helm chart to PCB
+- Add p1as-beluga-healthcheck Helm chart to PEB
 
 _Changes:_
 
@@ -49,7 +50,7 @@ _Changes:_
 - Update Security Contexts for kube-system namespace workloads
 - Update Security Contexts for elastic-stack-logging namespace workloads
 - Upgrade cluster-autoscaler to version 1.34
-- Upgrade external-dns to version v0.20.0 
+- Upgrade external-dns to version v0.20.0
 - Add p1as-pingaccess/was code-gen directories to PCB
 - Update NewRelic APM agent Java args logic
 - Upgrade pod-reaper to version 2.14.0

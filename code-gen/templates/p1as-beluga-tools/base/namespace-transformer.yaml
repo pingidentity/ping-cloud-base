@@ -1,6 +1,6 @@
 apiVersion: builtin
 kind: NamespaceTransformer
 metadata:
-  name: p1as-pingfederate-namespace
+  name: p1as-beluga-tools-namespace
   namespace: ${PING_CLOUD_NAMESPACE}
 unsetOnly: true

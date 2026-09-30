@@ -235,13 +235,6 @@ LOGGING_TIER=${LOGGING_TIER}
 # Set to true to enable the "Impossible Login" OpenSearch dashboard (default: false)
 ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD=false
 
-# Healthcheck variables
-CLUSTER_HEALTHCHECK_SCHEDULE="* * * * *"
-PINGACCESS_HEALTHCHECK_SCHEDULE="* * * * *"
-PINGACCESS_WAS_HEALTHCHECK_SCHEDULE="* * * * *"
-PINGDIRECTORY_HEALTHCHECK_SCHEDULE="* * * * *"
-PINGFEDERATE_HEALTHCHECK_SCHEDULE="* * * * *"
-
 
 # cert-manager variables
 # The maximum duration allowed by Let's Encrypt for certificate rotation is 90 days (equivalent to 2160 hours).

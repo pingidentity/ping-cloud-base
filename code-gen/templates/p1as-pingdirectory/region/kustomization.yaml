@@ -1,15 +1,15 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
-namespace: ${PING_CLOUD_NAMESPACE}
-
 commonLabels:
   app: ping-cloud
-  role: pingdirectory
 
 resources:
   - ../base/custom-resources
   - custom-resources
+
+transformers:
+  - ../base/namespace.yaml
 
 helmCharts:
   - name: p1as-pingdirectory
@@ -19,6 +19,7 @@ helmCharts:
       - values.yaml   # app specific values.yaml
     version: v2.4-release-branch-latest
     repo: oci://${ECR_REGISTRY_NAME}/dev
+    namespace: ${PING_CLOUD_NAMESPACE}
 
 ### This field is used to trigger a resync of the p1as-pingdirectory helm chart ###
 configMapGenerator:
@@ -33,4 +34,4 @@ configMapGenerator:
 patchesStrategicMerge:
   ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
   - custom-patches.yaml
-  - ../base/custom-patches.yaml  
+  - ../base/custom-patches.yaml

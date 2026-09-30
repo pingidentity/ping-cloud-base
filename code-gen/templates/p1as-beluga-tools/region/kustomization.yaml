@@ -1,11 +1,13 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
-namespace: ${PING_CLOUD_NAMESPACE}
-
 resources:
   - ../base/custom-resources
+  - ../base/namespace.yaml
   - custom-resources
+
+transformers:
+  - ../base/namespace-transformer.yaml
 
 helmCharts:
   - name: p1as-beluga-tools
@@ -15,7 +17,17 @@ helmCharts:
       - values.yaml   # app specific values.yaml
     version: v2.4-release-branch-latest
     repo: oci://${ECR_REGISTRY_NAME}/dev
-    
+    namespace: ${PING_CLOUD_NAMESPACE}
+
+  - name: p1as-beluga-healthcheck
+    additionalValuesFiles:
+      - ../../values-files/base/values.yaml   # base values.yaml
+      - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
+      - values.yaml   # app specific values.yaml
+    version: v2.4-release-branch-latest
+    repo: oci://${ECR_REGISTRY_NAME}/dev
+    namespace: health
+
 ### This field is used to trigger a resync of the p1as-beluga-tools helm chart ###
 configMapGenerator:
   - name: beluga-tools-last-update-reason
@@ -24,7 +36,7 @@ configMapGenerator:
   ### This is needed for the empty custom-patches.yaml file to work ###
   - name: beluga-tools-custom-placeholder
   ### This is needed for the empty custom-patches.yaml file to work in base folder ###
-  - name: beluga-tools-custom-placeholder-base      
+  - name: beluga-tools-custom-placeholder-base
 
 patchesStrategicMerge:
   ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###

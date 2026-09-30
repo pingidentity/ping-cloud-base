@@ -1,6 +1,4 @@
-## File for BeOps to change/update app specific variables
 healthcheck:
-  # Customization for healthcheck deployment resource
   deployment:
     # Set container limits for the healthcheck deployment
     resources:

@@ -1,14 +1,15 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
-namespace: ${PING_CLOUD_NAMESPACE}
-
 commonLabels:
   app: ping-cloud
 
 resources:
   - ../base/custom-resources
   - custom-resources
+
+transformers:
+  - ../base/namespace.yaml
 
 helmCharts:
   - name: p1as-pingaccess
@@ -18,6 +19,7 @@ helmCharts:
       - values.yaml   # app specific values.yaml
     version: v2.4-release-branch-latest
     repo: oci://${ECR_REGISTRY_NAME}/dev
+    namespace: ${PING_CLOUD_NAMESPACE}
 
 ### This field is used to trigger a resync of the p1as-pingaccess helm chart ###
 configMapGenerator:
