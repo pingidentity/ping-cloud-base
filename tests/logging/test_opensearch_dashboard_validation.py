@@ -592,11 +592,7 @@ class TestGrafanaDashboardValidation(unittest.TestCase):
 
     # Fields known to be missing from OS index templates pending a dashboard fix.
     # Remove an entry here once the corresponding dashboard is corrected.
-    KNOWN_MISSING_FIELDS = {
-        # clientIp is not present in pf-audit documents; the dashboard referencing it
-        # on pf-audit-* will be fixed in https://pingidentity.atlassian.net/browse/PDO-10261
-        "pf-audit-*": {"clientIp"},
-    }
+    KNOWN_MISSING_FIELDS = {}
 
     # Lucene field reference: word chars before ':' that are NOT inside a quoted string.
     # We first strip quoted strings, then extract field names.
