@@ -666,6 +666,39 @@ jobs:
             echo "Compile passed, deployment not torn down to allow for troubleshooting";
           fi
 
+  call-sonar:
+    name: Sonar
+    needs:
+      - resolve-image-sha
+      - compile
+      - copy-images
+      - kubelinter-uber-yaml
+      - kube-linter
+      - check-ext-images
+      - scan
+      - find-cluster
+      - deploy
+      - pre-check
+      - pa-was-integration-tests
+      - integration-tests
+      - chaos-tests
+      - cleanup-on-success
+      - cleanup-on-compile-failure
+    if: ${{ always() && !contains(github.event.head_commit.message || '', '[skip pipeline]') }}
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+      pull-requests: write
+    uses: ping-internal/p1as-eng-tools/.github/workflows/sonar.yml@master
+    with:
+      caller: ci-cd
+      run_id: ${{ github.run_id }}
+      branch: ${{ github.ref_name }}
+      conclusion: ${{ contains(join(needs.*.result, ' '), 'failure') && 'failure' || contains(join(needs.*.result, ' '), 'cancelled') && 'failure' || 'success' }}
+      k8sDeployToolsImage: ${{ needs.resolve-image-sha.outputs.image }}
+    secrets: inherit
+
   ci-cd-gatekeeper:
     name: ci-cd-gatekeeper
     runs-on: ubuntu-latest
@@ -691,4 +724,4 @@ jobs:
       - uses: ping-internal/p1as-eng-tools/.github/actions/ci-cd-gatekeeper@master
         with:
           results: ${{ join(needs.*.result, ' ') }}
-          excluded_jobs: resolve-image-sha
+          excluded_jobs: resolve-image-sha call-sonar
