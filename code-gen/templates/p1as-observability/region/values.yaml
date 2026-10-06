@@ -1,4 +1,11 @@
-#Cloudwatch related values
+global:
+  cluster: ${TENANT_NAME}_${ENV}_${REGION}_k8s-cluster
+  # OpenSearch hot-node sizing tier sourced from LOGGING_TIER env var.
+  loggingTier: ${LOGGING_TIER}
+
+#######################################################
+# CloudWatch (p1as-cloudwatch) settings
+#######################################################
 cloudwatch:
   enabled : ${CLOUDWATCH_ENABLED}
 #The IRSA role ARN to be used for the CWAgent serviceAccount, for the customer environment
@@ -11,10 +18,6 @@ cloudwatch:
     requests:
       cpu: 200m
       memory: 200Mi
-
-
-global:
-  cluster: ${TENANT_NAME}_${ENV}_${REGION}_k8s-cluster
 
 #######################################################
 # Prometheus Server (p1as-prometheus) settings
@@ -119,6 +122,10 @@ prometheus-agent:
 # for child/secondary CDE regions and customer-hub envs  OpenSearch is not deployed
 # and the secret will not exist.  secondary-values.yaml and chub-values.yaml override
 # this to remove the volume mount
+
+#######################################################
+# New Relic settings
+#######################################################
 nri-bundle:
   newrelic-prometheus-agent:
     extraVolumes:
@@ -180,16 +187,6 @@ prometheus-adapter:
 #######################################################
 
 opensearch-cluster:
-  hotNodes:
-    jvm: "-Xms3g -Xmx3g -XX:MaxDirectMemorySize=1g"
-    resources:
-      requests:
-        cpu: "2"
-        memory: 6Gi
-      limits:
-        cpu: "2"
-        memory: 8Gi
-
   irsaAnnotationKeyValue: "${IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE}"
   dashboards:
     baseRedirectUrl: "https://logs.${VALUES_FILES_DNS_ZONE}"
