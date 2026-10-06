@@ -20,9 +20,30 @@ SKIP_TEMPLATES = {"general", "logstash"}
 # Fields known to be missing from specific index templates pending a fix.
 # Remove entries once the corresponding template is updated.
 KNOWN_MISSING_FIELDS = {
-    "pds-errors": {"vm.swappiness"},
-    "pds-server": {"class", "id"},
-    "ingress-access": {"log"},
+    # PD access logs carry the operation-purpose request control (DSConfig
+    # set-commands, PurgeExpiredData plugin) and soft-delete attributes;
+    # the pd-access template does not declare them yet (PDO-12227).
+    "pd-access": {
+        "attributes",
+        "changeToSoftDeletedEntry",
+        "operationPurposeRequestControl",
+        "operationPurposeRequestControl.applicationName",
+        "operationPurposeRequestControl.applicationVersion",
+        "operationPurposeRequestControl.codeLocation",
+    },
+    # 09-pdg-filters error-branch parsing emits logLevel/pid/tid/message/log_name
+    # plus the standard @version/host/stream; the pdg-error template does not
+    # declare them yet.
+    "pdg-error": {
+        "@version",
+        "host",
+        "logLevel",
+        "log_name",
+        "message",
+        "pid",
+        "stream",
+        "tid",
+    },
 }
 
 # OS adds these metadata fields to every document at index time; they are not
@@ -250,21 +271,32 @@ class TestIndexTemplateFieldCoverage(unittest.TestCase):
                                      {f"{p}.lon" for p in geo_point_fields}
 
                 known_missing = KNOWN_MISSING_FIELDS.get(template_name, set())
-                unmapped_per_doc = []
+                offending_docs = []
                 for doc in docs:
                     doc_fields = _flatten_doc_fields(doc)
                     unmapped = doc_fields - mapped_fields.keys() - OS_INTERNAL_FIELDS - geo_point_subpaths - known_missing
                     if unmapped:
-                        unmapped_per_doc.append(unmapped)
+                        offending_docs.append((unmapped, doc))
 
-                if unmapped_per_doc:
-                    all_unmapped = sorted(set().union(*unmapped_per_doc))
+                if offending_docs:
+                    all_unmapped = sorted(set().union(*(u for u, _ in offending_docs)))
                     msg = (
-                        f"{template_name} ({index_pattern}): {len(unmapped_per_doc)}/{len(docs)} "
+                        f"{template_name} ({index_pattern}): {len(offending_docs)}/{len(docs)} "
                         f"documents contain fields not declared in the template mapping:\n"
                         + "\n".join(f"  - {f}" for f in all_unmapped)
                     )
+                    # Print each offending document in full so failures remain
+                    # triageable after the cluster is torn down (the doc content
+                    # — field values and shape — is what identifies which log
+                    # writer / filter path produced it).
                     print(f"\n{msg}", flush=True)
+                    for i, (unmapped, doc) in enumerate(offending_docs):
+                        print(
+                            f"\n--- offending doc {i + 1}/{len(offending_docs)} "
+                            f"(unmapped: {', '.join(sorted(unmapped))}) ---",
+                            flush=True,
+                        )
+                        print(json.dumps(doc, indent=2, default=str), flush=True)
                     self.fail(msg)
 
 

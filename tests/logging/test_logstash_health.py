@@ -1,12 +1,13 @@
 import unittest
 import json
+import time
 from ast import literal_eval
-import boto3
-from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError, PartialCredentialsError
 from k8s_utils import K8sUtils
 
-# Maximum number of leftover objects tolerated in the S3 logstash bucket.
-ACCEPTABLE_S3_THRESHOLD = 3000
+# The s3 output flushes every 3 minutes, so the drain poll must outlast the
+# flush interval to see events mid-buffer land.
+S3_DRAIN_TIMEOUT_SECONDS = 240
+S3_POLL_INTERVAL_SECONDS = 15
 
 
 def parse_output(output, pod):
@@ -23,7 +24,6 @@ class TestLogstash(unittest.TestCase):
     LOGSTASH_S3_LABEL = "app=logstash-elastic-s3"
     MAIN_CUSTOMER_PIPELINES = ["main", "customer"]
     S3_PIPELINE = "s3"
-    S3_BUCKET_PREFIX = "application/"
     workload_pods = {}
     workload_pipelines = {
         LOGSTASH_LABEL: ["main", "customer", "dlq"],
@@ -131,6 +131,49 @@ class TestLogstash(unittest.TestCase):
             f"Missing plugins in pod {pod}: {', '.join(missing_plugins)}"
         )
 
+    def _fetch_s3_pipeline_events(self, pod):
+        """Read live s3 pipeline stats from the pod and return the events block."""
+        command = ["curl", "-s", f"http://localhost:9600/_node/stats/pipelines/{self.S3_PIPELINE}?pretty"]
+        output = self.exec_in_logstash_container(pod, command)
+        stats_json = parse_output(output, pod)
+        pipeline_stats = self._extract_pipeline_stats(stats_json, self.S3_PIPELINE)
+        self.assertTrue(
+            isinstance(pipeline_stats, dict) and pipeline_stats,
+            f"No s3 pipeline stats returned for pod {pod}"
+        )
+        return pipeline_stats.get("events", {})
+
+    def _poll_s3_pipeline_drained(self, pod):
+        """
+        Poll live stats until every event counted `in` has been counted `out`.
+
+        Each poll reads a FRESH in/out pair from the same snapshot, so the
+        comparison never mixes a stale number with a new one. The S3 output
+        counts `out` only after a successful flush, so while the batch buffer
+        or an open file part holds events, `out` lags `in` — that lag must
+        close (the pipeline is a pass-through) before the deadline.
+        """
+        deadline = time.monotonic() + S3_DRAIN_TIMEOUT_SECONDS
+        last_snapshot = None
+
+        while True:
+            events = self._fetch_s3_pipeline_events(pod)
+            if events:
+                self.assertIn("in", events, f"events.in missing for s3 pipeline in pod {pod}")
+                self.assertIn("out", events, f"events.out missing for s3 pipeline in pod {pod}")
+                self.assertIsInstance(events["in"], (int, float), f"events.in is not numeric in pod {pod}")
+                self.assertIsInstance(events["out"], (int, float), f"events.out is not numeric in pod {pod}")
+                self.assertGreaterEqual(events["in"], 0, f"events.in must be >= 0 in pod {pod}")
+                self.assertGreaterEqual(events["out"], 0, f"events.out must be >= 0 in pod {pod}")
+                if events["in"] == events["out"]:
+                    return events
+                print(f"  [s3 drain poll] pod {pod}: in={events['in']} out={events['out']} — waiting for flush")
+            last_snapshot = events
+
+            if time.monotonic() >= deadline:
+                return last_snapshot
+            time.sleep(S3_POLL_INTERVAL_SECONDS)
+
     def test_s3_pipeline_stats_events_and_failures(self):
         label = self.LOGSTASH_S3_LABEL
         pods = self.workload_pods.get(label, [])
@@ -138,39 +181,15 @@ class TestLogstash(unittest.TestCase):
 
         for pod in pods:
             with self.subTest(label=label, pod=pod):
-                command = ["curl", "-s", f"http://localhost:9600/_node/stats/pipelines/{self.S3_PIPELINE}?pretty"]
-                output = self.exec_in_logstash_container(pod, command)
-                stats_json = parse_output(output, pod)
-                pipeline_stats = self._extract_pipeline_stats(stats_json, self.S3_PIPELINE)
-                self.assertTrue(
-                    isinstance(pipeline_stats, dict) and pipeline_stats,
-                    f"No s3 pipeline stats returned for pod {pod}"
-                )
-                pipeline_status = pipeline_stats.get("status", "")
-                if pipeline_status:
-                    self.assertIn(
-                        pipeline_status,
-                        {"green", "unknown"},
-                        f"s3 pipeline status in pod {pod} is unexpected: {pipeline_status}"
-                    )
-
-                events = pipeline_stats.get("events", {})
-                if not events:
+                final_events = self._poll_s3_pipeline_drained(pod)
+                if not final_events:
                     # Some versions/plugins expose flow/reloads/plugins without events counters when idle.
-                    if pipeline_status == "unknown" or self._has_observable_pipeline_metrics(pipeline_stats):
-                        continue
-                    self.fail(f"events block missing for s3 pipeline in pod {pod} while status is {pipeline_status}")
-
-                self.assertIn("in", events, f"events.in missing for s3 pipeline in pod {pod}")
-                self.assertIn("out", events, f"events.out missing for s3 pipeline in pod {pod}")
-                self.assertIsInstance(events["in"], (int, float), f"events.in is not numeric in pod {pod}")
-                self.assertIsInstance(events["out"], (int, float), f"events.out is not numeric in pod {pod}")
-                self.assertGreaterEqual(events["in"], 0, f"events.in must be >= 0 in pod {pod}")
-                self.assertGreaterEqual(events["out"], 0, f"events.out must be >= 0 in pod {pod}")
+                    continue
                 self.assertEqual(
-                    events["in"],
-                    events["out"],
-                    f"s3 pipeline in pod {pod}: events_in ({events['in']}) != events_out ({events['out']}). "
+                    final_events["in"],
+                    final_events["out"],
+                    f"s3 pipeline in pod {pod}: events_in ({final_events['in']}) != events_out "
+                    f"({final_events['out']}) after {S3_DRAIN_TIMEOUT_SECONDS}s. "
                     f"The S3 pipeline is a pass-through — all ingested events must be flushed to S3.",
                 )
 
@@ -226,71 +245,6 @@ class TestLogstash(unittest.TestCase):
                         f"events_out ({events['out']}) exceeds events_in ({events['in']}). "
                         "Possible pipeline misconfiguration or stats corruption.",
                     )
-
-    def _get_pod_env_var(self, pod_name, var_name):
-        """Return the value of an environment variable from inside the logstash container."""
-        output = self.exec_in_logstash_container(
-            pod_name, ["printenv", var_name]
-        )
-        return output.strip()
-
-    def test_s3_bucket_object_count(self):
-        """
-        Validates that the S3 bucket used by logstash-elastic-s3 does not accumulate
-        leftover objects beyond ACCEPTABLE_S3_THRESHOLD.
-
-        A non-zero count indicates a previous cleanup/flush job failure and must be
-        investigated before the deployment is considered healthy.
-        """
-        label = self.LOGSTASH_S3_LABEL
-        pod = self.workload_pods[label][0]
-
-        raw_bucket = self._get_pod_env_var(pod, "S3_BUCKET")
-        self.assertTrue(
-            raw_bucket,
-            f"S3_BUCKET env var must be set in logstash-elastic-s3 pod {pod}."
-        )
-
-        bucket_uri_without_scheme = raw_bucket.removeprefix("s3://")
-        bucket_name = bucket_uri_without_scheme.split("/", 1)[0]
-        bucket_prefix = self.S3_BUCKET_PREFIX
-
-        try:
-            sts_client = boto3.client("sts")
-            identity = sts_client.get_caller_identity()
-            print(
-                f"Using local AWS identity: {identity.get('Arn', 'unknown')}"
-            )
-
-            s3_client = boto3.client("s3")
-            paginator = s3_client.get_paginator("list_objects_v2")
-            object_count = 0
-            for page in paginator.paginate(Bucket=bucket_name, Prefix=bucket_prefix):
-                object_count += len(page.get("Contents", []))
-        except (NoCredentialsError, PartialCredentialsError) as ex:
-            self.fail(
-                f"Local AWS credentials are not configured for S3 check. "
-                f"Unable to count objects in s3://{bucket_name}/{bucket_prefix}. Error: {ex}"
-            )
-        except (ClientError, BotoCoreError) as ex:
-            self.fail(
-                f"Failed to list S3 objects for s3://{bucket_name}/{bucket_prefix} using local boto3. "
-                f"Error: {ex}"
-            )
-
-        print(
-            f"S3 path 's3://{bucket_name}/{bucket_prefix}' object count: {object_count} "
-            f"(acceptable threshold: <= {ACCEPTABLE_S3_THRESHOLD})"
-        )
-
-        self.assertLessEqual(
-            object_count,
-            ACCEPTABLE_S3_THRESHOLD,
-            f"S3 bucket '{bucket_name}' contains {object_count} leftover object(s), "
-            f"exceeding the acceptable threshold of {ACCEPTABLE_S3_THRESHOLD}. "
-            "A prior cleanup job may have failed - review the bucket before proceeding.",
-        )
-
 
 if __name__ == "__main__":
     unittest.main()

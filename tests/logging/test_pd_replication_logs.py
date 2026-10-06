@@ -3,6 +3,7 @@ import subprocess
 import time
 import unittest
 import urllib3
+from datetime import datetime, timedelta, timezone
 
 from opensearchpy import OpenSearch
 
@@ -12,15 +13,21 @@ PD_NS = "ping-cloud"
 PD_POD = "pingdirectory-0"
 PD_POD_1 = "pingdirectory-1"
 PD_CONTAINER = "pingdirectory"
-PD_LABEL_0 = "statefulset.kubernetes.io/pod-name=pingdirectory-0"
-PD_LABEL_1 = "statefulset.kubernetes.io/pod-name=pingdirectory-1"
 REPLICATION_LOG = "/opt/pingidentity/server/logs/replication"
 OPENSEARCH_NS = "elastic-stack-logging"
 OPENSEARCH_SVC = "opensearch-cluster-headless"
 OPENSEARCH_PORT = 9200
 OPENSEARCH_INDEX = "pd-replication-*"
 SAMPLE_SIZE = 20
-INGEST_WAIT_SECONDS = 60
+# Pipeline lag into OpenSearch is commonly 20-130s; poll rather than a single shot.
+PARITY_POLL_INTERVAL_SECONDS = 15
+PARITY_MAX_ATTEMPTS = 4
+# Clock skew allowance when time-boxing parity lookups. Logstash stamps docs with
+# @timestamp at parse time, which can trail the PD log line timestamp; the file log
+# timestamp and OS app_timestamp are both UTC so a modest skew window suffices.
+# Kept small (2 min): a large window lets a CI retry attempt match the previous
+# attempt's docs, since PD msgIDs are static per message type.
+PARITY_SKEW_MINUTES = 2
 
 
 def _log(msg):
@@ -33,10 +40,17 @@ class TestPDReplicationLogs(unittest.TestCase):
       1. Written to the file-based Replication Repair Logger
       2. Routed by Logstash into the pd-replication-* OpenSearch index
 
-    Trigger strategy:
-      - Delete pingdirectory-1 pod to generate INFORMATION disconnect/reconnect
-        events on pingdirectory-0's replication log
-      - Run dsreplication initialize (pd-0 -> pd-1) to generate NOTICE events
+    Trigger strategy (no pod restarts — a full restart takes minutes and is the
+    slowest, flakiest step in this suite):
+      Run the external-initialization cycle on dc=example,dc=com:
+        pre-external-initialization -> initialize (pd-0 -> pd-1) -> post-external-initialization
+      This runtime-only sequence generates a rich replication event family on pd-0:
+        - NOTICE generation-ID reset (error-path) events
+        - INFORMATION replica disconnect / "will be reinitialized" events
+        - NOTICE export start/complete + reconnect events
+        - INFORMATION "replicas have been reinitialized" events
+      The cycle must run to completion: between pre- and post-external-initialization
+      replication for the domain is suspended.
     """
 
     @classmethod
@@ -61,18 +75,34 @@ class TestPDReplicationLogs(unittest.TestCase):
         cls.log_line_before = int(baseline.strip() or 0)
         _log(f"Replication log baseline: {cls.log_line_before} lines")
 
-        _log(f"Deleting {PD_POD_1} to trigger disconnect/reconnect events on {PD_POD}...")
-        cls.k8s.kill_pods(label=PD_LABEL_1, namespace=PD_NS)
-
-        _log(f"Waiting for {PD_POD_1} to be ready (timeout 240s)...")
-        time.sleep(5)
-        ready = cls.k8s.wait_for_all_pods_ready(label=PD_LABEL_1, namespace=PD_NS, timeout_seconds=240)
-        _log(f"{PD_POD_1} ready: {ready}")
+        # Time-box origin for parity lookups. PD message IDs are static per message
+        # type (e.g. "Starting export..." always carries the same msgID), so OS docs
+        # from previous runs share IDs with this run's events. Every parity lookup
+        # must therefore be constrained to docs ingested at/after this test started.
+        cls.test_start_utc = datetime.now(timezone.utc) - timedelta(minutes=PARITY_SKEW_MINUTES)
+        cls.test_start_str = cls.test_start_utc.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
         pd_0_host = f"pingdirectory-0.pingdirectory.{PD_NS}.svc.cluster.local"
         pd_1_host = f"pingdirectory-1.pingdirectory.{PD_NS}.svc.cluster.local"
+
+        # Use the container's tool properties (localhost:1636) for topology-wide
+        # commands — passing --hostname/--port conflicts with the properties file.
+        _log("Running dsreplication pre-external-initialization for dc=example,dc=com...")
+        output = cls.k8s.exec_command(
+            PD_NS, PD_POD,
+            ["dsreplication", "pre-external-initialization",
+             "--baseDN", "dc=example,dc=com",
+             "--no-prompt"],
+            container_name=PD_CONTAINER,
+        )
+        _log(f"dsreplication pre-external-initialization output:\n{output}")
+        if "pre-external-initialization.log" not in output:
+            raise RuntimeError(
+                f"dsreplication pre-external-initialization did not succeed:\n{output}"
+            )
+
         _log(f"Running dsreplication initialize ({PD_POD} -> {PD_POD_1}) for dc=example,dc=com...")
-        cls.k8s.exec_command(
+        output = cls.k8s.exec_command(
             PD_NS, PD_POD,
             [
                 "dsreplication", "initialize",
@@ -83,9 +113,27 @@ class TestPDReplicationLogs(unittest.TestCase):
             ],
             container_name=PD_CONTAINER,
         )
+        _log(f"dsreplication initialize output:\n{output}")
+        if "initialize.log" not in output:
+            raise RuntimeError(f"dsreplication initialize did not succeed:\n{output}")
 
-        _log(f"Waiting {INGEST_WAIT_SECONDS}s for Logstash to ingest entries into OpenSearch...")
-        time.sleep(INGEST_WAIT_SECONDS)
+        _log("Running dsreplication post-external-initialization for dc=example,dc=com...")
+        output = cls.k8s.exec_command(
+            PD_NS, PD_POD,
+            ["dsreplication", "post-external-initialization",
+             "--baseDN", "dc=example,dc=com",
+             "--no-prompt"],
+            container_name=PD_CONTAINER,
+        )
+        _log(f"dsreplication post-external-initialization output:\n{output}")
+        if "post-external-initialization.log" not in output:
+            raise RuntimeError(
+                f"dsreplication post-external-initialization did not succeed:\n{output}"
+            )
+
+        # No flat ingest sleep here: the parity test polls OpenSearch with retries
+        # (PARITY_MAX_ATTEMPTS x PARITY_POLL_INTERVAL_SECONDS), which absorbs the
+        # pipeline lag without a fixed wait.
 
         cls.new_entries = cls.k8s.exec_command(
             PD_NS, PD_POD,
@@ -161,11 +209,16 @@ class TestPDReplicationLogs(unittest.TestCase):
         Logger writes the same events as JSON to stdout, which Logstash picks up and routes
         to the pd-replication-* index in OpenSearch.
 
-        For each file log entry we extract its msgID — a per-instance monotonic integer
-        that PD assigns to every log message and includes in both the file log and the JSON
-        stdout. We then query OpenSearch for a document with that same messageID and
-        category=REPLICATION. A match confirms the event made it end-to-end from PD stdout
-        through Logstash into OpenSearch.
+        For each file log entry we extract its msgID — a per-instance integer that PD
+        assigns to every log message and includes in both the file log and the JSON
+        stdout. We query OpenSearch for a document with that same messageID and
+        category=REPLICATION.
+
+        msgIDs are static per message type, so OpenSearch accumulates documents sharing
+        the same messageID across runs (verified: 35+ docs share one ID). A lookup by
+        messageID alone would match a stale document and pass even if this run's event
+        was never ingested. Every lookup is therefore time-boxed to documents ingested
+        at or after this test started (with a small clock-skew allowance).
 
         If msgID is not parseable from a line it is counted as missing, since we have no
         reliable way to correlate it to an OpenSearch document.
@@ -176,9 +229,12 @@ class TestPDReplicationLogs(unittest.TestCase):
             "No replication entries to check — file log trigger did not produce entries.",
         )
 
-        missing = []
+        # Parse msgID + instanceName from each sampled file-log line up front.
+        # Lines without a parseable msgID are counted as missing immediately —
+        # there is no reliable way to correlate them to an OS document.
         checked = 0
-
+        missing = []
+        expected = []
         for line in self.new_entries.splitlines():
             line = line.strip()
             if not line:
@@ -193,34 +249,63 @@ class TestPDReplicationLogs(unittest.TestCase):
                 if part.startswith("instanceName="):
                     instance_name = part.split("=", 1)[1].strip('"')
 
-            if msg_id is None:
-                missing.append(f"(no msgID parseable) {line}")
+            if msg_id is None or not msg_id.isdigit() or instance_name is None:
+                missing.append(f"(no msgID/instanceName parseable) {line}")
                 print(f"  [MISSING] FILE : {line}")
-                print(f"  [MISSING] OS   : no match found (no msgID in line)")
+                print(f"  [MISSING] OS   : no match found (no msgID/instanceName in line)")
                 print()
                 continue
 
-            must_clauses = [
-                {"term": {"category.keyword": "REPLICATION"}},
-                {"term": {"messageID": int(msg_id)}},
-            ]
-            if instance_name:
-                must_clauses.append({"term": {"instanceName.keyword": instance_name}})
+            expected.append((line, int(msg_id), instance_name))
 
+        # Batch lookup: one query fetches every candidate doc for this run's
+        # window instead of one query per line, then we match (msgID,
+        # instanceName) pairs locally. Both keys matter: msgIDs are static per
+        # message TYPE (both replicas emit the same IDs), so matching on msgID
+        # alone would let one instance's doc satisfy the other's file line.
+        def query_window():
             response = self.opensearch_client.search(
                 index=OPENSEARCH_INDEX,
-                body={"query": {"bool": {"must": must_clauses}}, "size": 1},
+                body={
+                    "size": len(expected) * 5,
+                    "query": {"bool": {"must": [
+                        {"term": {"category.keyword": "REPLICATION"}},
+                        {"range": {"app_timestamp": {"gte": self.test_start_str}}},
+                    ]}},
+                },
             )
+            found = {}
+            for hit in response["hits"]["hits"]:
+                src = hit["_source"]
+                found.setdefault((src.get("messageID"), src.get("instanceName")), src)
+            return found
 
-            hits = response["hits"]["hits"]
-            if not hits:
-                missing.append(f"msgID={msg_id} | {line}")
-                print(f"  [MISSING] FILE : {line}")
-                print(f"  [MISSING] OS   : no match found for msgID={msg_id} instanceName={instance_name}")
-            else:
-                src = hits[0]["_source"]
+        # Poll: pipeline lag is commonly 20-130s (see test_logstash_splits_merged_docuemnts),
+        # so re-query up to PARITY_MAX_ATTEMPTS times with PARITY_POLL_INTERVAL_SECONDS
+        # between attempts until every expected (msgID, instanceName) pair has a match.
+        found = {}
+        for attempt in range(1, PARITY_MAX_ATTEMPTS + 1):
+            found = query_window()
+            still_missing = [(line, msg_id, inst) for (line, msg_id, inst) in expected
+                             if (msg_id, inst) not in found]
+            if not still_missing:
+                break
+            _log(f"Parity attempt {attempt}/{PARITY_MAX_ATTEMPTS}: "
+                 f"{len(expected) - len(still_missing)}/{len(expected)} msgIDs matched; "
+                 f"retrying in {PARITY_POLL_INTERVAL_SECONDS}s...")
+            time.sleep(PARITY_POLL_INTERVAL_SECONDS)
+
+        matched_ids = set()
+        for line, msg_id, instance_name in expected:
+            src = found.get((msg_id, instance_name))
+            if src is not None:
+                matched_ids.add(msg_id)
                 print(f"  [MATCH] FILE : {line}")
                 print(f"  [MATCH] OS   : {src}")
+            else:
+                missing.append(f"msgID={msg_id} | {line}")
+                print(f"  [MISSING] FILE : {line}")
+                print(f"  [MISSING] OS   : no match found for msgID={msg_id} instanceName={instance_name} after {self.test_start_str}")
             print()
 
         _log(f"Parity check: {checked - len(missing)}/{checked} entries found in {OPENSEARCH_INDEX}")
