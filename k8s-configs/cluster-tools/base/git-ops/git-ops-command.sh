@@ -175,18 +175,11 @@ get_version() {
 }
 
 ########################################################################################################################
-# Set the Kustomize version based on the P1AS version
+# Set and check the Kustomize version
 ########################################################################################################################
 set_kustomize_version() {
-  # P1AS version 2.0.* and earlier require Kustomize version 5.0.3 due to use of empty kustomize files as well as
-  # helm compatibility issues and our desire to remove the helm-command.sh shim in future versions
-  if [[ "${P1AS_VERSION}" =~ ^v((1\.*)|(2\.0)).* ]]; then
-    kustomize_correct_version="5.0.3"
-    KUSTOMIZE_EXECUTABLE="kustomize_5_0_3"
-  else
-    kustomize_correct_version="5.5.0"
-    KUSTOMIZE_EXECUTABLE="kustomize"
-  fi
+  kustomize_correct_version="5.5.0"
+  KUSTOMIZE_EXECUTABLE="kustomize"
 
   # Sanity check version of kustomize
   if ! eval "${KUSTOMIZE_EXECUTABLE} version" | grep -q "${kustomize_correct_version}"; then
@@ -199,18 +192,6 @@ set_kustomize_version() {
   if ! command -v "${KUSTOMIZE_EXECUTABLE}" > /dev/null 2>&1; then
     log "Error: Kustomize executable '${KUSTOMIZE_EXECUTABLE}' not found. Make sure it is installed with the name shown"
     exit 1
-  fi
-}
-
-########################################################################################################################
-# Previous versions of kustomize did not work properly with helm and had to use a custom helm-command.sh
-# Set this as part of the global $HELM_FLAGS variable for use with Kustomize when using Helm
-########################################################################################################################
-set_helm_flags() {
-  if [[ "${KUSTOMIZE_EXECUTABLE}" == "kustomize_5_0_3" ]]; then
-    HELM_FLAGS="--enable-helm --helm-command helm-command.sh"
-  else
-    HELM_FLAGS="--enable-helm"
   fi
 }
 
@@ -355,10 +336,9 @@ monorepo_main() {
 # Main loop for microservices
 # This function is designed to work ONLY from ArgoCD. If you want to run it directly, manually, you must make sure
 # you are already in a MICROSERVICE/REGION directory before running.
-# You must also have the helm-command.sh file in your $PATH if running older versions of Kustomize.
 ########################################################################################################################
 microservice_main() {
-  eval "${KUSTOMIZE_EXECUTABLE} build --load-restrictor LoadRestrictionsNone ${HELM_FLAGS}"
+  eval "${KUSTOMIZE_EXECUTABLE} build --load-restrictor LoadRestrictionsNone --enable-helm"
 }
 
 ########################################################################################################################
@@ -382,7 +362,6 @@ main () {
   # Otherwise, we are building a microservice
   else
     log "Current working directory is ${PWD} which does NOT contain k8s-configs, so building this as a microservice"
-    set_helm_flags
     microservice_main
   fi
 }

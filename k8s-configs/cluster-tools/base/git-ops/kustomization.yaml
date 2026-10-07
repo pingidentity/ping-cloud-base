@@ -13,6 +13,3 @@ configMapGenerator:
 - name: git-ops-command
   files:
   - git-ops-command.sh
-- name: helm-command
-  files:
-  - helm-command.sh

@@ -20,12 +20,14 @@
 - Implement Opensearch Tiers support
 - Rework, and add integration tests for logging stack
 - Update argocd-init-tools version
+- Remove helm-command.sh since old Kustomize version no longer used
 
 _Changes:_
 
 - [X] PDO-5990 Opensearch: Add p1as-observability to PCB
 - [X] PDO-7316 JSON Logging: Implement JSON logging for PingDelegator logs
 - [X] PDO-7374 JSON Logging: Implement JSON logging for PingCentral
+- [X] PDO-8371 Remove helm-command.sh since old Kustomize version no longer used
 - [X] PDO-8875 Add deploy wrapper to capture deploy failure logs
 - [X] PDO-9115 Introduce 'revisionHistoryLimit' to Delegated Admin deployment object to avoid cluttering
 - [X] PDO-10598 JSON Logging: Update index templates in OpenSearch
