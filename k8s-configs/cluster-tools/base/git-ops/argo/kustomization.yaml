@@ -365,7 +365,7 @@ patches:
           initContainers:
           # Installs custom tools
           - name: install-custom-tools
-            image: public.ecr.aws/r2h3l6e4/pingcloud-services/argocd-init-tools:v1.0.0
+            image: public.ecr.aws/r2h3l6e4/pingcloud-services/argocd-init-tools:v1.1.0
             securityContext:
               readOnlyRootFilesystem: true
               privileged: false

@@ -19,6 +19,7 @@
 - Add p1as-beluga-healthcheck Helm chart to PEB
 - Implement Opensearch Tiers support
 - Rework, and add integration tests for logging stack
+- Update argocd-init-tools version
 
 _Changes:_
 
@@ -39,6 +40,7 @@ _Changes:_
 - [X] PDO-11621 Add HIPAA logging bucket bootstrap resource
 - [X] PDO-12181 Implement Logging tier patches for OpenSearch Chart
 - [X] PDO-12227 CI/CD Pipeline: Stabilize logging integration tests
+- [X] PDO-12265 Update argocd-init-tools
 
 ### 2.3.0
 
