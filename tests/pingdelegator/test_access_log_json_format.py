@@ -23,6 +23,12 @@ EXPECTED_FIELDS = {
 # nginx error log format: "2026/05/21 18:00:00 [warn] 1#1: ..."
 # These are the only non-JSON lines expected on stdout; everything else must parse as JSON.
 _NGINX_ERROR_LOG_RE = re.compile(r"^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} \[")
+# Synthetic pipeline-probe payloads from tests/logging/test_json_parse_failures.py
+# carry this prefix in their message. They are written to pingdelegator's real
+# stdout by design — one is deliberately unparseable JSON and the others are not
+# access-log entries — so they are excluded here; that suite verifies their
+# routing on its own.
+_PROBE_MARKER = "test-json-parse-failures-probe-"
 
 
 def _is_nginx_error_line(line: str) -> bool:
@@ -41,6 +47,7 @@ def _get_access_log_lines(k8s: K8sUtils, namespace: str, pod_name: str) -> list[
         line
         for raw in raw_lines
         if (line := raw.strip()) and not _is_nginx_error_line(line)
+        and _PROBE_MARKER not in line
     ]
 
 

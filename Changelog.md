@@ -21,6 +21,7 @@
 - Rework, and add integration tests for logging stack
 - Update argocd-init-tools version
 - Remove helm-command.sh since old Kustomize version no longer used
+- Add integration tests for json-parse-failures index
 
 _Changes:_
 
@@ -38,6 +39,7 @@ _Changes:_
 - [X] PDO-11285 Fix Fluentbit multiline cont rule sweeping JSON lines into buffer, causing silent audit log loss in OpenSearch
 - [X] PDO-11651 Add resources for datalake telemetry pipeline
 - [X] PDO-11804 Add karpenter.sh/do-not-disrupt annotation to Jobs and CronJobs
+- [X] PDO-11883: Observability: Implement remediation for silent log parse failures
 - [X] PDO-11929 Enable replication events in Console JSON Error Logger (PingDirectory)
 - [X] PDO-11621 Add HIPAA logging bucket bootstrap resource
 - [X] PDO-12181 Implement Logging tier patches for OpenSearch Chart

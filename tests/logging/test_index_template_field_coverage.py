@@ -50,6 +50,15 @@ KNOWN_MISSING_FIELDS = {
 # part of the log payload and do not need to be declared in the template.
 OS_INTERNAL_FIELDS = {"_id", "_index", "_score", "_type"}
 
+# Synthetic pipeline-probe payloads from test_json_parse_failures.py carry this
+# prefix in one of their fields (userAgent for the valid shape, log for the
+# malformed/plaintext shapes). They are deliberately routed through every app's
+# pipeline, so they land in service indices whose templates don't map the
+# probes' fields — that is expected and not a template-coverage gap. Probe
+# documents are excluded from field-coverage checks; that suite owns the
+# assertions on their routing.
+PROBE_MARKER = "test-json-parse-failures-probe-"
+
 # When set, templates are loaded from this local directory instead of from the
 # OpenSearch cluster. Useful for running against a port-forwarded cluster with
 # a checked-out copy of the templates.
@@ -96,6 +105,20 @@ def _flatten_doc_fields(source: dict, prefix: str = "") -> set:
         if isinstance(v, dict):
             fields |= _flatten_doc_fields(v, full_key)
     return fields
+
+
+def _doc_contains_probe(doc: dict) -> bool:
+    """True if any string value anywhere in the document carries the probe
+    marker injected by test_json_parse_failures.py. The marker sits in
+    different fields per payload shape (userAgent when parsed, log when the
+    raw line was kept), so check every leaf value recursively.
+    """
+    for v in doc.values():
+        if isinstance(v, str) and PROBE_MARKER in v:
+            return True
+        if isinstance(v, dict) and _doc_contains_probe(v):
+            return True
+    return False
 
 
 def _load_templates_from_cluster(os_client: OpenSearch) -> list:
@@ -234,7 +257,10 @@ class TestIndexTemplateFieldCoverage(unittest.TestCase):
         }
         try:
             response = self.os_client.search(index=index_pattern, body=query)
-            return [hit["_source"] for hit in response["hits"]["hits"]]
+            return [
+                hit["_source"] for hit in response["hits"]["hits"]
+                if not _doc_contains_probe(hit["_source"])
+            ]
         except Exception as e:
             if "index_not_found" in str(e).lower() or "no such index" in str(e).lower():
                 return []
