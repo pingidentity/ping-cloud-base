@@ -22,10 +22,12 @@
 - Update argocd-init-tools version
 - Remove helm-command.sh since old Kustomize version no longer used
 - Add integration tests for json-parse-failures index
+- Enhance Opensearch tests (unit, integration, system)
 
 _Changes:_
 
 - [X] PDO-5990 Opensearch: Add p1as-observability to PCB
+- [X] PDO-5998 Opensearch: Enhance p1as-observability tests (unit, integration, system)
 - [X] PDO-7316 JSON Logging: Implement JSON logging for PingDelegator logs
 - [X] PDO-7374 JSON Logging: Implement JSON logging for PingCentral
 - [X] PDO-8371 Remove helm-command.sh since old Kustomize version no longer used
