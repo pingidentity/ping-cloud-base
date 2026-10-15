@@ -46,6 +46,7 @@
 - Do not schedule fluentbit daemonset on Fargate
 - Default all env to logging tier1
 - Update to include kube proxy logs in main pipeline
+- Added storageClass for logstash-s3
 
 _Changes:_
 
@@ -79,6 +80,7 @@ _Changes:_
 - [X] PDO-11071 OpenSearch: Implement Logstash → Write Alias + ISM Rollover (40GB or Daily), Read-Only + Delete
 - [X] PDO-11091 Logstash: Implement  (Fluent Bit → 2x Logstash StatefulSets)
 - [X] PDO-11092 Grafana: Update Dashboards for (Fluent Bit → 2x Logstash)
+- [X] PDO-11093 Added storageClass for logstash-s3
 - [X] PDO-11104 Update p1as-beluga-lib and seal-secret-values to handle dynamic secrets
 - [X] PDO-11181 Add priorityclass to PD microservice and remove from PCB
 - [X] PDO-11237 Add p1as-pingaccess/was code-gen directories to PCB
