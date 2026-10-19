@@ -46,9 +46,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 
-# Delegated admin resources
-- ../pingdelegator/server
-
 # Ping Data Sync resources
 - ../pingdatasync/server
 

@@ -118,11 +118,11 @@
 # ENVIRONMENTS                     | The environments the customer is entitled to. This | dev test stage prod customer-hub
 #                                  | will be a subset of SUPPORTED_ENVIRONMENT_TYPES    |
 #                                  |                                                    |
-# EXTERNAL_INGRESS_ENABLED         | List of ping apps(pingdelegator)      | No defaults
+# EXTERNAL_INGRESS_ENABLED         | List of ping apps                                  | No defaults
 #                                  | for which you can enable external ingress (the     |
 #                                  | values are ping app names)                         |
 #                                  |                                                    |
-#                                  | Examplelist:"pingdelegator"           |
+#                                  |                                                    |
 #                                  |                                                    |
 #                                  |                                                    |
 # GLOBAL_TENANT_DOMAIN             | Region-independent URL used for DNS failover/      | Replaces the first segment of
@@ -435,7 +435,6 @@ ${BOOTSTRAP_IMAGE_TAG}
 ${P14C_INTEGRATION_IMAGE_TAG}
 ${ANSIBLE_BELUGA_IMAGE_TAG}
 ${PINGCENTRAL_IMAGE_TAG}
-${PINGDELEGATOR_IMAGE_TAG}
 ${OS_BOOTSTRAP_IMAGE_TAG}
 ${ENRICHMENT_BOOTSTRAP_IMAGE_TAG}
 ${LOGSTASH_EXPORTER_IMAGE_TAG}
@@ -1269,7 +1268,7 @@ BOOTSTRAP_DIR="${TARGET_DIR}/${BOOTSTRAP_SHORT_DIR}"
 CLUSTER_STATE_REPO_DIR="${TARGET_DIR}/cluster-state"
 PROFILE_REPO_DIR="${TARGET_DIR}/profile-repo"
 PROFILES_DIR="${PROFILE_REPO_DIR}/profiles"
-PROFILE_REPO_MIRRORS=("p1as-pingdirectory p1as-pingfederate p1as-pingaccess")
+PROFILE_REPO_MIRRORS=("p1as-pingdirectory p1as-pingfederate p1as-pingaccess p1as-pingdelegatedadmin")
 
 
 CUSTOMER_HUB='customer-hub'

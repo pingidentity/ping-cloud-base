@@ -31,21 +31,6 @@ getMatchedTagCount() {
         | grep ${image_tag_name} | wc -l | awk '{ print $1 }')
 }
 
-testPingDelegatorImageTag() {
-  if [ "${ENV_TYPE}" == "customer-hub" ]; then
-    echo "Skipping testPingDelegatorImageTag as ENV_TYPE is customer-hub"
-    return
-  fi
-  $(test "${PINGDELEGATOR_IMAGE_TAG}")
-  assertEquals "PINGDELEGATOR_IMAGE_TAG missing from env_vars file" 0 $?
-
-  unique_count=$(getUniqueTagCount "pingdelegator")
-  assertEquals "PingDelegator is using multiple image tag versions" 1 "${unique_count}"
-
-  matched_count=$(getMatchedTagCount "${PINGDELEGATOR_IMAGE_TAG}" "pingdelegator")
-  assertEquals "PingDelegator CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
-}
-
 testPingCentralImageTag() {
   if [ $ENV_TYPE = 'customer-hub' ] || { [[ $CLUSTER_NAME == ci-cd* ]] && [ "${ENV_TYPE}" == "dev" ] && [ "${CI_PIPELINE_SOURCE}" != "schedule" ]; }; then
     $(test "${PINGCENTRAL_IMAGE_TAG}")

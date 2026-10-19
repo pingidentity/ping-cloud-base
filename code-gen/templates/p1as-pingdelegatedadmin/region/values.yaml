@@ -1,0 +1,12 @@
+pingdelegatedadmin:
+  deployment:
+    resources:
+      limits:
+        memory: "1Gi"
+        cpu: "1"
+      requests:
+        memory: "256Mi"
+        cpu: "80m"          
+  ingress:  
+    # Set true to also create the external (nginx-public) ingress
+    enableExternalIngress: false

@@ -5,7 +5,6 @@ resources:
 
 # PingCloud common resources and configs. These should always be included. DO NOT comment them out.
 - pingcommon
-- pingdelegator/config
 - pingdatasync/config
 
 # The following resource reference includes all ping applications by default. However, it may be tweaked to roll out

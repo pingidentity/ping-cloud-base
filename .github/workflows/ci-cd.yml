@@ -245,6 +245,7 @@ jobs:
           - p1as-pingfederate
           - p1as-self-service
           - p1as-pingaccess
+          - p1as-pingdelegatedadmin
     steps:
       - name: Repository Setup
         uses: ping-internal/p1as-eng-tools/.github/actions/repo-setup@master

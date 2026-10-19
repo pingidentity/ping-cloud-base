@@ -3,7 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
   - ../base
-  - pingdelegator
   - custom-resources
 
 generatorOptions:
@@ -26,20 +25,6 @@ configMapGenerator:
   - env_vars
   - pingdatasync/env_vars
 
-# PingDelegator
-# Create the config maps that hold the variable for triggering updates of DA servers
-- name: pingdelegator-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-  - pingdelegator/env_vars
-
-# Ping Delegated Admin
-- name: pingdelegator-environment-variables
-  behavior: merge
-  envs:
-  - ../base/env_vars
-  - env_vars
-  - pingdelegator/env_vars
 
 # PingCloud P14C bootstrap
 - name: pingcloud-p14c-bootstrap-environment-variables
@@ -73,6 +58,4 @@ patchesStrategicMerge:
 
   - ../base/cluster-tools/logging/remove-from-secondary-patch.yaml
 
-  ### The removal of these patches is handled automatically via git-ops-command.sh script, manual toggling is not needed ###
 
-  - pingdelegator/ff-external-ingress/remove-external-ingress.yaml

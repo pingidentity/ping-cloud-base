@@ -1,1 +1,0 @@
-Add custom hook scripts into this directory. Every script will need executable permissions.

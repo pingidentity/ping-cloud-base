@@ -9,6 +9,7 @@
 - Fix Fluentbit multiline filter concatenating JSON audit log lines, causing admin-event-detail entries to be dropped
 - Add resources for datalake telemetry pipeline
 - Update generate-cluster-state.sh to use helm charts in bootstrap kustomization.yaml
+- Add p1as-delegatedadmin code-gen directory to PEB
 - Add karpenter.sh/do-not-disrupt annotation to Jobs and CronJobs
 - Added Testcase to validate JSON nginx ingress logs
 - Get Karpenter IRSA role arn from SSM
@@ -40,6 +41,7 @@ _Changes:_
 - [X] PDO-11215 Get KarpenterController IRSA role path from SSM
 - [X] PDO-11285 Fix Fluentbit multiline cont rule sweeping JSON lines into buffer, causing silent audit log loss in OpenSearch
 - [X] PDO-11651 Add resources for datalake telemetry pipeline
+- [X] PDO-11671 Add p1as-delegatedadmin code-gen directory to PEB
 - [X] PDO-11804 Add karpenter.sh/do-not-disrupt annotation to Jobs and CronJobs
 - [X] PDO-11883: Observability: Implement remediation for silent log parse failures
 - [X] PDO-11929 Enable replication events in Console JSON Error Logger (PingDirectory)
