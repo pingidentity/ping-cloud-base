@@ -1,0 +1,28 @@
+# Removes the unencrypted Logstash Compliance StorageClass and points
+# logstash-elastic-compliance to the KMS-encrypted gp3 StorageClass.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: logstash-compliance-gp3
+$patch: delete
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-elastic-compliance
+spec:
+  volumeClaimTemplates:
+  - metadata:
+      name: logstash-gp3
+      annotations:
+        volume.autoscaler.kubernetes.io/scale-above-percent: "85"
+        volume.autoscaler.kubernetes.io/scale-up-percent: "25"
+      labels:
+        app: logstash-elastic-compliance
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: logstash-compliance-gp3-kms
+      resources:
+        requests:
+          storage: 10Gi

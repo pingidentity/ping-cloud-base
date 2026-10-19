@@ -47,6 +47,7 @@ _Changes:_
 - [X] PDO-11929 Enable replication events in Console JSON Error Logger (PingDirectory)
 - [X] PDO-11621 Add HIPAA logging bucket bootstrap resource
 - [X] PDO-12181 Implement Logging tier patches for OpenSearch Chart
+- [X] PDO-12196 Extend KMS patch and migration steps for logstash-elastic-compliance StatefulSet and PVCs
 - [X] PDO-12227 CI/CD Pipeline: Stabilize logging integration tests
 - [X] PDO-12265 Update argocd-init-tools
 

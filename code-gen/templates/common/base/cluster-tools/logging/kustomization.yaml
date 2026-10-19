@@ -7,6 +7,8 @@ resources:
 # This patch must be enabled manually to use KMS encryption.
 # Uncomment the KMS-related resources/patches when EBS_KMS_KEY_ARN is set.
 #- kms-storageclass.yaml
+# Uncomment only for customers with HIPAA or Telemetry DataLake enabled.
+#- compliance-kms-storageclass.yaml
 
 components:
 # Logging tier patches are selected by LOGGING_TIER and split by component for independent control of Fluent Bit, Logstash, and OpenSearch.
@@ -112,6 +114,8 @@ patchesStrategicMerge:
 # This patch must be enabled manually to use KMS encryption.
 # Uncomment the KMS-related resources/patches when EBS_KMS_KEY_ARN is set.
 #- kms-patch.yaml
+# Uncomment only for customers with HIPAA or Telemetry DataLake enabled.
+#- compliance-kms-patch.yaml
 
 patchesJson6902:
 - target:
