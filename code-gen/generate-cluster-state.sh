@@ -1605,13 +1605,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     if test -f "${configure_profile_repo_script}"; then
       /bin/bash "${configure_profile_repo_script}" "${ENV_PROFILES_DIR}"
     fi
-
-    # Remove pingdirectory-proxy profile
-    # This code will be changed to utilize pingdirectory-proxy enabled variable once it is supported in P1AS full deployments
-    if test "${app_repo}" = "p1as-pingdirectory"; then
-      echo "Removing pingdirectory-proxy profile"
-      rm -rf "${ENV_PROFILES_DIR}/pingdirectoryproxy"
-    fi
   done
 
   if test "${ENV}" = "${CUSTOMER_HUB}"; then

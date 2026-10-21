@@ -17,6 +17,7 @@
 - Add OpenSearch index template field coverage test and dashboard field validation test
 - JSON Logging: Implement JSON logging for PingCentral
 - Add p1as-observability Opensearch Helm chart to PCB
+- Remove logic that removes PingDirectoryProxy folder from profile-repo
 - Add p1as-beluga-healthcheck Helm chart to PEB
 - Implement Opensearch Tiers support
 - Rework, and add integration tests for logging stack
@@ -38,6 +39,7 @@ _Changes:_
 - [X] PDO-10168 Update pod-reaper and httpbin images
 - [X] PDO-10226 Implement JSON logging for Ingress logs
 - [X] PDO-10267 Update generate-cluster-state.sh to use helm charts in bootstrap kustomization.yaml
+- [X] PDO-10718 Remove logic that removes PingDirectoryProxy folder from profile-repo
 - [X] PDO-11215 Get KarpenterController IRSA role path from SSM
 - [X] PDO-11285 Fix Fluentbit multiline cont rule sweeping JSON lines into buffer, causing silent audit log loss in OpenSearch
 - [X] PDO-11651 Add resources for datalake telemetry pipeline
