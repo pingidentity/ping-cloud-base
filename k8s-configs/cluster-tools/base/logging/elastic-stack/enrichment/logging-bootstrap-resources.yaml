@@ -19,3 +19,10 @@ storage/compliance/hipaa-bucket/name:
   values_container_key: bucketName
   ssm_type: string
   ssm_path_prefix: SERVICE_SSM_PATH_PREFIX
+customer-metadata:
+  kind: ConfigMap
+  name: customer-metadata
+  template:
+  values_container_key: customer-metadata
+  ssm_type: json
+  ssm_path_prefix: CUSTOMER_SSM_PATH_PREFIX

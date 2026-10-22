@@ -51,6 +51,7 @@ configMapGenerator:
   behavior: merge
   literals:
     - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
+    - CUSTOMER_SSM_PATH_PREFIX=${CUSTOMER_SSM_PATH_PREFIX}
     - REGION=${REGION}
 
 patchesStrategicMerge:

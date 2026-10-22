@@ -104,9 +104,6 @@
 #                                  | and be replaced by discovery-service with the      |
 #                                  | actual bucket name used by hook scripts.           |
 #                                  |                                                    |
-# SALESFORCE_ID                    | The Salesforce ID for the customer, used as an     |
-#                                  | enrichment field in the datalake audit pipeline.   |
-#                                  |                                                    |
 # CLUSTER_STATE_REPO_URL           | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
 #                                  |                                                    |
 # DEFAULT_CLUSTER_UPTIME           | The cluster default uptime used by kube-downscaler | Mon-Fri 09:00-:18:00 UTC
@@ -479,7 +476,6 @@ ${LOGGING_TIER}
 ${APP_RESYNC_SECONDS}
 ${CERT_RENEW_BEFORE}
 ${TELEPORT_RESOURCE_ID}
-${SALESFORCE_ID}
 ${STAGE}'
 
 # Variables to replace within the generated cluster state code
@@ -833,7 +829,6 @@ echo "Initial PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
 echo "Initial CONFIG_DATA_BUCKET_URI: ${CONFIG_DATA_BUCKET_URI}"
-echo "Initial SALESFORCE_ID: ${SALESFORCE_ID}"
 
 echo "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Initial MYSQL_USER: ${MYSQL_USER}"
@@ -1031,7 +1026,6 @@ export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-""}"
 export HEALTHCHECKS_ENABLED="${HEALTHCHECKS_ENABLED:-false}"
 export CUSTOMER_PINGONE_ENABLED="${CUSTOMER_PINGONE_ENABLED:-false}"
 export ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD="${ENABLE_IMPOSSIBLE_LOGIN_DASHBOARD:-false}"
-export SALESFORCE_ID="${SALESFORCE_ID:-""}"
 
 # For SELF_SERVICE_TEMPLATES_ENABLED, we want to default it to true for new clusters but false for upgrades,
 # since we don't want to introduce new functionality via an upgrade without explicit opt-in.
@@ -1176,7 +1170,6 @@ echo "Using PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 echo "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Using BACKUP_URL: ${BACKUP_URL}"
 echo "Using CONFIG_DATA_BUCKET_URI: ${CONFIG_DATA_BUCKET_URI}"
-echo "Using SALESFORCE_ID: ${SALESFORCE_ID}"
 
 echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Using MYSQL_USER: ${MYSQL_USER}"

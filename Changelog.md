@@ -25,6 +25,7 @@
 - Remove helm-command.sh since old Kustomize version no longer used
 - Add integration tests for json-parse-failures index
 - Enhance Opensearch tests (unit, integration, system)
+- Obtain Salesforce ID from SSM param for logstash compliance
 
 _Changes:_
 
@@ -52,6 +53,7 @@ _Changes:_
 - [X] PDO-12196 Extend KMS patch and migration steps for logstash-elastic-compliance StatefulSet and PVCs
 - [X] PDO-12227 CI/CD Pipeline: Stabilize logging integration tests
 - [X] PDO-12265 Update argocd-init-tools
+- [X] PDO-12393 Obtain Salesforce ID from SSM param for logstash compliance
 
 ### 2.3.0
 
