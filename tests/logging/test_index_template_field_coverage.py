@@ -19,32 +19,7 @@ SKIP_TEMPLATES = {"general", "logstash"}
 
 # Fields known to be missing from specific index templates pending a fix.
 # Remove entries once the corresponding template is updated.
-KNOWN_MISSING_FIELDS = {
-    # PD access logs carry the operation-purpose request control (DSConfig
-    # set-commands, PurgeExpiredData plugin) and soft-delete attributes;
-    # the pd-access template does not declare them yet (PDO-12227).
-    "pd-access": {
-        "attributes",
-        "changeToSoftDeletedEntry",
-        "operationPurposeRequestControl",
-        "operationPurposeRequestControl.applicationName",
-        "operationPurposeRequestControl.applicationVersion",
-        "operationPurposeRequestControl.codeLocation",
-    },
-    # 09-pdg-filters error-branch parsing emits logLevel/pid/tid/message/log_name
-    # plus the standard @version/host/stream; the pdg-error template does not
-    # declare them yet.
-    "pdg-error": {
-        "@version",
-        "host",
-        "logLevel",
-        "log_name",
-        "message",
-        "pid",
-        "stream",
-        "tid",
-    },
-}
+KNOWN_MISSING_FIELDS = {}
 
 # OS adds these metadata fields to every document at index time; they are not
 # part of the log payload and do not need to be declared in the template.

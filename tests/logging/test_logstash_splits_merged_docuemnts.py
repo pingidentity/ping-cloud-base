@@ -225,29 +225,38 @@ class TestTeeMergedSplit(unittest.TestCase):
                 f"category=PROTOCOL severity=NOTICE msgID={msgid_errors} "
                 f"msg=\"Web application extensions to initialize: 0\"")
         )
+        # PD fixtures use server.out lines — the only file PD actually tails in
+        # production since the JSON logging migration (file-based access logger
+        # is disabled, so /logs/access no longer exists to tail).
         pd_normal_line = cls._tee_line(
-            "/opt/pingidentity/server/logs/", "access",
+            "/opt/pingidentity/server/logs/", "server.out",
             "15/Sep/2026:20:37:17.728 +0000",
-            f"DISCONNECT requesterIP=\"127.0.0.1\" requesterDN=\"\" conn=0 msgID={pd_normal}",
+            f"category=PROTOCOL severity=NOTICE msgID={pd_normal} "
+            f"msg=\"Accepted LDAP connection from 127.0.0.1:{pd_normal}\"",
         )
         pd_glued = (
-            cls._tee_line("/opt/pingidentity/server/logs/", "access",
+            cls._tee_line("/opt/pingidentity/server/logs/", "server.out",
                 "15/Sep/2026:20:37:17.728 +0000",
-                f"DISCONNECT requesterIP=\"127.0.0.1\" conn=0 msgID={pd_glued_1}")
-            + cls._tee_line("/opt/pingidentity/server/logs/", "access",
+                f"category=PROTOCOL severity=NOTICE msgID={pd_glued_1} "
+                f"msg=\"Accepted LDAP connection from 127.0.0.1:{pd_glued_1}\"")
+            + cls._tee_line("/opt/pingidentity/server/logs/", "server.out",
                 "15/Sep/2026:20:37:18.728 +0000",
-                f"DISCONNECT requesterIP=\"127.0.0.2\" conn=1 msgID={pd_glued_2}")
+                f"category=PROTOCOL severity=NOTICE msgID={pd_glued_2} "
+                f"msg=\"Accepted LDAP connection from 127.0.0.2:{pd_glued_2}\"")
         )
         pf_json_line = json.dumps({
             "type": "application", "logLevel": "INFO", "className": "s3_sync_ops",
             "msg": f"test normal PF line {pf_json}", "timestamp": "2026-09-16T16:18:31.253Z",
         })
-        # PDG error log lines have a BARE timestamp in the file content (no
-        # brackets), so this one is not built with _tee_line — its bracket
-        # wrapper would corrupt the timestamp the 09-pdg-filters grok captures.
+        # PDG error log line, real shape: nginx writes "yyyy/MM/dd HH:mm:ss
+        # [level] pid#tid: message" to /opt/out/instance/logs/error.log, and
+        # 100-tail-logs.sh prefixes each line with the file path. The bare
+        # timestamp is part of the tee line body, so this is not built with
+        # _tee_line — its "[ts]" wrapper would corrupt the timestamp the
+        # 09-pdg-filters grok captures.
         pdg_line = (
-            "/opt/out/instance/logs/error 15/Sep/2026:20:37:17 +0000 "
-            f"[NOTICE] 12345#678: PDG test normal line {pdg_normal}"
+            "/opt/out/instance/logs/error.log 2026/09/15 20:37:17 [warn] 12345#678: "
+            f"PDG test normal line {pdg_normal}"
         )
         # PA engine-log shape (log_name=pingaccess, message key — matches real
         # PA JSON stdout). The PA filter routes by log_name; carrying
@@ -401,31 +410,30 @@ class TestTeeMergedSplit(unittest.TestCase):
             "pds-errors (server msgID must not appear — fragment routing is wrong)")
 
     def test_pd_normal_line_not_split(self):
-        """A normal PD access tee line must index exactly one parsed document."""
+        """A normal PD server.out tee line must index exactly one parsed
+        pd-server document."""
         marker = self._markers["pd_normal"][2]
-        docs = self._search_by_marker(marker, "pd-access-*")
-        assert docs, f"pd-access: document not found for marker {marker}"
-        assert len(docs) == 1, f"pd-access: expected 1 doc for marker {marker}, got {len(docs)}"
-        self._assert_no_split_tag(docs[0], "pd-access")
+        docs = self._search_by_marker(marker, "pd-server-*")
+        assert docs, f"pd-server: document not found for marker {marker}"
+        assert len(docs) == 1, f"pd-server: expected 1 doc for marker {marker}, got {len(docs)}"
+        self._assert_no_split_tag(docs[0], "pd-server")
 
-    def test_pd_glued_two_access_lines_split(self):
-        """Two glued PD access tee lines (same root, different times) must
-        split into exactly two pd-access documents."""
+    def test_pd_glued_two_server_lines_split(self):
+        """Two glued PD server.out tee lines (same root, different times) must
+        split into exactly two pd-server documents."""
         marker_1 = self._markers["pd_glued_1"][2]
         marker_2 = self._markers["pd_glued_2"][2]
 
-        docs_1 = self._search_by_marker(marker_1, "pd-access-*")
-        assert docs_1, f"pd-access: first fragment not indexed for marker {marker_1}"
-        assert len(docs_1) == 1, f"pd-access: expected 1 doc for marker {marker_1}, got {len(docs_1)}"
-        # DISCONNECT lines stay in log_string after the access grok; both
-        # fragments must be present as separate docs with their own msgIDs.
+        docs_1 = self._search_by_marker(marker_1, "pd-server-*")
+        assert docs_1, f"pd-server: first fragment not indexed for marker {marker_1}"
+        assert len(docs_1) == 1, f"pd-server: expected 1 doc for marker {marker_1}, got {len(docs_1)}"
         # The split's own re-emitted clone legitimately carries the tag; the
         # correctness check is that this doc contains ONLY fragment 2's line.
-        docs_2 = self._search_by_marker(marker_2, "pd-access-*")
-        assert docs_2, f"pd-access: second fragment not indexed for marker {marker_2}"
-        assert len(docs_2) == 1, f"pd-access: expected 1 doc for marker {marker_2}, got {len(docs_2)}"
+        docs_2 = self._search_by_marker(marker_2, "pd-server-*")
+        assert docs_2, f"pd-server: second fragment not indexed for marker {marker_2}"
+        assert len(docs_2) == 1, f"pd-server: expected 1 doc for marker {marker_2}, got {len(docs_2)}"
         assert marker_1 not in str(docs_2[0]), \
-            f"pd-access fragment-2 doc contains fragment-1 text — unsplit record: {docs_2[0]}"
+            f"pd-server fragment-2 doc contains fragment-1 text — unsplit record: {docs_2[0]}"
 
     ### DISABLED (PDO-12227): the PF glued case cannot pass until the split gate
     ### in 02-input-filters.conf matches PF's actual tail paths. The gate regex
