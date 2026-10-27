@@ -30,6 +30,7 @@
 
 _Changes:_
 
+- [X] PDO-5965 Add PingDirectoryProxy key to values.yaml
 - [X] PDO-5990 Opensearch: Add p1as-observability to PCB
 - [X] PDO-5998 Opensearch: Enhance p1as-observability tests (unit, integration, system)
 - [X] PDO-7316 JSON Logging: Implement JSON logging for PingDelegator logs

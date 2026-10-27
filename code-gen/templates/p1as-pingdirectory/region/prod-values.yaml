@@ -16,3 +16,14 @@ pingdirectory:
   # Persistent volume size configuration.
   persistentVolume:
     size: 50Gi
+
+pingdirectoryproxy:
+  maxHeapSize: "15g"
+  statefulSet:
+    # Container specific configuration
+    pingdirectoryproxy:
+      resources:
+        limits:
+          memory: "20Gi"
+        requests:
+          memory: "20Gi"

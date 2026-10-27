@@ -44,7 +44,29 @@ pingdirectory:
   pdUseSharedCache: "false"
   # Set this to define overall cache size .This would to be shared across all local backends
   sharedCachePercent: "55"
-  license:
-    # Only use if you want to provide your own SSM path to perpetual license
-    # The default is that automation will determine SSM path to retrieve product license
-    overrideProductLicense: ""
+
+pingdirectoryproxy:
+  monitorBucketUrl: "${PD_MONITOR_BUCKET_URL}"
+  maxHeapSize: "3g"
+  statefulSet:
+    lastUpdateReason: "NA"
+    replicas: "3"
+    # Keep at least 66% of proxy pods available; do not lower this in customer environment.
+    # With 3 replicas in customer environment, this keeps 2 pods running and allows 1 eviction.
+    podDisruptionBudget:
+      minAvailable: "66%"
+    # Container specific configuration
+    pingdirectoryproxy:
+      resources:
+        limits:
+          memory: "4Gi"
+          cpu: "2"
+        requests:
+          memory: "4Gi"
+          cpu: "2"
+  healthChecks:
+    replicationBacklog:
+      maximumAvailableMissingChanges: 5000
+      minimumDegradedMissingChanges: 1000
+      maximumDegradedMissingChanges: 25000
+      minimumUnavailableMissingChanges: 10000
