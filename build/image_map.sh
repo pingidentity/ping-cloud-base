@@ -16,8 +16,7 @@ export IMAGE_MAP="pingcloud-apps/pingdelegator
    pingcloud-services/p14c-integration
    pingcloud-monitoring/logstash
    pingcloud-monitoring/enrichment-bootstrap
-   pingcloud-monitoring/os-bootstrap
-   pingcloud-services/grp-radiusproxy"
+   pingcloud-monitoring/os-bootstrap"
 
 export CHART_MAP="p1as-beluga-tools
    p1as-cluster-tools
