@@ -27,6 +27,7 @@
 - Enhance Opensearch tests (unit, integration, system)
 - Obtain Salesforce ID from SSM param for logstash compliance
 - Update logging test fixtures to production log shapes (PD server.out, PDG nginx error)
+- Remove RadsecProxy From Codebase
 
 _Changes:_
 
@@ -38,6 +39,7 @@ _Changes:_
 - [X] PDO-8371 Remove helm-command.sh since old Kustomize version no longer used
 - [X] PDO-8875 Add deploy wrapper to capture deploy failure logs
 - [X] PDO-9115 Introduce 'revisionHistoryLimit' to Delegated Admin deployment object to avoid cluttering
+- [X] PDO-10021 Remove RadsecProxy From Codebase
 - [X] PDO-10598 JSON Logging: Update index templates in OpenSearch
 - [X] PDO-10168 Update pod-reaper and httpbin images
 - [X] PDO-10226 Implement JSON logging for Ingress logs

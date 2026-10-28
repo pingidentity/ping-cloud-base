@@ -106,20 +106,6 @@ pingfederate:
         memory: "25Mi"
         cpu: "25m"
 
-  # Radius Proxy settings
-  radiusProxy:
-    enabled: false
-
-    # Control side-car container within PingFederate statefulset
-    statefulSet:
-      resources:
-        requests:
-          memory: "200Mi"
-          cpu: "200m"
-        limits:
-          memory: "500Mi"
-          cpu: "400m"
-
   # Heartbeat Exporter settings
   heartbeatExporter:
 
