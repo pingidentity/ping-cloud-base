@@ -46,6 +46,7 @@ _Changes:_
 - [X] PDO-10267 Update generate-cluster-state.sh to use helm charts in bootstrap kustomization.yaml
 - [X] PDO-10718 Remove logic that removes PingDirectoryProxy folder from profile-repo
 - [X] PDO-11215 Get KarpenterController IRSA role path from SSM
+- [X] PDO-11243 Prometheus Adapter: p1as-prometheus-adapter chart added to build
 - [X] PDO-11285 Fix Fluentbit multiline cont rule sweeping JSON lines into buffer, causing silent audit log loss in OpenSearch
 - [X] PDO-11651 Add resources for datalake telemetry pipeline
 - [X] PDO-11671 Add p1as-delegatedadmin code-gen directory to PEB
