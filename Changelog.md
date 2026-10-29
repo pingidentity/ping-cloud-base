@@ -27,6 +27,7 @@
 - Enhance Opensearch tests (unit, integration, system)
 - Obtain Salesforce ID from SSM param for logstash compliance
 - Update logging test fixtures to production log shapes (PD server.out, PDG nginx error)
+- Implement p1as-delegatedadmin pipeline integration test
 - Remove RadsecProxy From Codebase
 
 _Changes:_
@@ -49,6 +50,7 @@ _Changes:_
 - [X] PDO-11243 Prometheus Adapter: p1as-prometheus-adapter chart added to build
 - [X] PDO-11285 Fix Fluentbit multiline cont rule sweeping JSON lines into buffer, causing silent audit log loss in OpenSearch
 - [X] PDO-11651 Add resources for datalake telemetry pipeline
+- [X] PDO-11670 Implement p1as-delegatedadmin pipeline integration test
 - [X] PDO-11671 Add p1as-delegatedadmin code-gen directory to PEB
 - [X] PDO-11804 Add karpenter.sh/do-not-disrupt annotation to Jobs and CronJobs
 - [X] PDO-11883: Observability: Implement remediation for silent log parse failures
