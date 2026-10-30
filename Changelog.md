@@ -29,6 +29,7 @@
 - Update logging test fixtures to production log shapes (PD server.out, PDG nginx error)
 - Implement p1as-delegatedadmin pipeline integration test
 - Remove RadsecProxy From Codebase
+- Assign p1as-vital-fluentbit PriorityClass to Fluent Bit DaemonSet and create the class
 
 _Changes:_
 
@@ -62,6 +63,7 @@ _Changes:_
 - [X] PDO-12265 Update argocd-init-tools
 - [X] PDO-12374 Revert suppress-internal-operations:false on PD Console JSON Access Logger
 - [X] PDO-12393 Obtain Salesforce ID from SSM param for logstash compliance
+- [X] PDO-12385 Assign the Vital PriorityClass to Fluent Bit DaemonSet
 
 ### 2.3.0
 

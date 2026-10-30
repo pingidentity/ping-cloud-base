@@ -1,3 +1,15 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: p1as-vital-fluentbit
+value: 1501
+preemptionPolicy: Never
+globalDefault: false
+# When Fluent Bit is migrated to the p1as-eng-apps-observability repo, this class can be
+# merged with the observability repo's p1as-vital-observability into a single p1as-vital
+# PriorityClass used by both Fluent Bit and New Relic.
+description: "Priority for observability components such as Fluent Bit and New Relic."
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -202,7 +214,7 @@ spec:
         hostPath:
           path: /var/log/dmesg
       serviceAccountName: fluent-bit
-      priorityClassName: system-node-critical
+      priorityClassName: p1as-vital-fluentbit
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
