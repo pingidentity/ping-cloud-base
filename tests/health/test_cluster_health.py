@@ -22,60 +22,65 @@ class TestClusterHealth(TestHealthBase):
             "No cluster health in health check results",
         )
 
-    def test_health_check_has_namespace_results(self):
-        res = [key for key in self.test_results if "namespace" in key]
-        self.assertTrue(
-            len(res) > 0, "No namespace checks found in health check results"
-        )
-
-    def test_health_check_has_node_results(self):
-        res = [key for key in self.test_results if "node" in key]
-        self.assertTrue(len(res) > 0, "No node checks found in health check results")
-
+    # Kept in p1as-eng-base: StatefulSets are not deployed as part of the beluga-tools microservice CI/CD pipeline.
     def test_health_check_has_stateful_set_results(self):
         res = [key for key in self.test_results if "statefulset" in key]
         self.assertTrue(
             len(res) > 0, "No statefulset checks found in health check results"
         )
 
-    def test_health_check_has_unapproved_namespaces_results(self):
-        self.assertIn("No unapproved namespaces are present", self.test_results.keys())
-
-    def test_health_check_has_required_namespaces_results(self):
-        self.assertIn("All required namespaces are present", self.test_results.keys())
-
-    def test_health_check_has_pods_running_results(self):
-        self.assertIn(
-            "All pods in namespace health are running", self.test_results.keys()
-        )
-
-    def test_health_check_has_nodes_ready_results(self):
-        self.assertIn("All nodes in cluster are Ready", self.test_results.keys())
-
-    def test_health_check_has_node_disk_pressure_results(self):
-        self.assertIn(
-            "No nodes in cluster are experiencing Disk Pressure",
-            self.test_results.keys(),
-        )
-
-    def test_health_check_has_node_memory_pressure_results(self):
-        self.assertIn(
-            "No nodes in cluster are experiencing Memory Pressure",
-            self.test_results.keys(),
-        )
-
-    def test_health_check_has_node_pid_pressure_results(self):
-        self.assertIn(
-            "No nodes in cluster are experiencing PID Pressure",
-            self.test_results.keys(),
-        )
-
+    # Kept in p1as-eng-base: StatefulSets are not deployed as part of the beluga-tools microservice CI/CD pipeline.
     def test_health_check_has_statefulset_pods_ready_results(self):
         pattern = re.compile("All pods in statefulset [a-z-a-z]+ are Ready")
         self.assertTrue(any(pattern.match(test_name) for test_name in self.test_results.keys()))
 
-    def test_health_check_has_k8s_api_ready_results(self):
-        self.assertIn("K8s API is ready", self.test_results.keys())
+    def test_cluster_health_results_published(self):
+        """
+        Verifies that the cluster-health pod publishes its results to the healthcheck
+        service, and that the published product has the expected summary fields and counts
+        """
+        res = requests.get(self.healthcheck_endpoint, verify=False)
+        result = res.json()["health"][self.cluster_health]
+        for key in [
+            "healthStatus",
+            "passedChecks",
+            "failedChecks",
+            "degradedChecks",
+            "tests",
+            "lastModified",
+        ]:
+            self.assertIn(key, result, f"{key} missing from {self.cluster_health} result")
+        for key in ["passedChecks", "failedChecks", "degradedChecks"]:
+            self.assertIsInstance(result[key], int, f"{key} was not an integer")
+            self.assertGreaterEqual(result[key], 0, f"{key} was negative")
+        self.assertTrue(
+            0 <= float(result["healthStatus"]) <= 100,
+            "healthStatus was not between 0-100",
+        )
+
+    def test_cluster_health_environment_section(self):
+        """
+        Verifies that publishing cluster-health results leaves the environment summary
+        in the healthcheck response with allowed values
+        """
+        allowed_env_types = ["dev", "test", "stage", "prod", "customer-hub"]
+        allowed_statuses = ["healthy", "degraded", "unhealthy", "initializing"]
+        res = requests.get(self.healthcheck_endpoint, verify=False)
+        environment = res.json()["health"]["environment"]
+        self.assertIn(
+            environment["envType"],
+            allowed_env_types,
+            f"envType was not one of {allowed_env_types}",
+        )
+        self.assertIn(
+            environment["healthStatus"],
+            allowed_statuses,
+            f"healthStatus was not one of {allowed_statuses}",
+        )
+        self.assertTrue(
+            0 <= float(environment["healthScore"]) <= 100,
+            "healthScore was not between 0-100",
+        )
 
 
 if __name__ == "__main__":

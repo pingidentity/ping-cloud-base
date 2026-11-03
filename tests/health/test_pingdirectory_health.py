@@ -7,6 +7,8 @@ from health_common import Categories, TestHealthBase
     os.environ.get("ENV_TYPE") == "customer-hub",
     "Customer-hub CDE detected, skipping test module",
 )
+# Kept in p1as-eng-base: PD healthchecks require Prometheus
+
 class TestPingDirectoryHealth(TestHealthBase):
     deployment_name = "healthcheck-pingdirectory"
     label = f"role={deployment_name}"
@@ -55,6 +57,32 @@ class TestPingDirectoryHealth(TestHealthBase):
             self.pingdirectory,
             res.json()["health"].keys(),
             f"No {self.pingdirectory} in health check results",
+        )
+
+    def test_pingdirectory_health_results_published(self):
+        """
+        Verifies that the pingdirectory-health pod publishes its results to the healthcheck
+        service, and that the published product has the expected summary fields and counts
+        """
+        res = requests.get(self.healthcheck_endpoint, verify=False)
+        result = res.json()["health"][self.pingdirectory]
+        for key in [
+            "healthStatus",
+            "passedChecks",
+            "failedChecks",
+            "degradedChecks",
+            "tests",
+            "lastModified",
+        ]:
+            self.assertIn(
+                key, result, f"{key} missing from {self.pingdirectory} result"
+            )
+        for key in ["passedChecks", "failedChecks", "degradedChecks"]:
+            self.assertIsInstance(result[key], int, f"{key} was not an integer")
+            self.assertGreaterEqual(result[key], 0, f"{key} was negative")
+        self.assertTrue(
+            0 <= float(result["healthStatus"]) <= 100,
+            "healthStatus was not between 0-100",
         )
 
     def test_health_check_has_prometheus_ready_results(self):

@@ -1,6 +1,6 @@
 import requests, unittest, os
 
-from health_common import Categories, TestHealthBase
+from health_common import TestHealthBase
 
 
 @unittest.skipIf(
@@ -15,14 +15,6 @@ class TestPingAccessHealth(TestHealthBase):
     admin_service_name_env_var = "K8S_SERVICE_NAME_PINGACCESS_ADMIN"
     admin_port_env_var = "PA_ADMIN_PORT"
 
-    def test_region_env_vars_in_pod(self):
-        env_vars = self.k8s.get_pod_env_vars(self.health, self.label)
-        for expected_ev in ["REGION=", "TENANT_DOMAIN="]:
-            with self.subTest(env_var=expected_ev):
-                self.assertTrue(
-                    any(env_var.startswith(expected_ev) for env_var in env_vars)
-                )
-
     def test_pingaccess_health_deployment_exists(self):
         self.deployment_exists()
 
@@ -33,51 +25,31 @@ class TestPingAccessHealth(TestHealthBase):
             f"No {self.pingaccess} in health check results",
         )
 
-    def test_health_check_has_registered_results(self):
-        test_results = self.get_test_results(self.pingaccess, Categories.pod_status)
-        res = [key for key in test_results if "registered" in key]
+    def test_pingaccess_health_results_published(self):
+        """
+        Verifies that the pingaccess-health pod publishes its results to the healthcheck
+        service, and that the published product has the expected summary fields and counts
+        """
+        res = requests.get(self.healthcheck_endpoint, verify=False)
+        result = res.json()["health"][self.pingaccess]
+        for key in [
+            "healthStatus",
+            "passedChecks",
+            "failedChecks",
+            "degradedChecks",
+            "tests",
+            "lastModified",
+        ]:
+            self.assertIn(key, result, f"{key} missing from {self.pingaccess} result")
+        for key in ["passedChecks", "failedChecks", "degradedChecks"]:
+            self.assertIsInstance(result[key], int, f"{key} was not an integer")
+            self.assertGreaterEqual(result[key], 0, f"{key} was negative")
         self.assertTrue(
-            len(res) > 0,
-            "No 'registered with PA Admin' checks found in health check results",
-        )
-
-    def test_health_check_has_responsive_results(self):
-        test_results = self.get_test_results(self.pingaccess, Categories.connectivity)
-        res = [key for key in test_results if "responds" in key]
-        self.assertTrue(
-            len(res) > 0,
-            "No 'responds to requests' checks found in health check results",
-        )
-
-    def test_health_check_has_create_object_results(self):
-        test_results = self.get_test_results(self.pingaccess, Categories.connectivity)
-        res = [key for key in test_results if "create an object" in key]
-        self.assertTrue(
-            len(res) > 0,
-            "No 'create an object' checks found in health check results",
-        )
-
-    def test_health_check_has_proxy_results(self):
-        test_results = self.get_test_results(self.pingaccess, Categories.connectivity)
-        res = [key for key in test_results if "proxy an unauthenticated request" in key]
-        self.assertTrue(
-            len(res) > 0,
-            "No 'proxy an unauthenticated request' checks found in health check results",
+            0 <= float(result["healthStatus"]) <= 100,
+            "healthStatus was not between 0-100",
         )
 
     def test_admin_api_url_uses_service_name_in_primary_region(self):
         self.assert_admin_api_url_uses_service_name(
             "/app/PAVariables.py", "pa_admin_api_host"
         )
-
-    def test_health_check_has_connectivity_k8s_api_ready_results(self):
-        test_results = self.get_test_results(self.pingaccess, Categories.connectivity)
-        self.assertIn("K8s API is ready", test_results.keys())
-
-    def test_health_check_has_registered_k8s_api_ready_results(self):
-        test_results = self.get_test_results(self.pingaccess, Categories.pod_status)
-        self.assertIn("K8s API is ready", test_results.keys())
-
-    def test_health_check_has_registered_pingaccess_admin_api_ready_results(self):
-        test_results = self.get_test_results(self.pingaccess, Categories.pod_status)
-        self.assertIn("PingAccess Admin API is ready", test_results.keys())

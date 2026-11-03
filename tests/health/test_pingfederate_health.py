@@ -38,6 +38,30 @@ class TestPingFederateHealth(TestHealthBase):
             f"No {self.pingfederate} in health check results",
         )
 
+    def test_pingfederate_health_results_published(self):
+        """
+        Verifies that the pingfederate-health pod publishes its results to the healthcheck
+        service, and that the published product has the expected summary fields and counts
+        """
+        res = requests.get(self.healthcheck_endpoint, verify=False)
+        result = res.json()["health"][self.pingfederate]
+        for key in [
+            "healthStatus",
+            "passedChecks",
+            "failedChecks",
+            "degradedChecks",
+            "tests",
+            "lastModified",
+        ]:
+            self.assertIn(key, result, f"{key} missing from {self.pingfederate} result")
+        for key in ["passedChecks", "failedChecks", "degradedChecks"]:
+            self.assertIsInstance(result[key], int, f"{key} was not an integer")
+            self.assertGreaterEqual(result[key], 0, f"{key} was negative")
+        self.assertTrue(
+            0 <= float(result["healthStatus"]) <= 100,
+            "healthStatus was not between 0-100",
+        )
+
     def test_health_check_has_registered_results(self):
         test_results = self.get_test_results(self.pingfederate, Categories.pod_status)
         res = [key for key in test_results if "registered" in key]
