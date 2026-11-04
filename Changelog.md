@@ -30,6 +30,7 @@
 - Implement p1as-delegatedadmin pipeline integration test
 - Remove RadsecProxy From Codebase
 - Assign p1as-vital-fluentbit PriorityClass to Fluent Bit DaemonSet and create the class
+- Karpenter Fargate pod security group policy to use Versent worker node SG's
 
 _Changes:_
 
@@ -64,6 +65,7 @@ _Changes:_
 - [X] PDO-12374 Revert suppress-internal-operations:false on PD Console JSON Access Logger
 - [X] PDO-12393 Obtain Salesforce ID from SSM param for logstash compliance
 - [X] PDO-12385 Assign the Vital PriorityClass to Fluent Bit DaemonSet
+- [X] PDO-12453 Karpenter Fargate pod security group policy
 
 ### 2.3.0
 

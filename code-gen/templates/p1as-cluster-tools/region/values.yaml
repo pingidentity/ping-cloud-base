@@ -60,6 +60,13 @@ karpenterController:
   serviceAccount:
     annotations:
       ${IRSA_KARPENTER_ANNOTATION_KEY_VALUE}
+  # SGs for the Karpenter Fargate pod ENI (SecurityGroupPolicy).
+  # Populated from cde-factory-exported SSM paths; empty on non-CDE clusters,
+  # in which case the p1as-karpenter chart renders no SecurityGroupPolicy.
+  fargateSecurityGroupPolicy:
+    groupIds:
+      - ${KARPENTER_FARGATE_WORKER_NODE_SG}
+      - ${KARPENTER_FARGATE_WHITELIST_SG}
   # Ec2NodeClass definitions
   p1asEC2NodeClass:
     instanceProfile: "${KARPENTER_INSTANCE_PROFILE}"
