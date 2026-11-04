@@ -46,6 +46,7 @@ _Changes:_
 - [X] PDO-10598 JSON Logging: Update index templates in OpenSearch
 - [X] PDO-10168 Update pod-reaper and httpbin images
 - [X] PDO-10226 Implement JSON logging for Ingress logs
+- [X] PDO-10228 JSON Logging: Dev Team Performance Testing of the Observability Stack
 - [X] PDO-10267 Update generate-cluster-state.sh to use helm charts in bootstrap kustomization.yaml
 - [X] PDO-10718 Remove logic that removes PingDirectoryProxy folder from profile-repo
 - [X] PDO-11215 Get KarpenterController IRSA role path from SSM
