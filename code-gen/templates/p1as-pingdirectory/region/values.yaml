@@ -64,6 +64,14 @@ pingdirectoryproxy:
         requests:
           memory: "4Gi"
           cpu: "2"
+    statsdExporter:
+      resources:
+        limits:
+          cpu: "100m"
+          memory: "300Mi"
+        requests:
+          cpu: "100m"
+          memory: "100Mi"
   healthChecks:
     replicationBacklog:
       maximumAvailableMissingChanges: 5000

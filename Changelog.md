@@ -31,6 +31,8 @@
 - Remove RadsecProxy From Codebase
 - Assign p1as-vital-fluentbit PriorityClass to Fluent Bit DaemonSet and create the class
 - Karpenter Fargate pod security group policy to use Versent worker node SG's
+- Create pingdirectoryproxy-statsd-exporter sidecar with Prometheus and New Relic scrape
+
 
 _Changes:_
 
@@ -63,6 +65,7 @@ _Changes:_
 - [X] PDO-12196 Extend KMS patch and migration steps for logstash-elastic-compliance StatefulSet and PVCs
 - [X] PDO-12227 CI/CD Pipeline: Stabilize logging integration tests
 - [X] PDO-12265 Update argocd-init-tools
+- [X] PDO-12365 Create pingdirectoryproxy-statsd-exporter sidecar with Prometheus and New Relic scrape
 - [X] PDO-12374 Revert suppress-internal-operations:false on PD Console JSON Access Logger
 - [X] PDO-12393 Obtain Salesforce ID from SSM param for logstash compliance
 - [X] PDO-12385 Assign the Vital PriorityClass to Fluent Bit DaemonSet

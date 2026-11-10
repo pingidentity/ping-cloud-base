@@ -27,3 +27,7 @@ pingdirectoryproxy:
           memory: "20Gi"
         requests:
           memory: "20Gi"
+    statsdExporter:
+      resources:
+        requests:
+          memory: "300Mi"
