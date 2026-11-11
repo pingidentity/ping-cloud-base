@@ -24,13 +24,12 @@ import kubernetes as k8s
 
 from k8s_utils import K8sUtils
 
-# The PriorityClasses the tier model requires in every cluster. The vital
-# classes follow the p1as-vital naming convention; PingDirectory's class
-# predates the convention, so its name is hardcoded here.
+# The PriorityClasses the workloads requires in every cluster.  See documentation for full tier model
+# https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/3502637059/Pod+Priority+Classes+Level
 REQUIRED_CLASSES = (
     "p1as-vital-fluentbit",
     "p1as-vital-observability",
-    "pingdirectory-high-priority",
+    "p1as-critical-pingdirectory",
 )
 
 # The workloads covered by the tier model, as (kind, name, namespace).
