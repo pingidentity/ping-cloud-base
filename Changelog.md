@@ -99,6 +99,7 @@ _Changes:_
 - [X] PDO-12049 Default All Environments to Logging Tier 1
 - [X] PDO-12148 Logstash and OpenSearch 2.3-tagged build not visible
 - [X] PDO-12182 kube-proxy logs no longer ingested into OpenSearch after FluentBit pipeline reorganization
+- [X] PDO-12413 KMS patch update - StorageClass update for logstash-s3 STS
 
 ### 2.2.3
 

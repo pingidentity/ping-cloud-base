@@ -1,8 +1,14 @@
-# Removes old unencrypted StorageClass and updates Logstash , opensearch and S3 Logstash StatefulSets to use KMS-encrypted gp3 storage
+# Removes original StorageClasses and updates Logstash, Logstash S3 and OpenSearch to use their customer KMS key StorageClasses.
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: logstash-gp3
+$patch: delete
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: logstash-s3-gp3
 $patch: delete
 ---
 apiVersion: storage.k8s.io/v1
@@ -59,8 +65,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: logstash-gp3-kms
+      storageClassName: logstash-s3-gp3-kms
       resources:
         requests:
           storage: 12Gi
-
