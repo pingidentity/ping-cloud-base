@@ -3,10 +3,12 @@
 ### 2.2.3
 
 - Update customer-p1-connection job to perform connection deletion
+- OpenSearch: Fix global tenant read-only access for customers
 
 _Changes:_
 
 - [X] PDO-10832 Update customer-p1-connection job to perform connection deletion
+- [X] PDO-12522 OpenSearch: Fix global tenant read-only access for customers
 
 ### 2.2.2
 
