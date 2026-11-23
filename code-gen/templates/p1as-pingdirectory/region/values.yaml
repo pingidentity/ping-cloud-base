@@ -47,7 +47,7 @@ pingdirectory:
 
 pingdirectoryproxy:
   monitorBucketUrl: "${PD_MONITOR_BUCKET_URL}"
-  maxHeapSize: "3g"
+  maxHeapSize: "2g"
   statefulSet:
     lastUpdateReason: "NA"
     replicas: "3"
@@ -63,7 +63,7 @@ pingdirectoryproxy:
           cpu: "2"
         requests:
           memory: "4Gi"
-          cpu: "2"
+          cpu: "1"
     statsdExporter:
       resources:
         limits:

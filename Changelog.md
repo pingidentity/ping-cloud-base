@@ -32,6 +32,7 @@
 - Assign p1as-vital-fluentbit PriorityClass to Fluent Bit DaemonSet and create the class
 - Karpenter Fargate pod security group policy to use Versent worker node SG's
 - Create pingdirectoryproxy-statsd-exporter sidecar with Prometheus and New Relic scrape
+- Adjust PingDirectoryProxy memory resources
 
 
 _Changes:_
@@ -70,6 +71,7 @@ _Changes:_
 - [X] PDO-12393 Obtain Salesforce ID from SSM param for logstash compliance
 - [X] PDO-12385 Assign the Vital PriorityClass to Fluent Bit DaemonSet
 - [X] PDO-12453 Karpenter Fargate pod security group policy
+- [X] PDO-12521 Adjust PingDirectoryProxy memory resources
 
 ### 2.3.0
 
