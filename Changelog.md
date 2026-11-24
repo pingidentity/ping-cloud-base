@@ -33,7 +33,7 @@
 - Karpenter Fargate pod security group policy to use Versent worker node SG's
 - Create pingdirectoryproxy-statsd-exporter sidecar with Prometheus and New Relic scrape
 - Adjust PingDirectoryProxy memory resources
-
+- Add Force=true,Replace=true sync options to argocd-p1as-bootstrap and customer-p1-connection Jobs
 
 _Changes:_
 
@@ -72,6 +72,7 @@ _Changes:_
 - [X] PDO-12385 Assign the Vital PriorityClass to Fluent Bit DaemonSet
 - [X] PDO-12453 Karpenter Fargate pod security group policy
 - [X] PDO-12521 Adjust PingDirectoryProxy memory resources
+- [X] PDO-12552 Add Force=true,Replace=true sync options to argocd-p1as-bootstrap and customer-p1-connection Jobs
 
 ### 2.3.0
 

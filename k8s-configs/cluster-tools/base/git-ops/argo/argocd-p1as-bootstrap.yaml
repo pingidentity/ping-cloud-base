@@ -40,6 +40,8 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: argocd-p1as-bootstrap
+  annotations:
+    argocd.argoproj.io/sync-options: Force=true,Replace=true
   labels:
     role: argocd-p1as-bootstrap
 spec:

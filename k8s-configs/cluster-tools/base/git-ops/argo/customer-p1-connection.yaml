@@ -4,6 +4,8 @@ kind: Job
 metadata:
   name: customer-p1-connection
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: Force=true,Replace=true
   labels:
     role: customer-p1-connection
 spec:
