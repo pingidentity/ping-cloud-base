@@ -108,7 +108,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: perpetual-license
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v2.4-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:v2.4.0-RC1
         imagePullPolicy: Always
         command: [ "sh", "-c", "python3 /opt/in/perpetual_license.py" ]
         env:
@@ -143,7 +143,7 @@ spec:
           runAsUser: 9031
           allowPrivilegeEscalation: false
           privileged: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v2.4-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:v2.4.0-RC1
         imagePullPolicy: Always
         resources:
           requests:
