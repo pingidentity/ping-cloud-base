@@ -12,6 +12,7 @@ helmCharts:
   - name: teleport-kube-agent
     namespace: teleport
     valuesFile: values.yaml
+    ### This version is only used for the first-time OOTB deployment. After that it is changed dynamically by the Teleport auto-updater in the cluster, and ArgoCD ignores the container image on the teleport StatefulSet (see ignoreDifferences in argocd-application-set.yaml), so changing it here will not update an existing deployment. ###
     version: 16.2.0
     repo: https://charts.releases.teleport.dev
     includeCRDs: true

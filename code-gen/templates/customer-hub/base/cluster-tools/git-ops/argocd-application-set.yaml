@@ -137,6 +137,13 @@ spec:
           namespace: ping-cloud
           jsonPointers:
             - /data
+        # Ignore container image changes managed by Teleport's auto-updater to prevent ArgoCD from rolling back to the Helm-pinned version
+        - group: apps
+          kind: StatefulSet
+          name: teleport
+          namespace: teleport
+          jqPathExpressions:
+            - .spec.template.spec.containers[].image
       syncPolicy:
         automated:
           prune: true
